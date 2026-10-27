@@ -1,0 +1,500 @@
+{
+  "samples": {
+    "lgbm-bureau": {
+      "clear_approve": {
+        "pd": 0.0243,
+        "points": null
+      },
+      "borderline": {
+        "pd": 0.2814,
+        "points": null
+      },
+      "clear_decline": {
+        "pd": 0.999,
+        "points": null
+      }
+    },
+    "lgbm-no-lc-grade": {
+      "clear_approve": {
+        "pd": 0.0182,
+        "points": null
+      },
+      "borderline": {
+        "pd": 0.2748,
+        "points": null
+      },
+      "clear_decline": {
+        "pd": 0.999,
+        "points": null
+      }
+    },
+    "lgbm": {
+      "clear_approve": {
+        "pd": 0.0408,
+        "points": null
+      },
+      "borderline": {
+        "pd": 0.3007,
+        "points": null
+      },
+      "clear_decline": {
+        "pd": 0.999,
+        "points": null
+      }
+    },
+    "scorecard-bureau": {
+      "clear_approve": {
+        "pd": 0.0055,
+        "points": 627
+      },
+      "borderline": {
+        "pd": 0.2855,
+        "points": 546
+      },
+      "clear_decline": {
+        "pd": 0.999,
+        "points": 513
+      }
+    },
+    "scorecard-no-lc-grade": {
+      "clear_approve": {
+        "pd": 0.001,
+        "points": 624
+      },
+      "borderline": {
+        "pd": 0.2766,
+        "points": 545
+      },
+      "clear_decline": {
+        "pd": 0.3523,
+        "points": 516
+      }
+    },
+    "scorecard": {
+      "clear_approve": {
+        "pd": 0.001,
+        "points": 625
+      },
+      "borderline": {
+        "pd": 0.2767,
+        "points": 545
+      },
+      "clear_decline": {
+        "pd": 0.45,
+        "points": 520
+      }
+    }
+  },
+  "sample_order_ok": {
+    "lgbm-bureau": true,
+    "lgbm-no-lc-grade": true,
+    "lgbm": true,
+    "scorecard-bureau": true,
+    "scorecard-no-lc-grade": true,
+    "scorecard": true
+  },
+  "monotonicity": {
+    "lgbm-bureau": {
+      "int_rate": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 5.93,
+        "grid_max": 19.52,
+        "pd_at_min": 0.2228,
+        "pd_at_max": 0.2652,
+        "pd_range": 0.0424
+      },
+      "fico": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 662.0,
+        "grid_max": 782.0,
+        "pd_at_min": 0.2714,
+        "pd_at_max": 0.2281,
+        "pd_range": 0.0433
+      },
+      "dti": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 3.29,
+        "grid_max": 36.84,
+        "pd_at_min": 0.2188,
+        "pd_at_max": 0.2861,
+        "pd_range": 0.0673
+      },
+      "revol_util": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 6.4,
+        "grid_max": 96.9,
+        "pd_at_min": 0.2511,
+        "pd_at_max": 0.304,
+        "pd_range": 0.0528
+      },
+      "annual_inc": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 20000.0,
+        "grid_max": 204000.0,
+        "pd_at_min": 0.2776,
+        "pd_at_max": 0.226,
+        "pd_range": 0.0517
+      },
+      "inq_last_6mths": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 3.0,
+        "pd_at_min": 0.2563,
+        "pd_at_max": 0.2636,
+        "pd_range": 0.0073
+      },
+      "delinq_2yrs": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 3.0,
+        "pd_at_min": 0.262,
+        "pd_at_max": 0.2925,
+        "pd_range": 0.0306
+      },
+      "credit_age_years": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 4.413415468856948,
+        "grid_max": 36.917180013689254,
+        "pd_at_min": 0.262,
+        "pd_at_max": 0.2532,
+        "pd_range": 0.0088
+      },
+      "loan_to_income": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.03529411764705882,
+        "grid_max": 0.44642857142857145,
+        "pd_at_min": 0.223,
+        "pd_at_max": 0.2693,
+        "pd_range": 0.0463
+      },
+      "installment_to_income": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.014029937142857142,
+        "grid_max": 0.1828608600471837,
+        "pd_at_min": 0.1981,
+        "pd_at_max": 0.2677,
+        "pd_range": 0.0696
+      },
+      "pub_rec": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 2.0,
+        "pd_at_min": 0.262,
+        "pd_at_max": 0.2649,
+        "pd_range": 0.0029
+      },
+      "pub_rec_bankruptcies": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 1.0,
+        "pd_at_min": 0.262,
+        "pd_at_max": 0.262,
+        "pd_range": 0.0
+      },
+      "acc_open_past_24mths": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 13.0,
+        "pd_at_min": 0.1955,
+        "pd_at_max": 0.3171,
+        "pd_range": 0.1216
+      },
+      "bc_open_to_buy": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 5.0,
+        "grid_max": 54815.51999999999,
+        "pd_at_min": 0.2899,
+        "pd_at_max": 0.2574,
+        "pd_range": 0.0325
+      },
+      "total_bc_limit": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 800.0,
+        "grid_max": 83900.0,
+        "pd_at_min": 0.3157,
+        "pd_at_max": 0.257,
+        "pd_range": 0.0588
+      },
+      "bc_util": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 3.0,
+        "grid_max": 99.9,
+        "pd_at_min": 0.262,
+        "pd_at_max": 0.2819,
+        "pd_range": 0.02
+      },
+      "num_tl_op_past_12m": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 7.0,
+        "pd_at_min": 0.2607,
+        "pd_at_max": 0.2719,
+        "pd_range": 0.0112
+      },
+      "mo_sin_rcnt_tl": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 1.0,
+        "grid_max": 35.0,
+        "pd_at_min": 0.2669,
+        "pd_at_max": 0.2418,
+        "pd_range": 0.025
+      },
+      "mths_since_recent_inq": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 22.0,
+        "pd_at_min": 0.2687,
+        "pd_at_max": 0.2479,
+        "pd_range": 0.0208
+      },
+      "percent_bc_gt_75": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 100.0,
+        "pd_at_min": 0.2294,
+        "pd_at_max": 0.2631,
+        "pd_range": 0.0336
+      }
+    },
+    "lgbm-no-lc-grade": {
+      "fico": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 662.0,
+        "grid_max": 782.0,
+        "pd_at_min": 0.3323,
+        "pd_at_max": 0.0809,
+        "pd_range": 0.2515
+      },
+      "dti": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 3.29,
+        "grid_max": 36.84,
+        "pd_at_min": 0.2057,
+        "pd_at_max": 0.3574,
+        "pd_range": 0.1517
+      },
+      "revol_util": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 6.4,
+        "grid_max": 96.9,
+        "pd_at_min": 0.2417,
+        "pd_at_max": 0.3389,
+        "pd_range": 0.0972
+      },
+      "annual_inc": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 20000.0,
+        "grid_max": 204000.0,
+        "pd_at_min": 0.3131,
+        "pd_at_max": 0.2208,
+        "pd_range": 0.0923
+      },
+      "inq_last_6mths": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 3.0,
+        "pd_at_min": 0.1873,
+        "pd_at_max": 0.2983,
+        "pd_range": 0.111
+      },
+      "delinq_2yrs": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 3.0,
+        "pd_at_min": 0.271,
+        "pd_at_max": 0.2775,
+        "pd_range": 0.0065
+      },
+      "credit_age_years": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 4.413415468856948,
+        "grid_max": 36.917180013689254,
+        "pd_at_min": 0.2935,
+        "pd_at_max": 0.2608,
+        "pd_range": 0.0327
+      },
+      "loan_to_income": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.03529411764705882,
+        "grid_max": 0.44642857142857145,
+        "pd_at_min": 0.1999,
+        "pd_at_max": 0.2936,
+        "pd_range": 0.0937
+      },
+      "pub_rec": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 2.0,
+        "pd_at_min": 0.271,
+        "pd_at_max": 0.2758,
+        "pd_range": 0.0047
+      },
+      "pub_rec_bankruptcies": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 1.0,
+        "pd_at_min": 0.271,
+        "pd_at_max": 0.2743,
+        "pd_range": 0.0032
+      }
+    },
+    "lgbm": {
+      "int_rate": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 5.93,
+        "grid_max": 19.52,
+        "pd_at_min": 0.2464,
+        "pd_at_max": 0.2969,
+        "pd_range": 0.0505
+      },
+      "fico": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 662.0,
+        "grid_max": 782.0,
+        "pd_at_min": 0.3072,
+        "pd_at_max": 0.2331,
+        "pd_range": 0.0742
+      },
+      "dti": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 3.29,
+        "grid_max": 36.84,
+        "pd_at_min": 0.2421,
+        "pd_at_max": 0.309,
+        "pd_range": 0.0669
+      },
+      "revol_util": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 6.4,
+        "grid_max": 96.9,
+        "pd_at_min": 0.2926,
+        "pd_at_max": 0.315,
+        "pd_range": 0.0224
+      },
+      "annual_inc": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 20000.0,
+        "grid_max": 204000.0,
+        "pd_at_min": 0.3171,
+        "pd_at_max": 0.2503,
+        "pd_range": 0.0668
+      },
+      "inq_last_6mths": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 3.0,
+        "pd_at_min": 0.263,
+        "pd_at_max": 0.3036,
+        "pd_range": 0.0406
+      },
+      "delinq_2yrs": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 3.0,
+        "pd_at_min": 0.2945,
+        "pd_at_max": 0.2983,
+        "pd_range": 0.0038
+      },
+      "credit_age_years": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 4.413415468856948,
+        "grid_max": 36.917180013689254,
+        "pd_at_min": 0.3034,
+        "pd_at_max": 0.2922,
+        "pd_range": 0.0111
+      },
+      "loan_to_income": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.03529411764705882,
+        "grid_max": 0.44642857142857145,
+        "pd_at_min": 0.256,
+        "pd_at_max": 0.3048,
+        "pd_range": 0.0488
+      },
+      "installment_to_income": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.014029937142857142,
+        "grid_max": 0.1828608600471837,
+        "pd_at_min": 0.2447,
+        "pd_at_max": 0.3031,
+        "pd_range": 0.0584
+      },
+      "pub_rec": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 2.0,
+        "pd_at_min": 0.2945,
+        "pd_at_max": 0.2945,
+        "pd_range": 0.0
+      },
+      "pub_rec_bankruptcies": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 1.0,
+        "pd_at_min": 0.2945,
+        "pd_at_max": 0.2945,
+        "pd_range": 0.0
+      }
+    }
+  },
+  "bureau_gain": {
+    "lgbm-bureau": {
+      "base": "lgbm",
+      "auc_base": 0.6922,
+      "auc_bureau": 0.6981,
+      "delta_auc": 0.0059,
+      "ks_delta": 0.0083,
+      "verdict": "the nine columns add signal on dev"
+    },
+    "scorecard-bureau": {
+      "base": "scorecard",
+      "auc_base": 0.6825,
+      "auc_bureau": 0.6893,
+      "delta_auc": 0.0068,
+      "ks_delta": 0.0079,
+      "verdict": "the nine columns add signal on dev"
+    }
+  }
+}

@@ -2,7 +2,6 @@
 data/raw/*
 !data/raw/.gitkeep
 data/cohort/*.parquet
-eval/results/*.png
 __pycache__/
 *.py[cod]
 .venv/

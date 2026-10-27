@@ -113,21 +113,33 @@ def train_lgbm(X_train: pd.DataFrame, y_train, X_dev: pd.DataFrame, y_dev, use_l
 
 
 def train_scorecard(X_train: pd.DataFrame, y_train, use_lc_grade: bool = True, min_iv: float = 0.02, scale: dict | None = None,
-                    bureau: bool = False) -> ModelBundle:
+                    bureau: bool = False, max_sign_refits: int = 5) -> ModelBundle:
+    """WoE binning + logistic regression, scaled to points. A scorecard must read the same way line by line, so every selected
+    feature has to point the way its WoE points: a positive coefficient on WoE (points that fall as the bin gets safer, a
+    collinearity artefact, e.g. int_rate next to sub_grade) is dropped and the card refitted until all coefficients are ≤ 0.
+    The dropped features are recorded in meta['dropped_wrong_sign']."""
     from optbinning import BinningProcess, Scorecard
     from sklearn.linear_model import LogisticRegression
 
     numeric, categorical = feature_list(use_lc_grade, bureau)
-    feats = numeric + categorical
     scale = scale or SCORECARD_SCALE
-    binning = BinningProcess(variable_names=feats, categorical_variables=categorical, selection_criteria={"iv": {"min": min_iv}},
-                             binning_fit_params={f: {"monotonic_trend": "auto_asc_desc"} for f in numeric})
-    card = Scorecard(binning_process=binning, estimator=LogisticRegression(C=1.0, max_iter=2000, solver="lbfgs"), scaling_method="pdo_odds",
-                     scaling_method_params={"pdo": scale["pdo"], "odds": scale["target_odds"], "scorecard_points": scale["target_score"]})
-    card.fit(_as_scorecard_frame(X_train[feats]), np.asarray(y_train))
-    selected = [f for f, keep in zip(feats, card.binning_process_.get_support(), strict=True) if keep]  # Scorecard clones and fits its own copy
-    meta = {"selected_features": selected, "min_iv": min_iv, "scale": scale, "n_train": len(X_train)}
-    return ModelBundle("scorecard", use_lc_grade, numeric, categorical, card, meta=meta, bureau=bureau)
+    dropped: list[str] = []
+    for _ in range(max_sign_refits + 1):
+        num = [f for f in numeric if f not in dropped]
+        cat = [f for f in categorical if f not in dropped]
+        feats = num + cat
+        binning = BinningProcess(variable_names=feats, categorical_variables=cat, selection_criteria={"iv": {"min": min_iv}},
+                                 binning_fit_params={f: {"monotonic_trend": "auto_asc_desc"} for f in num})
+        card = Scorecard(binning_process=binning, estimator=LogisticRegression(C=1.0, max_iter=2000, solver="lbfgs"), scaling_method="pdo_odds",
+                         scaling_method_params={"pdo": scale["pdo"], "odds": scale["target_odds"], "scorecard_points": scale["target_score"]})
+        card.fit(_as_scorecard_frame(X_train[feats]), np.asarray(y_train))
+        selected = [f for f, keep in zip(feats, card.binning_process_.get_support(), strict=True) if keep]  # Scorecard clones and fits its own copy
+        wrong_sign = [f for f, c in zip(selected, card.estimator_.coef_.ravel(), strict=True) if c > 0]  # WoE > 0 = safer, so a consistent coefficient is < 0
+        if not wrong_sign:
+            break
+        dropped += wrong_sign
+    meta = {"selected_features": selected, "dropped_wrong_sign": dropped, "min_iv": min_iv, "scale": scale, "n_train": len(X_train)}
+    return ModelBundle("scorecard", use_lc_grade, num, cat, card, meta=meta, bureau=bureau)
 
 
 def grade_only_model() -> ModelBundle:

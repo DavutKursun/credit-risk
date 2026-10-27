@@ -1,0 +1,62 @@
+{
+  "lgbm-bureau": {
+    "n_late_dev": 60395,
+    "observed_rate": 0.1547,
+    "mean_pd_before": 0.1347,
+    "mean_pd_after": 0.1472,
+    "ece_before": 0.01994,
+    "ece_after": 0.00781,
+    "max_abs_gap_before": 0.0321,
+    "max_abs_gap_after": 0.0162
+  },
+  "lgbm-no-lc-grade": {
+    "n_late_dev": 60395,
+    "observed_rate": 0.1547,
+    "mean_pd_before": 0.1369,
+    "mean_pd_after": 0.1468,
+    "ece_before": 0.01781,
+    "ece_after": 0.00832,
+    "max_abs_gap_before": 0.0352,
+    "max_abs_gap_after": 0.0243
+  },
+  "lgbm": {
+    "n_late_dev": 60395,
+    "observed_rate": 0.1547,
+    "mean_pd_before": 0.132,
+    "mean_pd_after": 0.1469,
+    "ece_before": 0.02272,
+    "ece_after": 0.0078,
+    "max_abs_gap_before": 0.0386,
+    "max_abs_gap_after": 0.0212
+  },
+  "scorecard-bureau": {
+    "n_late_dev": 60395,
+    "observed_rate": 0.1547,
+    "mean_pd_before": 0.1351,
+    "mean_pd_after": 0.1473,
+    "ece_before": 0.01964,
+    "ece_after": 0.00817,
+    "max_abs_gap_before": 0.0344,
+    "max_abs_gap_after": 0.0213
+  },
+  "scorecard-no-lc-grade": {
+    "n_late_dev": 60395,
+    "observed_rate": 0.1547,
+    "mean_pd_before": 0.1333,
+    "mean_pd_after": 0.1458,
+    "ece_before": 0.02135,
+    "ece_after": 0.00984,
+    "max_abs_gap_before": 0.0371,
+    "max_abs_gap_after": 0.0218
+  },
+  "scorecard": {
+    "n_late_dev": 60395,
+    "observed_rate": 0.1547,
+    "mean_pd_before": 0.1328,
+    "mean_pd_after": 0.1467,
+    "ece_before": 0.02239,
+    "ece_after": 0.00849,
+    "max_abs_gap_before": 0.0419,
+    "max_abs_gap_after": 0.02
+  }
+}

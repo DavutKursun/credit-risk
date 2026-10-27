@@ -6,37 +6,35 @@ Section 0 says where we are.
 
 ## 0. Status (updated 2026-10-27)
 
-**Milestone 1 is done (commits "Milestone 1 (1/2)" and "Milestone 1 (2/2)"). Start at Milestone 2, step 0 below.**
+**Milestones 1 and 2 are done (commits "Milestone 1 (1/2)", "Milestone 1 (2/2)", "Milestone 2"). Start at Milestone 3, step 0 below.**
 
-Done in M1 (numbers and reasoning in `docs/DESIGN.md` §1–3):
-- Raw file in `data/raw/` (392.6 MB, sha256 55c16f75…, gitignored). Cohort: 589,488 36-month loans issued 2012-01..2015-12 with a
-  terminal status, default rate 14.03%; train 306,462 / dev 120,790 / test 162,236 by issue month (`data/cohort/summary.json`,
-  `build_report.json` committed; parquet gitignored). The parquet carries the nine opt-in bureau columns.
-- Leakage audit on train: 0 suspicious columns, 0 among feature sources (`eval/results/leakage_audit_train.csv`). Decisions in
-  `leakage.py`: the 37 bureau columns with cohort data are `ORIGINATION_BUREAU` (True, evidence in the comment and DESIGN.md §2);
-  the 14 Dec-2015 and 13 joint-application columns stay None ("no data in the 2012–2015 cohort"); `IDENTIFIERS` (id, member_id)
-  are True but never feature sources.
-- `features.BUREAU_FEATURES` (9 columns: acc_open_past_24mths, bc_open_to_buy, total_bc_limit, bc_util, tot_cur_bal,
-  num_tl_op_past_12m, mo_sin_rcnt_tl, mths_since_recent_inq, percent_bc_gt_75) is an opt-in set with monotone constraints:
-  `make_features(..., bureau=True)`, `feature_list(..., bureau=True)`, `scripts/train.py --bureau`, bundle variant suffix
-  `-bureau`; optional `Application` fields (None = not on file, stays NaN). Not in the default list: M2 runs it as an ablation.
-- `drift.py` reports the value PSI (non-missing bins) and a two-bin missingness PSI separately; status = max of the two;
-  `drift_report.py` writes `psi_by_quarter.csv` (max), `psi_values_by_quarter.csv`, `psi_missing_by_quarter.csv`.
-- Train window stays 2012-01 → 2014-12 for both models; no imputation; missing is its own bin. The early-2012 bureau block
-  (7.4% of train, 0% of dev/test) is a recorded known effect.
-- Economics on train (`scripts/economics.py` → `eval/results/economics_train.json|md`): LGD 0.314 (median 0.290, flat by grade),
-  median break-even PD 28% (grade A) → 59% (G); scheduled interest exceeds LGD × principal for 7.8% of loans.
-- 33 tests, no network, no raw data (`pytest -q`); CI unchanged.
+Done in M1 (numbers in `docs/DESIGN.md` §1–3): cohort 589,488 36-month loans 2012-01..2015-12 (default rate 14.03%), train 306,462 /
+dev 120,790 / test 162,236 by issue month (`data/cohort/summary.json`, parquet gitignored); leakage audit on train 0 suspicious;
+37 bureau columns with cohort data flagged True (`leakage.ORIGINATION_BUREAU`), 27 without data None; `IDENTIFIERS` (id, member_id)
+never feature sources; `features.BUREAU_FEATURES` (9) opt-in via `make_features(..., bureau=True)` / `train.py --bureau`; `drift.py`
+reports value PSI and missingness PSI separately; economics on train (LGD 0.314, break-even PD 28% → 59% by grade).
 
-**Milestone 2, step 0 (do first):** `pytest -q` (expect 33 passed). Then train and evaluate on dev, never on test:
-`python scripts/train.py --model both` (LC grade on), `--no-lc-grade`, `--bureau`, and `--no-lc-grade --bureau`; after each,
-`python scripts/evaluate.py --split dev`. Report per variant: dev AUC / Gini / KS / PR-AUC, AUC by grade, Brier / log loss / ECE and
-the reliability table before and after calibration (isotonic on the earlier half of dev, measured on the later half), the
-"grade only" reference row, fit time and best iteration, and the bureau ablation gain over the matching non-bureau variant.
-Stop and wait for Davut's OK before M3.
+Done in M2 (`docs/DESIGN.md` §4–5; all on dev, test never read):
+- Six bundles in `models/` (committed, 0.08–2.4 MB each): lgbm / scorecard × with LC grade, without (`-no-lc-grade`), with the
+  bureau set (`-bureau`); each calibrated with isotonic regression on the earlier half of dev, measured on the later half.
+- Dev AUC: lgbm 0.692, scorecard 0.682, grade-only 0.675; without LC grade 0.672 / 0.650;
+  bureau 0.698 / 0.689 (+0.006 / +0.007: the nine columns add signal on dev). ECE after calibration 0.008–0.010.
+- `train_scorecard` enforces sign consistency (drops features with a positive coefficient on WoE and refits; `meta['dropped_wrong_sign']`):
+  int_rate and revol_util left the LC-grade card, bc_util the bureau card, no AUC lost.
+- Scripts: `evaluate.py --split dev`, `plot_reliability.py` (before/after PNGs, committed), `model_tables.py` (scorecard points table,
+  LightGBM gain), `sanity_checks.py` (sample order, monotonicity probes, bureau ablation). 34 tests.
+- Open points carried into M3: the isotonic top step gives 0.999 to extreme applications (DESIGN.md §5; cap or Platt above the 99th
+  percentile); `addr_state` takes 12–16% of LightGBM gain and is a fairness proxy; which variant the API serves is decided after M3.
+
+**Milestone 3, step 0 (do first):** `pytest -q` (expect 34 passed). Then, on dev only: `python scripts/policy_eval.py --split dev`
+(profit curves for every bundle, threshold by expected profit, review band ±0.02; compare approve-all, grades A–C, the sub-grade cut at
+the same approval rate, scorecard and LightGBM policies at the same approval rate, realized P&L of each), reason codes and adverse-action
+text for five declined dev applications with the agreement rate between the two models' top-3 reasons, `fairness_report.py` for the
+chosen variant (proxies: state, income quintile, employment band, home ownership; four-fifths ratio; the `addr_state` question), and
+`drift_report.py` (PSI by quarter, value and missingness). Report the tables, update DESIGN.md §6–8, commit, push, stop.
 
 macOS notes: Python 3.11 venv at `.venv`. The Mac has 8 GB RAM: reading the raw CSV peaks at 3.4–3.8 GB RSS for the cohort build
-and the audit, so run raw-file steps one at a time; never load all 151 columns at once.
+and the audit, so run raw-file steps one at a time; never load all 151 columns at once. Training all six bundles takes about 80 s.
 
 ## 1. Goal
 

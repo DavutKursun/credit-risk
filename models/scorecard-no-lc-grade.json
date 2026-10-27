@@ -1,0 +1,90 @@
+{
+  "variant": "scorecard-no-lc-grade",
+  "bureau": false,
+  "numeric": [
+    "loan_amnt",
+    "annual_inc",
+    "dti",
+    "fico",
+    "delinq_2yrs",
+    "inq_last_6mths",
+    "open_acc",
+    "pub_rec",
+    "revol_bal",
+    "revol_util",
+    "total_acc",
+    "mort_acc",
+    "pub_rec_bankruptcies",
+    "credit_age_years",
+    "emp_years",
+    "loan_to_income"
+  ],
+  "categorical": [
+    "home_ownership",
+    "verification_status",
+    "purpose",
+    "addr_state",
+    "initial_list_status",
+    "application_type"
+  ],
+  "selected_features": [
+    "annual_inc",
+    "dti",
+    "fico",
+    "inq_last_6mths",
+    "revol_util",
+    "mort_acc",
+    "credit_age_years",
+    "loan_to_income",
+    "home_ownership",
+    "purpose"
+  ],
+  "dropped_wrong_sign": [],
+  "min_iv": 0.02,
+  "scale": {
+    "target_score": 600,
+    "target_odds": 19,
+    "pdo": 20
+  },
+  "n_train": 306462,
+  "calibration": "isotonic",
+  "calib_share": 0.5,
+  "fit_seconds": 3.6,
+  "dev_ranking": {
+    "n": 120790,
+    "default_rate": 0.1512,
+    "mean_pd": 0.1342,
+    "auc": 0.6498,
+    "gini": 0.2997,
+    "ks": 0.2177,
+    "pr_auc": 0.2316,
+    "brier": 0.12422,
+    "log_loss": 0.40788,
+    "ece": 0.01726
+  },
+  "dev_late_before_calibration": {
+    "n": 60395,
+    "default_rate": 0.1547,
+    "mean_pd": 0.1333,
+    "auc": 0.6512,
+    "gini": 0.3024,
+    "ks": 0.2221,
+    "pr_auc": 0.2384,
+    "brier": 0.12651,
+    "log_loss": 0.41376,
+    "ece": 0.02135
+  },
+  "dev_late_after_calibration": {
+    "n": 60395,
+    "default_rate": 0.1547,
+    "mean_pd": 0.1458,
+    "auc": 0.6507,
+    "gini": 0.3013,
+    "ks": 0.2238,
+    "pr_auc": 0.234,
+    "brier": 0.12612,
+    "log_loss": 0.41245,
+    "ece": 0.00984
+  },
+  "approved_quantiles_pd_cut": 0.1926
+}

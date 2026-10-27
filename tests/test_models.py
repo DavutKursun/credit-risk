@@ -78,6 +78,7 @@ def test_scorecard_learns_and_scores_points(trained):
     assert pts is not None and len(pts) == len(X_dv) and np.isfinite(pts).all()
     assert np.corrcoef(pts, b.predict_raw(X_dv))[0, 1] < 0  # more points = safer
     assert len(b.meta["selected_features"]) >= 3
+    assert (b.estimator.estimator_.coef_.ravel() <= 0).all() and "dropped_wrong_sign" in b.meta  # every feature points the way its WoE points
 
 
 def test_calibration_improves_or_keeps_ece(trained):

@@ -1,4 +1,5 @@
-"""End to end on a synthetic export: build_cohort → audit → train → evaluate (dev; test refused) → policy → fairness → drift.
+"""End to end on a synthetic export: build_cohort → audit → train → evaluate (dev; test refused) → reliability plots, model tables,
+sanity checks → policy → fairness → drift.
 The same chain Claude Code runs on the real data, so the first real run is not the first run."""
 
 from __future__ import annotations
@@ -17,7 +18,10 @@ import build_cohort
 import drift_report
 import evaluate
 import fairness_report
+import model_tables
+import plot_reliability
 import policy_eval
+import sanity_checks
 import train
 
 from credit_risk.synthetic import make_raw, write_raw_csv
@@ -58,6 +62,17 @@ def test_evaluate_refuses_test_without_final(workspace):
     assert evaluate.main(["--split", "dev", "--models-dir", str(workspace["models"]), "--cohort-dir", str(workspace["cohort"]), "--out", str(workspace["out"])]) == 0
     s = json.loads((workspace["out"] / "dev-summary.json").read_text())
     assert {r["model"] for r in s["metrics"]} == {"lgbm", "scorecard", "grade_only"}
+
+
+def test_reliability_plots_model_tables_and_sanity_scripts(workspace):
+    common = ["--models-dir", str(workspace["models"]), "--cohort-dir", str(workspace["cohort"]), "--out", str(workspace["out"])]
+    assert plot_reliability.main(common) == 0
+    assert (workspace["out"] / "reliability_dev_lgbm.png").exists() and (workspace["out"] / "reliability_dev_lgbm_before.csv").exists()
+    assert model_tables.main(["--models-dir", str(workspace["models"]), "--out", str(workspace["out"])]) == 0
+    assert (workspace["out"] / "scorecard_table.md").exists() and (workspace["out"] / "lgbm_importance.csv").exists()
+    assert sanity_checks.main(common) == 0
+    s = json.loads((workspace["out"] / "sanity_dev.json").read_text())
+    assert {"lgbm", "scorecard"} <= set(s["samples"]) and all(p["ok"] for p in s["monotonicity"]["lgbm"].values())
 
 
 def test_policy_fairness_drift_scripts(workspace):

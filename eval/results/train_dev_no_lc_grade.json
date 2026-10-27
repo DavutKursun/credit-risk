@@ -1,0 +1,95 @@
+{
+  "lgbm-no-lc-grade": {
+    "dev_ranking": {
+      "n": 120790,
+      "default_rate": 0.1512,
+      "mean_pd": 0.1374,
+      "auc": 0.6712,
+      "gini": 0.3424,
+      "ks": 0.2491,
+      "pr_auc": 0.2521,
+      "brier": 0.12267,
+      "log_loss": 0.40197,
+      "ece": 0.01484
+    },
+    "dev_late_before": {
+      "n": 60395,
+      "default_rate": 0.1547,
+      "mean_pd": 0.1369,
+      "auc": 0.6726,
+      "gini": 0.3453,
+      "ks": 0.252,
+      "pr_auc": 0.2582,
+      "brier": 0.12487,
+      "log_loss": 0.40756,
+      "ece": 0.01781
+    },
+    "dev_late_after": {
+      "n": 60395,
+      "default_rate": 0.1547,
+      "mean_pd": 0.1468,
+      "auc": 0.6723,
+      "gini": 0.3446,
+      "ks": 0.2526,
+      "pr_auc": 0.2537,
+      "brier": 0.1245,
+      "log_loss": 0.40625,
+      "ece": 0.00832
+    },
+    "fit_seconds": 10.5,
+    "model_path": "/Users/davutkursun/Downloads/credit-risk/models/lgbm-no-lc-grade.joblib",
+    "best_iteration": 704
+  },
+  "scorecard-no-lc-grade": {
+    "dev_ranking": {
+      "n": 120790,
+      "default_rate": 0.1512,
+      "mean_pd": 0.1342,
+      "auc": 0.6498,
+      "gini": 0.2997,
+      "ks": 0.2177,
+      "pr_auc": 0.2316,
+      "brier": 0.12422,
+      "log_loss": 0.40788,
+      "ece": 0.01726
+    },
+    "dev_late_before": {
+      "n": 60395,
+      "default_rate": 0.1547,
+      "mean_pd": 0.1333,
+      "auc": 0.6512,
+      "gini": 0.3024,
+      "ks": 0.2221,
+      "pr_auc": 0.2384,
+      "brier": 0.12651,
+      "log_loss": 0.41376,
+      "ece": 0.02135
+    },
+    "dev_late_after": {
+      "n": 60395,
+      "default_rate": 0.1547,
+      "mean_pd": 0.1458,
+      "auc": 0.6507,
+      "gini": 0.3013,
+      "ks": 0.2238,
+      "pr_auc": 0.234,
+      "brier": 0.12612,
+      "log_loss": 0.41245,
+      "ece": 0.00984
+    },
+    "fit_seconds": 3.6,
+    "model_path": "/Users/davutkursun/Downloads/credit-risk/models/scorecard-no-lc-grade.joblib",
+    "selected_features": [
+      "annual_inc",
+      "dti",
+      "fico",
+      "inq_last_6mths",
+      "revol_util",
+      "mort_acc",
+      "credit_age_years",
+      "loan_to_income",
+      "home_ownership",
+      "purpose"
+    ]
+  }
+}

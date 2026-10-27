@@ -244,12 +244,144 @@ What the table says for the decision policy:
 
 ## 4. Models (M2)
 
-Scorecard bins and points; LightGBM best iteration and monotone constraints; the "grade only" reference; with and
-without Lending Club grade features; AUC inside each grade.
+**Setup.** Train = 306,462 loans issued 2012-01..2014-12 (13.25% default); dev = 120,790 loans issued 2015-01..2015-06, sorted by issue
+month; the earlier 60,395 dev rows fit the calibrator, the later 60,395 (observed default rate 15.47%) measure it, so every calibration
+number below is out-of-sample. Three feature sets: the §3.3 list with Lending Club's grade features (27 features), without them
+(22; `grade`, `sub_grade`, `int_rate`, `installment`, `installment_to_income` removed) and with the nine opt-in bureau attributes of
+§2 (36). LightGBM: binary objective, learning rate 0.03, 31 leaves, at least 200 loans per leaf, feature and bagging fractions 0.8,
+L2 5, early stopping after 100 rounds without dev-AUC improvement (at most 3,000), native categoricals, monotone constraints on
+12 / 10 / 20 features. No class weighting: the calibrator sets the level on dev, and re-weighting would distort the probabilities
+the policies consume while AUC, which is invariant to monotone transforms, gains nothing from it. Scorecard: optbinning
+`BinningProcess` (WoE, monotonic trend where the data allows, features kept at IV ≥ 0.02) + logistic regression (C = 1), scaled to
+600 points at odds 1:19 with 20 points to double the odds. Both took seconds on the laptop (peak memory under 1 GB); no scorecard
+needed the `max_n_prebins` fallback.
+
+**Dev ranking** (`eval/results/dev-summary.json`, calibrated PD on all 120,790 dev rows; ranking on the raw output is within 0.0005):
+
+| Variant | AUC | Gini | KS | PR-AUC | Fit s | Best iteration / selected features |
+|---|---|---|---|---|---|---|
+| lgbm | 0.6922 | 0.3843 | 0.2810 | 0.2655 | 6.1 | 324 |
+| scorecard | 0.6825 | 0.3650 | 0.2677 | 0.2528 | 8.3 | 12 of 27 |
+| lgbm-no-lc-grade | 0.6716 | 0.3433 | 0.2494 | 0.2487 | 10.5 | 704 |
+| scorecard-no-lc-grade | 0.6502 | 0.3004 | 0.2179 | 0.2286 | 3.6 | 10 of 22 |
+| lgbm-bureau | 0.6981 | 0.3962 | 0.2893 | 0.2739 | 9.1 | 504 |
+| scorecard-bureau | 0.6893 | 0.3785 | 0.2756 | 0.2620 | 10.7 | 22 of 36 |
+| grade_only | 0.6750 | 0.3501 | 0.2568 | 0.2499 |  |  |
+
+- **LightGBM beats the scorecard in every pair**: by 0.010 AUC with the LC grade, 0.021 without it, 0.009 with the bureau set. The gap
+  is the interactions and the non-monotone shapes a logistic model on WoE bins cannot express.
+- **Both models beat the "grade only" reference when they see the grade** (0.692 and 0.683 against 0.675). **Without it they fall below
+  it** (0.672 and 0.650): Lending Club's sub-grade carries information the public attributes do not hold, so the "from scratch" models
+  are the honest number for a lender that has no such grade, and the LC-grade models are the number for one that does.
+- **The bureau set adds +0.0059 AUC and +0.0083 KS to LightGBM, +0.0068 and +0.0079 to the scorecard** on dev,
+  above the 0.005 floor set for the ablation; `acc_open_past_24mths` is the fifth feature by gain in the bureau LightGBM. Test decides
+  whether it survives out of time.
+- **The models still rank inside a grade.** AUC within each grade on dev:
+
+| Variant | A | B | C | D | E | F | G |
+|---|---|---|---|---|---|---|---|
+| dev loans / default rate | 30,625 / 5.8% | 35,746 / 12.1% | 33,681 / 19.0% | 15,389 / 26.0% | 4,626 / 32.1% | 628 / 41.6% | 95 / 34.7% |
+| lgbm | 0.646 | 0.601 | 0.589 | 0.585 | 0.571 | 0.591 | 0.676 |
+| scorecard | 0.633 | 0.581 | 0.572 | 0.559 | 0.545 | 0.563 | 0.588 |
+| lgbm-no-lc-grade | 0.641 | 0.596 | 0.588 | 0.580 | 0.561 | 0.555 | 0.639 |
+| scorecard-no-lc-grade | 0.622 | 0.572 | 0.568 | 0.553 | 0.541 | 0.543 | 0.616 |
+| lgbm-bureau | 0.659 | 0.614 | 0.603 | 0.595 | 0.587 | 0.593 | 0.673 |
+| scorecard-bureau | 0.647 | 0.597 | 0.587 | 0.573 | 0.567 | 0.583 | 0.594 |
+
+  Inside grade A LightGBM reaches 0.646, inside E 0.571; the scorecard 0.633 and 0.545. A lender using the grade alone has no
+  ranking within it, so this is where the models earn their keep (the policy section of M3 measures how much in dollars).
+
+**What drives LightGBM** (`eval/results/lgbm_importance.csv`, share of total gain):
+- **lgbm:** sub_grade 36.1%, addr_state 12.2%, grade 9.1%, int_rate 7.1%, annual_inc 5.6%, dti 3.7%, installment_to_income 3.5%, fico 2.5%, revol_bal 2.3%, emp_years 2.2%
+- **lgbm-no-lc-grade:** fico 17.6%, addr_state 15.9%, annual_inc 8.9%, loan_to_income 6.4%, revol_bal 6.2%, dti 6.0%, purpose 5.9%, loan_amnt 5.2%, inq_last_6mths 5.0%, mort_acc 3.8%
+- **lgbm-bureau:** sub_grade 26.7%, addr_state 11.7%, grade 10.2%, int_rate 6.6%, acc_open_past_24mths 4.8%, annual_inc 4.5%, installment_to_income 3.7%, tot_cur_bal 2.9%, dti 2.8%, emp_years 2.1%
+
+`addr_state` takes 12 to 16% of the gain in every variant with 2,800 splits in the bureau model: a 50-level categorical that native
+LightGBM handling can over-fit, and the very proxy the fairness audit of M3 uses. Keep this in view in M3; coarsening or dropping it
+is a decision for the fairness report, not for dev AUC.
+
+**The scorecard, line by line** (`eval/results/scorecard_table.md`). Twelve of 27 features survive the IV ≥ 0.02 filter in the
+LC-grade card (loan_amnt, installment, annual_inc, dti, fico, delinq_2yrs, inq_last_6mths, open_acc, pub_rec, revol_bal, total_acc, mort_acc, pub_rec_bankruptcies, credit_age_years, emp_years, loan_to_income, installment_to_income, grade, sub_grade, home_ownership, verification_status, purpose, addr_state, initial_list_status, application_type were offered; selected:
+annual_inc, dti, fico, inq_last_6mths, mort_acc, credit_age_years, loan_to_income, installment_to_income, grade, sub_grade, home_ownership, purpose), 10 in the no-grade card and 22 of 36 in the bureau card. A scorecard must read
+the same way in every row, so training enforces sign consistency: a feature whose logistic coefficient on WoE comes out positive,
+which makes its points fall as the bin gets safer, is dropped and the card refitted. That removed `int_rate` and `revol_util` from
+the LC-grade card (collinear with `sub_grade` and `grade`, and with `dti` and `loan_to_income`) and `bc_util` from the bureau card
+(collinear with `revol_util` and `percent_bc_gt_75`), at no cost: dev AUC 0.6822 → 0.6821 and 0.6888 → 0.6888 on the raw score.
+Example rows from the LC-grade card:
+
+| Variable | Bin | Count (%) | Event rate | WoE | Points |
+|---|---|---|---|---|---|
+| fico | (-inf, 664.50) | 8.8% | 18.5% | -0.40 | 43.89 |
+| fico | [664.50, 669.50) | 8.9% | 17.5% | -0.33 | 44.53 |
+| fico | [669.50, 674.50) | 9.0% | 17.0% | -0.30 | 44.80 |
+| fico | [674.50, 679.50) | 8.1% | 15.7% | -0.20 | 45.67 |
+| fico | [679.50, 684.50) | 8.0% | 15.5% | -0.18 | 45.84 |
+| fico | [684.50, 689.50) | 7.2% | 14.5% | -0.11 | 46.51 |
+| fico | [689.50, 694.50) | 6.9% | 13.2% | 0.00 | 47.47 |
+| fico | [694.50, 699.50) | 6.2% | 12.8% | 0.04 | 47.76 |
+| fico | [699.50, 704.50) | 5.6% | 11.7% | 0.14 | 48.68 |
+| fico | [704.50, 714.50) | 9.2% | 10.7% | 0.24 | 49.61 |
+| fico | [714.50, 729.50) | 9.2% | 9.0% | 0.43 | 51.27 |
+| fico | [729.50, 754.50) | 7.3% | 7.1% | 0.70 | 53.64 |
+| fico | [754.50, inf) | 5.6% | 4.9% | 1.08 | 57.07 |
+| fico | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+| fico | Missing | 0.0% | 0.0% | 0.00 | 47.45 |
+| sub_grade | <ArrowStringArray>
+| sub_grade | <ArrowStringArray>
+| sub_grade | … | | | | |
+| sub_grade | <ArrowStringArray>
+| sub_grade | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+
+**Sanity checks** (`scripts/sanity_checks.py`, `eval/results/sanity_dev.json`). The three sample applications of the API schema
+score in the right order for all six bundles; every monotonicity probe on the constrained LightGBM features passes (12, 10 and 20
+features, swept over the 2nd to 98th dev percentile on a fixed row).
+
+| Variant | clear_approve | borderline | clear_decline |
+|---|---|---|---|
+| lgbm | 0.041 | 0.301 | 0.999 |
+| scorecard | 0.001 (625 pts) | 0.277 (545 pts) | 0.450 (520 pts) |
+| lgbm-no-lc-grade | 0.018 | 0.275 | 0.999 |
+| scorecard-no-lc-grade | 0.001 (624 pts) | 0.277 (545 pts) | 0.352 (516 pts) |
+| lgbm-bureau | 0.024 | 0.281 | 0.999 |
+| scorecard-bureau | 0.005 (627 pts) | 0.285 (546 pts) | 0.999 (513 pts) |
+
+The clear-decline sample gets 0.999 from four bundles: see the isotonic tail note in §5. On the scorecard it lands at 520 points
+and PD 0.45; the no-grade scorecard, which never sees the F2 sub-grade, at 0.35.
 
 ## 5. Calibration (M2)
 
-Reliability plots before/after, on the later half of dev (the calibrator was fitted on the earlier half).
+Every model under-predicts 2015 before calibration: mean raw PD 0.132–0.137 on the later half of dev against an observed 0.1547, the
+vintage shift described in §1 (about two points inside a sub-grade). Isotonic regression fitted on the earlier half of dev removes
+most of it: ECE falls from 0.018–0.023 to 0.008–0.010 and Brier and log loss improve for every model. The calibrated mean PD
+(0.146–0.147) still sits 0.8 points under the observed rate because the later half of 2015H1 defaults slightly more than the earlier
+half the calibrator saw; the test window (2015H2) has the same within-grade vintage level as dev, so the residual should not grow.
+Platt scaling fitted on the same rows is a close second and is kept as the fallback.
+
+| Variant | mean PD before → after | Brier before → after | log loss before → after | ECE before → after (isotonic) | ECE with Platt instead | largest bin gap after |
+|---|---|---|---|---|---|---|
+| lgbm | 0.1320 → 0.1469 | 0.12330 → 0.12278 | 0.4017 → 0.3998 | 0.0227 → 0.0078 | 0.0084 | 0.0212 |
+| scorecard | 0.1328 → 0.1467 | 0.12426 → 0.12373 | 0.4047 → 0.4031 | 0.0224 → 0.0085 | 0.0091 | 0.0200 |
+| lgbm-no-lc-grade | 0.1369 → 0.1468 | 0.12487 → 0.12450 | 0.4076 → 0.4062 | 0.0178 → 0.0083 | 0.0090 | 0.0243 |
+| scorecard-no-lc-grade | 0.1333 → 0.1458 | 0.12651 → 0.12612 | 0.4138 → 0.4124 | 0.0214 → 0.0098 | 0.0094 | 0.0218 |
+| lgbm-bureau | 0.1347 → 0.1472 | 0.12249 → 0.12211 | 0.3990 → 0.3975 | 0.0199 → 0.0078 | 0.0085 | 0.0162 |
+| scorecard-bureau | 0.1351 → 0.1473 | 0.12336 → 0.12307 | 0.4018 → 0.4009 | 0.0196 → 0.0082 | 0.0085 | 0.0213 |
+
+**Reliability plots** on the later half of dev, 10 equal-count bins by predicted PD, before (circles) and after (squares)
+calibration, 45° line = perfect calibration (`scripts/plot_reliability.py`):
+
+![lgbm](../eval/results/reliability_dev_lgbm.png)
+![scorecard](../eval/results/reliability_dev_scorecard.png)
+![lgbm-no-lc-grade](../eval/results/reliability_dev_lgbm-no-lc-grade.png)
+![scorecard-no-lc-grade](../eval/results/reliability_dev_scorecard-no-lc-grade.png)
+![lgbm-bureau](../eval/results/reliability_dev_lgbm-bureau.png)
+![scorecard-bureau](../eval/results/reliability_dev_scorecard-bureau.png)
+
+**Isotonic tail.** For `lgbm`, `lgbm-bureau`, `lgbm-no-lc-grade` and `scorecard-bureau` the two or three calibration rows with the
+highest raw PD all defaulted, so the isotonic step function ends at 1.0 (clipped to 0.999) above a raw PD of 0.63–0.70. Only
+0.002–0.004% of dev rows reach that step, and every policy threshold of M3 lies far below it, but an extreme application such as
+the clear-decline sample displays a PD of 0.999 although the observed default rate among the top 1% of raw PDs is 0.34–0.40. Open
+for M3/M5: cap the calibrated PD at the observed rate of the top 1% bin, require a minimum number of rows per isotonic block, or use
+Platt scaling above the 99th percentile of the raw score.
 
 ## 6. Decisions (M3)
 
