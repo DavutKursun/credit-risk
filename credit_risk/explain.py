@@ -78,10 +78,11 @@ def contributions(bundle: ModelBundle, X: pd.DataFrame) -> pd.DataFrame:
     raise ValueError(f"no explanations for {bundle.name}")
 
 
-def reason_codes(bundle: ModelBundle, X: pd.DataFrame, k: int = TOP_K, exclude: tuple[str, ...] = NOT_A_REASON) -> list[list[Reason]]:
+def reason_codes(bundle: ModelBundle, X: pd.DataFrame, k: int = TOP_K, exclude: tuple[str, ...] = NOT_A_REASON,
+                 contrib: pd.DataFrame | None = None) -> list[list[Reason]]:
     """Top-k reasons per row, strongest first, among the features not in `exclude` (by default the Lending Club-derived ones).
-    Positive contribution = raises the PD."""
-    contrib = contributions(bundle, X)
+    Positive contribution = raises the PD. `contrib` lets a caller pass contributions it already computed."""
+    contrib = contributions(bundle, X) if contrib is None else contrib
     shown = [f for f in contrib.columns if f not in exclude]
     out: list[list[Reason]] = []
     for i, idx in enumerate(X.index):

@@ -19,9 +19,9 @@ import pandas as pd
 
 from .config import MODELS, RESULTS, REVIEW_BAND, ROOT
 from .drift import status as psi_status
-from .explain import adverse_action_text, reason_codes
+from .explain import adverse_action_text, contributions, reason_codes
 from .features import ALL_RAW_COLUMNS, make_features
-from .models import ModelBundle
+from .models import ModelBundle, _as_scorecard_frame
 from .policy import decide
 from .schema import Application, ScoreResponse
 
@@ -53,6 +53,47 @@ def load_thresholds(path: Path = RESULTS / "policy_dev.json") -> dict[str, dict[
     return {"ev": ev, "rate85": rate85}
 
 
+@dataclass
+class CardFast:
+    """One WoE transform per request for the scorecard: PD, points and contributions all follow from logit = intercept + coef · WoE,
+    and pdo/odds scaling makes points = offset − factor × logit. Verified against optbinning's own predict_proba, score and the
+    explain contributions at load; if anything differs the slow path stays."""
+
+    selected: list[str]
+    coef: np.ndarray
+    intercept: float
+    factor: float
+    offset: float
+
+    @classmethod
+    def from_bundle(cls, b: ModelBundle) -> CardFast | None:
+        card = b.estimator
+        try:
+            p = card.scaling_method_params
+            factor = p["pdo"] / np.log(2)
+            return cls(selected=list(card.binning_process_.get_support(names=True)), coef=np.asarray(card.estimator_.coef_).ravel(),
+                       intercept=float(np.asarray(card.estimator_.intercept_).ravel()[0]), factor=factor, offset=p["scorecard_points"] - factor * np.log(p["odds"]))
+        except (AttributeError, KeyError, TypeError):
+            return None
+
+    def run(self, b: ModelBundle, X: pd.DataFrame) -> tuple[np.ndarray, np.ndarray, pd.DataFrame]:
+        woe = np.asarray(b.estimator.binning_process_.transform(_as_scorecard_frame(X[self.selected]), metric="woe"), dtype=float)
+        logit = self.intercept + woe @ self.coef
+        raw = 1.0 / (1.0 + np.exp(-logit))
+        points = self.offset - self.factor * logit
+        contrib = pd.DataFrame(woe * self.coef, columns=self.selected, index=X.index)
+        for f in b.features:
+            if f not in contrib:
+                contrib[f] = 0.0
+        return raw, points, contrib[b.features]
+
+    def verify(self, b: ModelBundle, X: pd.DataFrame, tol_pd: float = 1e-6, tol_points: float = 0.5) -> bool:
+        raw, points, contrib = self.run(b, X)
+        slow_raw, slow_points, slow_contrib = b.predict_raw(X), b.score_points(X), contributions(b, X)
+        return bool(np.max(np.abs(raw - slow_raw)) < tol_pd and np.max(np.abs(points - slow_points)) < tol_points
+                    and np.max(np.abs(contrib.to_numpy() - slow_contrib[b.features].to_numpy())) < tol_pd)
+
+
 def applications_frame(apps: list[Application]) -> pd.DataFrame:
     rows = [a.model_dump() for a in apps]
     return pd.DataFrame([{c: r.get(c) for c in ALL_RAW_COLUMNS} for r in rows])
@@ -67,6 +108,7 @@ class Scorer:
     band: float = REVIEW_BAND
     results_dir: Path = RESULTS
     loaded_at: float = field(default_factory=time.time)
+    card_fast: CardFast | None = None
 
     @classmethod
     def load(cls, models_dir: Path = MODELS, results_dir: Path = RESULTS, policy: str | None = None) -> Scorer:
@@ -74,7 +116,15 @@ class Scorer:
         if policy not in POLICIES:
             raise ValueError(f"POLICY must be one of {POLICIES}, got {policy!r}")
         bundles = {k: ModelBundle.load(models_dir / f"{v}.joblib") for k, v in DEPLOYED.items()}
-        return cls(bundles=bundles, thresholds=load_thresholds(results_dir / "policy_dev.json"), policy=policy, version=version(), results_dir=results_dir)
+        scorer = cls(bundles=bundles, thresholds=load_thresholds(results_dir / "policy_dev.json"), policy=policy, version=version(), results_dir=results_dir)
+        fast = CardFast.from_bundle(bundles["scorecard"])
+        if fast is not None:
+            from .schema import SAMPLE_APPLICATIONS
+
+            b = bundles["scorecard"]
+            X = make_features(applications_frame([Application(**a) for a in SAMPLE_APPLICATIONS.values()]), b.use_lc_grade, b.bureau)
+            scorer.card_fast = fast if fast.verify(b, X) else None
+        return scorer
 
     def threshold(self, model: str, policy: str | None = None) -> float:
         return self.thresholds[policy or self.policy][DEPLOYED[model]]
@@ -84,11 +134,16 @@ class Scorer:
         t0 = time.perf_counter()
         b = self.bundles[model]
         X = make_features(frame, b.use_lc_grade, b.bureau)
-        pd_ = b.predict_pd(X)
+        if model == "scorecard" and self.card_fast is not None:
+            raw, points, contrib = self.card_fast.run(b, X)
+            pd_ = b.calibrator.transform(raw) if b.calibrator is not None else raw
+            reasons = reason_codes(b, X, k=TOP_K, contrib=contrib)
+        else:
+            pd_ = b.predict_pd(X)
+            reasons = reason_codes(b, X, k=TOP_K)
+            points = b.score_points(X)
         t = self.threshold(model)
         decisions = decide(pd_, t, self.band)
-        reasons = reason_codes(b, X, k=TOP_K)
-        points = b.score_points(X)
         per_row_ms = (time.perf_counter() - t0) * 1000 / max(len(frame), 1)
         out = []
         for i in range(len(frame)):
@@ -110,6 +165,7 @@ class Scorer:
     def health(self) -> dict:
         return {"status": "ok", "models": {k: {"variant": v, "features": len(self.bundles[k].features), "calibration": self.bundles[k].meta.get("calibration")} for k, v in DEPLOYED.items()},
                 "policy": self.policy, "policies": {p: {k: self.thresholds[p][v] for k, v in DEPLOYED.items()} for p in POLICIES}, "review_band": self.band,
+                "scorecard_fast_path": self.card_fast is not None,
                 "version": self.version, "uptime_s": round(time.time() - self.loaded_at, 1)}
 
     def monitoring(self) -> dict:

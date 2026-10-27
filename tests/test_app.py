@@ -73,6 +73,29 @@ def test_samples_keep_their_order(model):
     assert pds[0] < pds[1] < pds[2], pds
 
 
+def test_scorecard_fast_path_matches_optbinning():
+    """One WoE transform per request must give exactly the PD, points and reasons of optbinning's own predict_proba / score / contributions."""
+    import numpy as np
+
+    from credit_risk.explain import contributions, reason_codes
+    from credit_risk.features import make_features
+    from credit_risk.schema import Application
+    from credit_risk.serving import applications_frame
+
+    scorer = app_module.scorer
+    assert scorer.card_fast is not None  # verified at load on the three samples
+    b = scorer.bundles["scorecard"]
+    apps = [Application(**v) for v in SAMPLE_APPLICATIONS.values()] + [Application(**{**BORDERLINE, "annual_inc": 24_000, "dti": 34.0, "emp_length": "n/a", "revol_util": None})]
+    X = make_features(applications_frame(apps), b.use_lc_grade, b.bureau)
+    raw, points, contrib = scorer.card_fast.run(b, X)
+    assert np.allclose(raw, b.predict_raw(X), atol=1e-9) and np.allclose(points, b.score_points(X), atol=0.5)
+    assert np.allclose(contrib.to_numpy(), contributions(b, X)[b.features].to_numpy(), atol=1e-9)
+    fast = reason_codes(b, X, k=5, contrib=contrib)
+    slow = reason_codes(b, X, k=5)
+    assert [[r.feature for r in row] for row in fast] == [[r.feature for r in row] for row in slow]
+    assert client.get("/health").json()["scorecard_fast_path"] is True
+
+
 def test_gradio_ui_is_mounted():
     r = client.get("/ui/")
     assert r.status_code == 200 and "gradio" in r.text.lower()
