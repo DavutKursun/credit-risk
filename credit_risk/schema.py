@@ -73,11 +73,33 @@ class Reason(BaseModel):
 
 
 class ScoreResponse(BaseModel):
+    """What /score returns. `policy` and `threshold` say which decision rule was in force; `adverse_action` is the notice text for a decline."""
+
     pd: float = Field(ge=0, le=1)
     decision: Literal["approve", "review", "decline"]
     reasons: list[Reason]
+    adverse_action: str | None = None
     score_points: int | None = None
+    policy: str
+    threshold: float
+    review_band: float
     model: str
+    version: str
+    latency_ms: float
+
+
+class BatchRequest(BaseModel):
+    """Up to 1,000 applications per call; more is rejected with 422 before any scoring."""
+
+    model_config = ConfigDict(extra="forbid")
+    applications: list[Application] = Field(min_length=1, max_length=1000)
+
+
+class BatchResponse(BaseModel):
+    n: int
+    results: list[ScoreResponse]
+    model: str
+    policy: str
     version: str
     latency_ms: float
 
