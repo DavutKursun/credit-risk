@@ -7,6 +7,8 @@ categorical codes are identical in training and in the API.
 
 from __future__ import annotations
 
+import re
+
 import numpy as np
 import pandas as pd
 
@@ -115,13 +117,81 @@ def to_category(s: pd.Series, levels: list[str]) -> pd.Series:
     return pd.Categorical(vals.astype(object).where(vals.isin(levels), None), categories=levels)
 
 
-def make_features(df: pd.DataFrame, use_lc_grade: bool = True, bureau: bool = False) -> pd.DataFrame:
+SMALL_FRAME = 32  # up to this many rows the per-column pandas machinery costs more than plain Python loops (one API request)
+
+
+def _is_missing(v) -> bool:
+    return v is None or v is pd.NA or (isinstance(v, float) and np.isnan(v))
+
+
+def _small_frame_features(df: pd.DataFrame, use_lc_grade: bool, bureau: bool) -> pd.DataFrame:
+    """Same output as the vectorized path, built with Python loops: ~5x faster for a handful of rows."""
+    n = len(df)
+    cols: dict[str, object] = {}
+
+    def numeric(col: str, percent: bool = False) -> np.ndarray:
+        vals = np.full(n, np.nan)
+        for i, v in enumerate(df[col].tolist()):
+            if _is_missing(v):
+                continue
+            if isinstance(v, str):
+                s = v.strip()
+                if percent:
+                    s = s.rstrip("%")
+                try:
+                    vals[i] = float(s)
+                except ValueError:
+                    pass
+            else:
+                try:
+                    vals[i] = float(v)
+                except (TypeError, ValueError):
+                    pass
+        return vals
+
+    for c in RAW_NUMERIC:
+        cols[c] = numeric(c, percent=c in ("int_rate", "revol_util"))
+    cols["fico"] = (cols["fico_range_low"] + cols["fico_range_high"]) / 2
+    months = lambda col: pd.to_datetime([None if _is_missing(v) else str(v).strip() for v in df[col].tolist()], format="%b-%Y", errors="coerce")
+    issued, opened = months("issue_d"), months("earliest_cr_line")
+    age = np.asarray((issued - opened).days, dtype=float) / 365.25
+    age[age < 0] = np.nan
+    cols["credit_age_years"] = age
+    emp = np.full(n, np.nan)
+    for i, v in enumerate(df["emp_length"].tolist()):
+        if _is_missing(v):
+            continue
+        s = str(v).strip().lower()
+        if s == "< 1 year":
+            emp[i] = 0.0
+        else:
+            m = re.match(r"^(\d+)", s)
+            if m:
+                emp[i] = float(m.group(1))
+    cols["emp_years"] = emp
+    income = np.clip(cols["annual_inc"], 1.0, None)
+    cols["loan_to_income"] = cols["loan_amnt"] / income
+    cols["installment_to_income"] = cols["installment"] * 12 / income
+    for c, levels in CATEGORY_LEVELS.items():
+        vals = [None if _is_missing(v) else str(v).strip() for v in df[c].tolist()]
+        cols[c] = pd.Categorical([v if v in levels else None for v in vals], categories=levels)
+    if bureau:
+        for c in RAW_BUREAU:
+            cols[c] = numeric(c)
+    num, cat = feature_list(use_lc_grade, bureau)
+    return pd.DataFrame({k: cols[k] for k in num + cat}, index=df.index)
+
+
+def make_features(df: pd.DataFrame, use_lc_grade: bool = True, bureau: bool = False, _vectorized: bool = False) -> pd.DataFrame:
     """Raw rows (DataFrame with RAW_FEATURE_COLUMNS, plus RAW_BUREAU when `bureau=True`; extra columns ignored) → model matrix.
-    Works on one Application row exactly as on the training frame. Bureau values not on file stay NaN: no imputation."""
+    Works on one Application row exactly as on the training frame (small frames take a loop-based path with identical output).
+    Bureau values not on file stay NaN: no imputation."""
     required = RAW_FEATURE_COLUMNS + (RAW_BUREAU if bureau else [])
     missing = [c for c in required if c not in df.columns]
     if missing:
         raise KeyError(f"raw columns missing: {missing}")
+    if len(df) <= SMALL_FRAME and not _vectorized:
+        return _small_frame_features(df, use_lc_grade, bureau)
     out = pd.DataFrame(index=df.index)
     for c in RAW_NUMERIC:
         out[c] = to_percent(df[c]) if c in ("int_rate", "revol_util") else pd.to_numeric(df[c], errors="coerce").astype(float)

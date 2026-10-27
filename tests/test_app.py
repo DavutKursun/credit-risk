@@ -96,6 +96,24 @@ def test_scorecard_fast_path_matches_optbinning():
     assert client.get("/health").json()["scorecard_fast_path"] is True
 
 
+def test_lgbm_fast_path_matches_dataframe_predict():
+    import numpy as np
+
+    from credit_risk.explain import contributions
+    from credit_risk.features import make_features
+    from credit_risk.schema import Application
+    from credit_risk.serving import applications_frame
+
+    scorer = app_module.scorer
+    assert scorer.lgbm_fast is not None
+    b = scorer.bundles["lgbm"]
+    apps = [Application(**v) for v in SAMPLE_APPLICATIONS.values()] + [Application(**{**BORDERLINE, "home_ownership": "OTHER", "purpose": "wedding", "emp_length": "n/a", "mort_acc": None})]
+    X = make_features(applications_frame(apps), b.use_lc_grade, b.bureau)
+    raw, contrib = scorer.lgbm_fast.run(b, X)
+    assert np.allclose(raw, b.predict_raw(X), atol=1e-9) and np.allclose(contrib.to_numpy(), contributions(b, X)[b.features].to_numpy(), atol=1e-9)
+    assert client.get("/health").json()["lgbm_fast_path"] is True
+
+
 def test_gradio_ui_is_mounted():
     r = client.get("/ui/")
     assert r.status_code == 200 and "gradio" in r.text.lower()

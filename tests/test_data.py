@@ -151,6 +151,24 @@ def test_make_features_shapes_and_categories(cohort):
     assert X3["bc_util"].dropna().between(0, 100).all() and (X3["num_tl_op_past_12m"].dropna() <= X3["acc_open_past_24mths"].dropna()).all()
 
 
+def test_small_frame_path_equals_vectorized_path(cohort):
+    """Up to 32 rows make_features takes a loop-based path; it must reproduce the vectorized output exactly, NaN for NaN."""
+    df, _ = cohort
+    rows = df.head(20).copy()
+    rows.loc[rows.index[0], "emp_length"] = None
+    rows.loc[rows.index[1], "revol_util"] = None
+    rows.loc[rows.index[2], "purpose"] = "yacht"
+    for bureau in (False, True):
+        fast, slow = make_features(rows, True, bureau), make_features(rows, True, bureau, _vectorized=True)
+        assert list(fast.columns) == list(slow.columns) and len(fast) == len(slow)
+        for c in fast.columns:
+            a, b = fast[c], slow[c]
+            if isinstance(a.dtype, pd.CategoricalDtype):
+                assert list(a.cat.categories) == list(b.cat.categories) and (a.cat.codes.to_numpy() == b.cat.codes.to_numpy()).all(), c
+            else:
+                assert np.allclose(a.to_numpy(dtype=float), b.to_numpy(dtype=float), equal_nan=True, atol=1e-12), c
+
+
 def test_single_application_matches_batch(cohort):
     df, _ = cohort
     X_batch = make_features(df.head(5), bureau=True)  # covers the bureau fields too

@@ -94,6 +94,43 @@ class CardFast:
                     and np.max(np.abs(contrib.to_numpy() - slow_contrib[b.features].to_numpy())) < tol_pd)
 
 
+@dataclass
+class LgbmFast:
+    """One LightGBM call per request on a numpy matrix: the contributions give the logit (their sum) and the reasons, so predict()
+    runs once instead of twice and skips the pandas-to-numpy conversion. Categorical codes follow the booster's stored category
+    lists. Verified against predict_raw and the explain contributions at load; the slow path stays if anything differs."""
+
+    categories: dict[str, list[str]]
+
+    @classmethod
+    def from_bundle(cls, b: ModelBundle) -> LgbmFast | None:
+        pc = getattr(b.estimator, "pandas_categorical", None)
+        if not pc or len(pc) != len(b.categorical):
+            return None
+        return cls(categories={f: list(c) for f, c in zip(b.categorical, pc, strict=True)})
+
+    def matrix(self, b: ModelBundle, X: pd.DataFrame) -> np.ndarray:
+        cols = [X[f].to_numpy(dtype=float) for f in b.numeric]
+        for f in b.categorical:
+            s = X[f]
+            if isinstance(s.dtype, pd.CategoricalDtype) and list(s.cat.categories) == self.categories[f]:
+                codes = s.cat.codes.to_numpy(dtype=float)
+            else:
+                codes = pd.Categorical(s.astype(object), categories=self.categories[f]).codes.astype(float)
+            codes[codes < 0] = np.nan
+            cols.append(codes)
+        return np.column_stack(cols)
+
+    def run(self, b: ModelBundle, X: pd.DataFrame) -> tuple[np.ndarray, pd.DataFrame]:
+        contrib = np.asarray(b.estimator.predict(self.matrix(b, X), pred_contrib=True, num_iteration=b.estimator.best_iteration or None), dtype=float)
+        raw = 1.0 / (1.0 + np.exp(-contrib.sum(axis=1)))
+        return raw, pd.DataFrame(contrib[:, :-1], columns=b.features, index=X.index)
+
+    def verify(self, b: ModelBundle, X: pd.DataFrame, tol: float = 1e-7) -> bool:
+        raw, contrib = self.run(b, X)
+        return bool(np.max(np.abs(raw - b.predict_raw(X))) < tol and np.max(np.abs(contrib.to_numpy() - contributions(b, X)[b.features].to_numpy())) < tol)
+
+
 def applications_frame(apps: list[Application]) -> pd.DataFrame:
     rows = [a.model_dump() for a in apps]
     return pd.DataFrame([{c: r.get(c) for c in ALL_RAW_COLUMNS} for r in rows])
@@ -109,6 +146,7 @@ class Scorer:
     results_dir: Path = RESULTS
     loaded_at: float = field(default_factory=time.time)
     card_fast: CardFast | None = None
+    lgbm_fast: LgbmFast | None = None
 
     @classmethod
     def load(cls, models_dir: Path = MODELS, results_dir: Path = RESULTS, policy: str | None = None) -> Scorer:
@@ -117,13 +155,17 @@ class Scorer:
             raise ValueError(f"POLICY must be one of {POLICIES}, got {policy!r}")
         bundles = {k: ModelBundle.load(models_dir / f"{v}.joblib") for k, v in DEPLOYED.items()}
         scorer = cls(bundles=bundles, thresholds=load_thresholds(results_dir / "policy_dev.json"), policy=policy, version=version(), results_dir=results_dir)
-        fast = CardFast.from_bundle(bundles["scorecard"])
-        if fast is not None:
-            from .schema import SAMPLE_APPLICATIONS
+        from .schema import SAMPLE_APPLICATIONS
 
+        probe = applications_frame([Application(**a) for a in SAMPLE_APPLICATIONS.values()])
+        card = CardFast.from_bundle(bundles["scorecard"])
+        if card is not None:
             b = bundles["scorecard"]
-            X = make_features(applications_frame([Application(**a) for a in SAMPLE_APPLICATIONS.values()]), b.use_lc_grade, b.bureau)
-            scorer.card_fast = fast if fast.verify(b, X) else None
+            scorer.card_fast = card if card.verify(b, make_features(probe, b.use_lc_grade, b.bureau)) else None
+        lgbm = LgbmFast.from_bundle(bundles["lgbm"])
+        if lgbm is not None:
+            b = bundles["lgbm"]
+            scorer.lgbm_fast = lgbm if lgbm.verify(b, make_features(probe, b.use_lc_grade, b.bureau)) else None
         return scorer
 
     def threshold(self, model: str, policy: str | None = None) -> float:
@@ -138,6 +180,11 @@ class Scorer:
             raw, points, contrib = self.card_fast.run(b, X)
             pd_ = b.calibrator.transform(raw) if b.calibrator is not None else raw
             reasons = reason_codes(b, X, k=TOP_K, contrib=contrib)
+        elif model == "lgbm" and self.lgbm_fast is not None:
+            raw, contrib = self.lgbm_fast.run(b, X)
+            pd_ = b.calibrator.transform(raw) if b.calibrator is not None else raw
+            reasons = reason_codes(b, X, k=TOP_K, contrib=contrib)
+            points = None
         else:
             pd_ = b.predict_pd(X)
             reasons = reason_codes(b, X, k=TOP_K)
@@ -165,7 +212,7 @@ class Scorer:
     def health(self) -> dict:
         return {"status": "ok", "models": {k: {"variant": v, "features": len(self.bundles[k].features), "calibration": self.bundles[k].meta.get("calibration")} for k, v in DEPLOYED.items()},
                 "policy": self.policy, "policies": {p: {k: self.thresholds[p][v] for k, v in DEPLOYED.items()} for p in POLICIES}, "review_band": self.band,
-                "scorecard_fast_path": self.card_fast is not None,
+                "scorecard_fast_path": self.card_fast is not None, "lgbm_fast_path": self.lgbm_fast is not None,
                 "version": self.version, "uptime_s": round(time.time() - self.loaded_at, 1)}
 
     def monitoring(self) -> dict:
