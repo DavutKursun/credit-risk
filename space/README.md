@@ -7,7 +7,7 @@ sdk: docker
 app_port: 7860
 license: mit
 pinned: false
-short_description: Loan default PD, decision by policy, five reasons — tested out of time
+short_description: Loan default PD, policy decision, five reasons, out-of-time
 ---
 
 # credit-risk — probability of default, decision and reasons, validated the way a bank would
