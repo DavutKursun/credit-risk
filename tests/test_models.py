@@ -87,7 +87,7 @@ def test_isotonic_tail_cannot_exceed_the_top_bin_rate():
     y = (rng.random(20_000) < p).astype(float)
     p_tail, y_tail = np.append(p, [0.95, 0.96, 0.97]), np.append(y, [1.0, 1.0, 1.0])  # three top-scored rows that all defaulted
     cal = fit_calibrator(p_tail, y_tail, "isotonic")
-    x, t, w = cal._binned(p_tail, y_tail)
+    _, t, w = cal._binned(p_tail, y_tail)
     assert cal.bins_ == 40 and (w >= 500).all()  # 20,003 rows → 40 equal-count bins of ≥ 500 rows
     assert float(cal.transform([0.999])[0]) <= float(t.max()) + 1e-9  # no step above the top bin's observed rate
     assert float(cal.transform([0.999])[0]) < 0.9

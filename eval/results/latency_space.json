@@ -1,0 +1,29 @@
+{
+  "base": "https://davutkursun-credit-risk.hf.space",
+  "calls_per_model": 30,
+  "client": "macOS-26.5.1-arm64-arm-64bit",
+  "models": {
+    "lgbm": {
+      "round_trip": {
+        "p50_ms": 170.0,
+        "p95_ms": 175.5
+      },
+      "server_side": {
+        "p50_ms": 15.4,
+        "p95_ms": 18.0
+      }
+    },
+    "scorecard": {
+      "round_trip": {
+        "p50_ms": 182.0,
+        "p95_ms": 203.8
+      },
+      "server_side": {
+        "p50_ms": 27.4,
+        "p95_ms": 36.1
+      }
+    }
+  },
+  "target_p50_ms": 50,
+  "meets_target_server_side": true
+}

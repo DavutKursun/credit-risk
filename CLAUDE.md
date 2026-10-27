@@ -6,34 +6,24 @@ Section 0 says where we are.
 
 ## 0. Status (updated 2026-10-27)
 
-**Milestones 1–4 are done. Start at Milestone 5, step 0 below.** The test split was used once (2026-10-27, see §2); never run a
-test-split script again.
+**Project complete (M1–M5).** Live Space: https://huggingface.co/spaces/DavutKursun/credit-risk (app https://davutkursun-credit-risk.hf.space, Docker SDK, cpu-basic, public). The test split was used once
+(2026-10-27, §2); never run a test-split script again.
 
-Done in M1–M3 (`docs/DESIGN.md` §1–8): cohort 589,488 36-month loans 2012-01..2015-12 (train 306,462 / dev 120,790 / test 162,236);
-leakage audit clean; bureau flags decided; ten dev-calibrated bundles in `models/`; binned isotonic calibration; policies, reasons,
-fairness and drift on dev. Deployed pair: **`lgbm-bureau-no-state`** and **`scorecard-bureau-no-state`** (both with LC grade and the
-nine bureau attributes, without `addr_state`); thresholds chosen on dev: expected-value 0.41 / 0.40, 85% operating point 0.253 / 0.248
-(`eval/results/policy_dev.json`). Reason codes never show the LC-derived features (`explain.NOT_A_REASON`).
+What exists (`docs/DESIGN.md` §1–10, `docs/model_card.md`, README): cohort 589,488 matured 36-month loans 2012–2015, out-of-time
+splits; leakage audit clean; ten dev-calibrated bundles; deployed pair `lgbm-bureau-no-state` (test AUC 0.7046) and
+`scorecard-bureau-no-state` (0.6968) against grade-only 0.6814; ECE 0.0065 / 0.0092; policies (EV 0.41 / 0.40, 85% point 0.253 / 0.248);
+reasons, fairness, drift; `app.py` (FastAPI `/score`, `/score/batch`, `/health`, `/monitoring`; Gradio at `/ui`), latency p50
+7 / 10 ms locally and 15 / 27 ms on the Space; `scripts/bench_latency.py`, `scripts/demo_gif.py`; 43 tests; CI green.
 
-Done in M4 (`docs/DESIGN.md` §9–10, `docs/model_card.md`, README): test AUC 0.7046 (LightGBM) / 0.6968 (scorecard) / 0.6814 (grade only);
-ECE 0.0065 / 0.0092; at 85% approval 11.8% / 11.9% defaulters among approved against 12.3% for the sub-grade cut, realized P&L
-$1,022 / $1,012 per approved loan against $976; fairness four-fifths on income 0.72 / 0.63; test confirms dev in every block
-(every variant +0.005–0.008 AUC, a population effect). Test reliability plots were drawn from evaluate's tables, not from a second read.
+Next steps, one line each (out of scope for this portfolio build):
+- Survival model for the unmatured cohorts (60-month loans, 2016+ vintages): PD at any horizon from censored outcomes.
+- Real-time bureau pull: replace the nine static bureau attributes with a live pull behind the same schema.
+- `emp_title` embeddings as a feature (100k+ free-text job titles), with the leakage audit re-run.
+- Pricing optimisation: learn the profit-maximising rate per PD band instead of approve / decline at a fixed rate.
+- Serving: a per-sub-grade calibrator, a cap on the isotonic tail, request rate limiting and a model registry for the ten bundles.
 
-**Milestone 5, step 0 (do first):** `pytest -q` (expect 35 passed). Build `app.py`: FastAPI `POST /score` (the `Application` schema,
-extra fields rejected; response `{pd, decision, reasons[5], score_points, model, version, latency_ms}` for the deployed pair, model chosen by
-a `model` query parameter defaulting to `lgbm-bureau-no-state`; decision = `policy.decide` with the 85% operating-point threshold from
-`eval/results/policy_dev.json`, review band ±0.02; reasons from `explain.reason_codes`), `POST /score/batch` (≤ 1,000), `GET /health`,
-`GET /monitoring` (PSI by quarter from `eval/results/psi_by_quarter.csv`); request logging without applicant data. Mount Gradio on the same
-app with the three tabs of §6 (Application with the three samples and what-if sliders, both models side by side; Policy with the dev
-profit curve and the two thresholds; Monitoring with the PSI heat map). `scripts/bench_latency.py`: p50/p95 of `/score` for batch 1 and
-1,000 on this Mac (criterion: p50 < 50 ms on the Space CPU). Tests for the API (schema rejection, five reasons, batch limit). Then the
-Hugging Face Space (Gradio SDK, cpu-basic, models committed), `scripts/demo_gif.py` → `assets/demo.gif`, README demo link and latency row,
-CI green. Commit "Milestone 5: ...", push. Stop.
-
-macOS notes: Python 3.11 venv at `.venv`. The Mac has 8 GB RAM: reading the raw CSV peaks at 3.4–3.8 GB RSS; run raw-file steps one at a
-time. Training all ten bundles takes about 2.5 minutes. The background shell is zsh: it does not word-split unquoted variables, so pass
-script arguments explicitly (or use arrays); Python 3.11 f-strings cannot nest the same quote type.
+macOS notes: Python 3.11 venv at `.venv`; 8 GB RAM, run raw-file steps one at a time; the background shell is zsh (pass script arguments
+explicitly or use arrays); Python 3.11 f-strings cannot nest the same quote type; Docker Desktop must be running for a local image build.
 
 ## 1. Goal
 
