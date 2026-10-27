@@ -36,7 +36,7 @@ def main(argv=None) -> int:
     if t is None:
         policy = json.loads((a.out / "policy_dev.json").read_text(encoding="utf-8"))
         t = policy["thresholds"][a.model]
-    X = make_features(df, b.use_lc_grade)
+    X = make_features(df, b.use_lc_grade, b.bureau)
     d = decide(b.predict_pd(X), t, REVIEW_BAND)
     reports = audit(df, df[TARGET].to_numpy(), d, make_features(df, True))
     summary = {"model": a.model, "split": a.split, "threshold": t, "four_fifths_ratio": {}}

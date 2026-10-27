@@ -6,37 +6,37 @@ Section 0 says where we are.
 
 ## 0. Status (updated 2026-10-27)
 
-**Starter is implemented and tested (no network, no raw data needed for tests). Start at
-Milestone 1, step 0 below.**
+**Milestone 1 is done (commits "Milestone 1 (1/2)" and "Milestone 1 (2/2)"). Start at Milestone 2, step 0 below.**
 
-Implemented in the starter:
-- `credit_risk/config.py` (paths, cohort window, split dates, seeds), `schema.py` (Application /
-  ScoreResponse, Pydantic), `data.py` (raw loader with `usecols`, cohort filter, target, time splits,
-  parquet I/O), `leakage.py` (origination-knowledge table + single-feature AUC audit), `features.py`
-  (deterministic transforms shared by training and scoring), `metrics.py` (AUC, Gini, KS, PR-AUC, Brier,
-  log loss, ECE + reliability table), `models.py` (scorecard via optbinning + LightGBM with monotone
-  constraints, save/load), `calibration.py` (isotonic / Platt on dev), `policy.py` (expected value,
-  decisions, profit curve, realized P&L), `explain.py` (SHAP reason codes, adverse-action text),
-  `fairness.py` (group metrics, four-fifths ratio), `drift.py` (PSI per feature and per quarter)
-- `scripts/download.py`, `build_cohort.py`, `audit_leakage.py`, `train.py`, `evaluate.py` (refuses
-  `--split test` without `--final`), `policy_eval.py`, `fairness_report.py`, `drift_report.py`
-- `credit_risk/synthetic.py`: a fake export with the real file's quirks (percent strings, ' 36 months', 'Dec-2015',
-  non-terminal statuses, two leaky columns, Kaggle's trailing summary lines). `tests/` (29, no network, no raw
-  data): cohort filter, out-of-time splits, the leakage audit catching a leaky column, feature parity batch vs
-  single application, metrics sanity, LightGBM monotonicity, scorecard points, calibration, policy, reason codes,
-  fairness, PSI, and the whole script chain end to end (`make smoke`). CI, Makefile.
-- NOT yet: `app.py` (FastAPI + Gradio), Dockerfile/Space, model card content, DESIGN.md content, GIF.
+Done in M1 (numbers and reasoning in `docs/DESIGN.md` §1–3):
+- Raw file in `data/raw/` (392.6 MB, sha256 55c16f75…, gitignored). Cohort: 589,488 36-month loans issued 2012-01..2015-12 with a
+  terminal status, default rate 14.03%; train 306,462 / dev 120,790 / test 162,236 by issue month (`data/cohort/summary.json`,
+  `build_report.json` committed; parquet gitignored). The parquet carries the nine opt-in bureau columns.
+- Leakage audit on train: 0 suspicious columns, 0 among feature sources (`eval/results/leakage_audit_train.csv`). Decisions in
+  `leakage.py`: the 37 bureau columns with cohort data are `ORIGINATION_BUREAU` (True, evidence in the comment and DESIGN.md §2);
+  the 14 Dec-2015 and 13 joint-application columns stay None ("no data in the 2012–2015 cohort"); `IDENTIFIERS` (id, member_id)
+  are True but never feature sources.
+- `features.BUREAU_FEATURES` (9 columns: acc_open_past_24mths, bc_open_to_buy, total_bc_limit, bc_util, tot_cur_bal,
+  num_tl_op_past_12m, mo_sin_rcnt_tl, mths_since_recent_inq, percent_bc_gt_75) is an opt-in set with monotone constraints:
+  `make_features(..., bureau=True)`, `feature_list(..., bureau=True)`, `scripts/train.py --bureau`, bundle variant suffix
+  `-bureau`; optional `Application` fields (None = not on file, stays NaN). Not in the default list: M2 runs it as an ablation.
+- `drift.py` reports the value PSI (non-missing bins) and a two-bin missingness PSI separately; status = max of the two;
+  `drift_report.py` writes `psi_by_quarter.csv` (max), `psi_values_by_quarter.csv`, `psi_missing_by_quarter.csv`.
+- Train window stays 2012-01 → 2014-12 for both models; no imputation; missing is its own bin. The early-2012 bureau block
+  (7.4% of train, 0% of dev/test) is a recorded known effect.
+- Economics on train (`scripts/economics.py` → `eval/results/economics_train.json|md`): LGD 0.314 (median 0.290, flat by grade),
+  median break-even PD 28% (grade A) → 59% (G); scheduled interest exceeds LGD × principal for 7.8% of loans.
+- 33 tests, no network, no raw data (`pytest -q`); CI unchanged.
 
-No LLM is needed before M6; no API key, no `.env`. Everything runs on CPU. Data is downloaded once
-from Kaggle (≈ 400 MB compressed); it is gitignored and never committed.
+**Milestone 2, step 0 (do first):** `pytest -q` (expect 33 passed). Then train and evaluate on dev, never on test:
+`python scripts/train.py --model both` (LC grade on), `--no-lc-grade`, `--bureau`, and `--no-lc-grade --bureau`; after each,
+`python scripts/evaluate.py --split dev`. Report per variant: dev AUC / Gini / KS / PR-AUC, AUC by grade, Brier / log loss / ECE and
+the reliability table before and after calibration (isotonic on the earlier half of dev, measured on the later half), the
+"grade only" reference row, fit time and best iteration, and the bureau ablation gain over the matching non-bureau variant.
+Stop and wait for Davut's OK before M3.
 
-**Milestone 1, step 0 (do first):** `pip install -r requirements-dev.txt`, `pytest -q`. Then ask Davut to
-place `accepted_2007_to_2018Q4.csv.gz` in `data/raw/` (see §3.1; Kaggle login is his, never in chat) and run
-`python scripts/build_cohort.py`. Report the cohort table (loans per issue year × status, default rate by
-year and by grade), the rows dropped by each filter, and the train/dev/test sizes. Stop.
-
-macOS notes: Python 3.11 venv. Loading the raw CSV with the column subset needs ≈ 2 GB RAM; fine on
-Davut's Mac. Never load all 151 columns at once.
+macOS notes: Python 3.11 venv at `.venv`. The Mac has 8 GB RAM: reading the raw CSV peaks at 3.4–3.8 GB RSS for the cohort build
+and the audit, so run raw-file steps one at a time; never load all 151 columns at once.
 
 ## 1. Goal
 

@@ -1,9 +1,10 @@
 """Leakage policy in code: which raw Lending Club columns are known when the loan is applied for.
 
-`KNOWN_AT_ORIGINATION[col]` is True (usable as a feature), False (post-origination: payments, recoveries,
-hardship, settlement, refreshed bureau pulls — target and economics only) or None (the data dictionary is
-ambiguous about when it is captured: excluded by default, listed for review). A column missing from the
-table counts as None. `audit()` computes single-feature AUCs so that a mistake here shows up as a number.
+`KNOWN_AT_ORIGINATION[col]` is True (usable as a feature), False (post-origination: payments, recoveries, hardship,
+settlement, refreshed bureau pulls — target and economics only) or None (no usable data in the cohort: excluded). A column
+missing from the table counts as None. `audit()` computes single-feature AUCs so that a mistake here shows up as a number.
+M1 (2026-10-27) decided the bureau attributes: ORIGINATION_BUREAU is flagged True on the evidence listed there; the two
+groups without data in the 2012–2015 cohort stay None.
 """
 
 from __future__ import annotations
@@ -21,6 +22,26 @@ ORIGINATION = [
     "annual_inc_joint", "dti_joint", "verification_status_joint", "acc_now_delinq", "mort_acc", "pub_rec_bankruptcies", "tax_liens",
     "desc", "disbursement_method",
 ]
+# Flagged True but never a feature source: usable_columns() excludes them (id is a vintage proxy: it rises with issue month).
+IDENTIFIERS = ("id", "member_id")
+# Bureau attributes captured at listing and never refreshed — M1 evidence on train: fields stay missing for loans listed before they
+# existed although 99% of those loans had later credit pulls; "months since" fields do not age with time to the last pull (slope
+# 0.004–0.118 per month vs ~1 under refresh); same-date identities hold (revol_util = revol_bal / total_rev_hi_lim within 2 pts for
+# 96%, num_tl_30dpd = acc_now_delinq in 99.85%); no trace of the borrower's own charge-off in any delinquency counter.
+ORIGINATION_BUREAU = [
+    # present for every cohort loan (since 2008)
+    "chargeoff_within_12_mths", "delinq_amnt",
+    # listed from Mar-2012
+    "acc_open_past_24mths", "total_bal_ex_mort", "total_bc_limit", "bc_open_to_buy", "bc_util", "percent_bc_gt_75", "mths_since_recent_bc",
+    "mths_since_recent_inq", "mths_since_recent_revol_delinq",
+    # listed from Jun-2012
+    "num_sats", "num_bc_sats",
+    # listed from Aug/Sep-2012 (missing for 52% of 2012 loans = 7.4% of train, 0% of dev/test)
+    "tot_coll_amt", "tot_cur_bal", "total_rev_hi_lim", "avg_cur_bal", "tot_hi_cred_lim", "total_il_high_credit_limit", "mo_sin_old_il_acct",
+    "mo_sin_old_rev_tl_op", "mo_sin_rcnt_rev_tl_op", "mo_sin_rcnt_tl", "mths_since_recent_bc_dlq", "num_accts_ever_120_pd", "num_actv_bc_tl",
+    "num_actv_rev_tl", "num_bc_tl", "num_il_tl", "num_op_rev_tl", "num_rev_accts", "num_rev_tl_bal_gt_0", "num_tl_120dpd_2m", "num_tl_30dpd",
+    "num_tl_90g_dpd_24m", "num_tl_op_past_12m", "pct_tl_nvr_dlq",
+]
 POST_ORIGINATION = [
     "loan_status", "pymnt_plan", "url", "out_prncp", "out_prncp_inv", "total_pymnt", "total_pymnt_inv", "total_rec_prncp",
     "total_rec_int", "total_rec_late_fee", "recoveries", "collection_recovery_fee", "last_pymnt_d", "last_pymnt_amnt",
@@ -30,23 +51,18 @@ POST_ORIGINATION = [
     "hardship_payoff_balance_amount", "hardship_last_payment_amount", "debt_settlement_flag", "debt_settlement_flag_date",
     "settlement_status", "settlement_date", "settlement_amount", "settlement_percentage", "settlement_term",
 ]
-# Bureau attributes added to the export in 2015. The dictionary does not say whether they are refreshed by later credit pulls
-# (`last_credit_pull_d` exists, so some fields are). Excluded until M1 checks their missing rate by issue year and their AUC.
+# No data in the 2012–2015 cohort: the first group was added to the export in Dec-2015 (100% missing in train and dev, present for
+# half of the Dec-2015 test loans), the second holds co-borrower fields that exist only for joint applications from 2017.
 UNCERTAIN = [
-    "tot_coll_amt", "tot_cur_bal", "open_acc_6m", "open_act_il", "open_il_12m", "open_il_24m", "mths_since_rcnt_il", "total_bal_il",
-    "il_util", "open_rv_12m", "open_rv_24m", "max_bal_bc", "all_util", "total_rev_hi_lim", "inq_fi", "total_cu_tl", "inq_last_12m",
-    "acc_open_past_24mths", "avg_cur_bal", "bc_open_to_buy", "bc_util", "chargeoff_within_12_mths", "delinq_amnt",
-    "mo_sin_old_il_acct", "mo_sin_old_rev_tl_op", "mo_sin_rcnt_rev_tl_op", "mo_sin_rcnt_tl", "mths_since_recent_bc",
-    "mths_since_recent_bc_dlq", "mths_since_recent_inq", "mths_since_recent_revol_delinq", "num_accts_ever_120_pd", "num_actv_bc_tl",
-    "num_actv_rev_tl", "num_bc_sats", "num_bc_tl", "num_il_tl", "num_op_rev_tl", "num_rev_accts", "num_rev_tl_bal_gt_0", "num_sats",
-    "num_tl_120dpd_2m", "num_tl_30dpd", "num_tl_90g_dpd_24m", "num_tl_op_past_12m", "pct_tl_nvr_dlq", "percent_bc_gt_75",
-    "tot_hi_cred_lim", "total_bal_ex_mort", "total_bc_limit", "total_il_high_credit_limit", "revol_bal_joint",
-    "sec_app_fico_range_low", "sec_app_fico_range_high", "sec_app_earliest_cr_line", "sec_app_inq_last_6mths", "sec_app_mort_acc",
+    "open_acc_6m", "open_act_il", "open_il_12m", "open_il_24m", "mths_since_rcnt_il", "total_bal_il", "il_util", "open_rv_12m", "open_rv_24m",
+    "max_bal_bc", "all_util", "inq_fi", "total_cu_tl", "inq_last_12m",
+    "revol_bal_joint", "sec_app_fico_range_low", "sec_app_fico_range_high", "sec_app_earliest_cr_line", "sec_app_inq_last_6mths", "sec_app_mort_acc",
     "sec_app_open_acc", "sec_app_revol_util", "sec_app_open_act_il", "sec_app_num_rev_accts", "sec_app_chargeoff_within_12_mths",
     "sec_app_collections_12_mths_ex_med", "sec_app_mths_since_last_major_derog",
 ]
 
-KNOWN_AT_ORIGINATION: dict[str, bool | None] = {**{c: True for c in ORIGINATION}, **{c: False for c in POST_ORIGINATION}, **{c: None for c in UNCERTAIN}}
+KNOWN_AT_ORIGINATION: dict[str, bool | None] = {**{c: True for c in ORIGINATION}, **{c: True for c in ORIGINATION_BUREAU},
+                                                **{c: False for c in POST_ORIGINATION}, **{c: None for c in UNCERTAIN}}
 
 # Post-origination columns that evaluation may read for population economics (never as features).
 ECONOMICS_COLUMNS = ["funded_amnt", "total_pymnt", "recoveries", "collection_recovery_fee", "installment", "loan_status"]
@@ -59,8 +75,8 @@ def flag(column: str) -> bool | None:
 
 
 def usable_columns(columns) -> list[str]:
-    """Columns a feature may be built from: flagged True. None and False are both out."""
-    return [c for c in columns if flag(c) is True]
+    """Columns a feature may be built from: flagged True and not an identifier. None and False are both out."""
+    return [c for c in columns if flag(c) is True and c not in IDENTIFIERS]
 
 
 def _safe_auc(y: np.ndarray, s: np.ndarray) -> float:
@@ -114,7 +130,7 @@ def audit(df: pd.DataFrame, target: str, columns=None, threshold: float = SUSPIC
     unflagged (None) column whose AUC is above the threshold. Sorted by AUC so the leaks are at the top."""
     rows = []
     for c in columns or [c for c in df.columns if c != target]:
-        if c in ("id", "member_id", "url"):
+        if c in IDENTIFIERS or c == "url":
             continue  # identifiers, not features
         auc_v, auc_m = single_feature_auc(df, c, target)
         f = flag(c)

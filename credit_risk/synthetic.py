@@ -2,7 +2,8 @@
 
 Mimics the quirks the pipeline must survive: '13.5%' strings, ' 36 months' with a leading space, 'Dec-2015' months,
 '10+ years', non-terminal statuses, 60-month loans, rows outside the cohort window, post-origination columns that
-leak the outcome (`last_fico_range_low`, `total_rec_prncp`) and the two summary lines Kaggle appends to the CSV.
+leak the outcome (`last_fico_range_low`, `total_rec_prncp`), the opt-in bureau attributes with their Sep-2012 introduction
+block, and the summary lines Kaggle appends to the CSV.
 Default depends on FICO, DTI, utilization, inquiries, income and rate through a logistic latent, so a model can learn.
 """
 
@@ -13,7 +14,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .features import CATEGORY_LEVELS
+from .features import CATEGORY_LEVELS, RAW_BUREAU
 
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -87,6 +88,25 @@ def make_raw(n: int = 4000, seed: int = 7, start_year: int = 2011, end_year: int
         "last_fico_range_low": np.where(default, fico_low - rng.integers(60, 160, n), fico_low + rng.integers(-10, 25, n)),
         "total_rec_prncp": np.where(default, loan_amnt * rng.uniform(0.05, 0.6, n), loan_amnt).round(2),
     })
+    # Opt-in bureau attributes (RAW_BUREAU), consistent with the origination columns at the same date, as in the real export
+    bc_bal = (df["revol_bal"].to_numpy() * rng.uniform(0.5, 1.0, n)).round(0)
+    bc_util_frac = np.clip(revol_util / 100 + rng.normal(0, 0.08, n), 0.01, 1.2)
+    total_bc_limit = np.maximum((bc_bal / bc_util_frac / 100).round() * 100, bc_bal)
+    total_bc_limit = np.where(total_bc_limit <= 0, 500.0, total_bc_limit)
+    df["total_bc_limit"] = total_bc_limit
+    df["bc_open_to_buy"] = np.maximum(total_bc_limit - bc_bal, 0)
+    df["bc_util"] = np.round(100 * bc_bal / total_bc_limit, 1)
+    df["percent_bc_gt_75"] = np.where(df["bc_util"] > 75, rng.uniform(50, 100, n), np.where(df["bc_util"] > 40, rng.uniform(0, 50, n), 0.0)).round(1)
+    df["tot_cur_bal"] = (df["revol_bal"] + np.where(df["home_ownership"] == "MORTGAGE", rng.lognormal(11.8, 0.5, n), 0) + rng.lognormal(8.5, 1.0, n)).round(0)
+    df["acc_open_past_24mths"] = rng.poisson(4, n)
+    df["num_tl_op_past_12m"] = rng.binomial(df["acc_open_past_24mths"].to_numpy(), 0.5)
+    df["mo_sin_rcnt_tl"] = np.where(df["num_tl_op_past_12m"] > 0, rng.integers(0, 12, n),
+                                    np.where(df["acc_open_past_24mths"] > 0, rng.integers(12, 24, n), rng.integers(24, 120, n)))
+    inq_months = np.where(inq > 0, rng.integers(0, 7, n), rng.integers(7, 60, n)).astype(float)
+    inq_months[(inq == 0) & (rng.random(n) < 0.15)] = np.nan  # no inquiry on file: informative missing, as in the real data
+    df["mths_since_recent_inq"] = inq_months
+    # the bureau set was added to the export in Sep-2012; loans listed before that stay missing (never backfilled)
+    df.loc[pd.to_datetime(df["issue_d"], format="%b-%Y") < pd.Timestamp("2012-09-01"), RAW_BUREAU] = np.nan
     # a few missing values where the real export has them
     df.loc[rng.random(n) < 0.02, "revol_util"] = np.nan
     df.loc[rng.random(n) < 0.05, "mort_acc"] = np.nan

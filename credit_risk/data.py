@@ -12,10 +12,10 @@ from pathlib import Path
 import pandas as pd
 
 from .config import COHORT, COHORT_RULES, ID_COL, SPLIT_RULES, TARGET, TIME_COL, Cohort, Splits
-from .features import RAW_FEATURE_COLUMNS, parse_month
+from .features import ALL_RAW_COLUMNS, parse_month
 from .leakage import ECONOMICS_COLUMNS
 
-RAW_COLUMNS = sorted(set([ID_COL, "term", "loan_status"] + RAW_FEATURE_COLUMNS + ECONOMICS_COLUMNS))
+RAW_COLUMNS = sorted(set([ID_COL, "term", "loan_status"] + ALL_RAW_COLUMNS + ECONOMICS_COLUMNS))  # incl. the opt-in bureau set
 SPLITS = ("train", "dev", "test")
 
 

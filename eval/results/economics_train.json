@@ -1,0 +1,164 @@
+{
+  "overall": {
+    "lgd": 0.3141,
+    "lgd_median": 0.2903,
+    "n_defaults": 40596,
+    "n_train": 306462,
+    "default_rate": 0.1325,
+    "gain_if_repaid_median": 2124.96,
+    "loss_if_default_median": 3141.0,
+    "breakeven_pd_median": 0.4013,
+    "share_interest_exceeds_lgd_x_principal": 0.0785,
+    "realized_pnl_mean": 1329.85,
+    "realized_pnl_per_dollar_lent": 0.1065,
+    "term_months": 36,
+    "int_rate_min": 6.0,
+    "int_rate_max": 26.06
+  },
+  "by_grade": {
+    "A": {
+      "n": 63143,
+      "default_rate": 0.0548,
+      "n_defaults": 3458,
+      "lgd_mean": 0.323,
+      "lgd_median": 0.2905,
+      "gain_if_repaid_median": 1502.76,
+      "loss_if_default_median": 3792.7575,
+      "breakeven_pd_median": 0.2814,
+      "breakeven_pd_median_grade_lgd": 0.2757,
+      "share_interest_exceeds_lgd_x_principal": 0.0,
+      "realized_pnl_mean": 1126.9593
+    },
+    "B": {
+      "n": 110578,
+      "default_rate": 0.1066,
+      "n_defaults": 11790,
+      "lgd_mean": 0.3099,
+      "lgd_median": 0.2826,
+      "gain_if_repaid_median": 2041.64,
+      "loss_if_default_median": 3313.755,
+      "breakeven_pd_median": 0.377,
+      "breakeven_pd_median_grade_lgd": 0.3802,
+      "share_interest_exceeds_lgd_x_principal": 0.0,
+      "realized_pnl_mean": 1360.9104
+    },
+    "C": {
+      "n": 78637,
+      "default_rate": 0.1665,
+      "n_defaults": 13090,
+      "lgd_mean": 0.3107,
+      "lgd_median": 0.2888,
+      "gain_if_repaid_median": 2379.0,
+      "loss_if_default_median": 3141.0,
+      "breakeven_pd_median": 0.4321,
+      "breakeven_pd_median_grade_lgd": 0.4348,
+      "share_interest_exceeds_lgd_x_principal": 0.0,
+      "realized_pnl_mean": 1407.6963
+    },
+    "D": {
+      "n": 40103,
+      "default_rate": 0.214,
+      "n_defaults": 8582,
+      "lgd_mean": 0.3182,
+      "lgd_median": 0.2968,
+      "gain_if_repaid_median": 2762.0,
+      "loss_if_default_median": 2999.655,
+      "breakeven_pd_median": 0.4863,
+      "breakeven_pd_median_grade_lgd": 0.4831,
+      "share_interest_exceeds_lgd_x_principal": 0.2584,
+      "realized_pnl_mean": 1400.3107
+    },
+    "E": {
+      "n": 11092,
+      "default_rate": 0.2558,
+      "n_defaults": 2837,
+      "lgd_mean": 0.319,
+      "lgd_median": 0.3015,
+      "gain_if_repaid_median": 2954.44,
+      "loss_if_default_median": 2638.44,
+      "breakeven_pd_median": 0.5289,
+      "breakeven_pd_median_grade_lgd": 0.5251,
+      "share_interest_exceeds_lgd_x_principal": 0.9717,
+      "realized_pnl_mean": 1377.4444
+    },
+    "F": {
+      "n": 2691,
+      "default_rate": 0.2847,
+      "n_defaults": 766,
+      "lgd_mean": 0.3342,
+      "lgd_median": 0.313,
+      "gain_if_repaid_median": 2675.68,
+      "loss_if_default_median": 2018.0925,
+      "breakeven_pd_median": 0.5685,
+      "breakeven_pd_median_grade_lgd": 0.5533,
+      "share_interest_exceeds_lgd_x_principal": 1.0,
+      "realized_pnl_mean": 1237.6993
+    },
+    "G": {
+      "n": 218,
+      "default_rate": 0.3349,
+      "n_defaults": 73,
+      "lgd_mean": 0.3319,
+      "lgd_median": 0.3476,
+      "gain_if_repaid_median": 5633.0,
+      "loss_if_default_median": 3953.7337,
+      "breakeven_pd_median": 0.5871,
+      "breakeven_pd_median_grade_lgd": 0.5737,
+      "share_interest_exceeds_lgd_x_principal": 0.9954,
+      "realized_pnl_mean": 2019.4421
+    }
+  },
+  "by_int_rate_band": {
+    "5\u201310%": {
+      "n": 79636,
+      "default_rate": 0.0607,
+      "gain_if_repaid_median": 1558.0,
+      "loss_if_default_median": 3769.2,
+      "breakeven_pd_median": 0.287,
+      "share_interest_exceeds_lgd_x_principal": 0.0,
+      "realized_pnl_mean": 1143.3578
+    },
+    "10\u201315%": {
+      "n": 146165,
+      "default_rate": 0.1296,
+      "gain_if_repaid_median": 2148.92,
+      "loss_if_default_median": 3141.0,
+      "breakeven_pd_median": 0.4012,
+      "share_interest_exceeds_lgd_x_principal": 0.0,
+      "realized_pnl_mean": 1364.0721
+    },
+    "15\u201320%": {
+      "n": 69223,
+      "default_rate": 0.2011,
+      "gain_if_repaid_median": 2692.16,
+      "loss_if_default_median": 3125.295,
+      "breakeven_pd_median": 0.4743,
+      "share_interest_exceeds_lgd_x_principal": 0.1822,
+      "realized_pnl_mean": 1453.2747
+    },
+    "20\u201325%": {
+      "n": 11084,
+      "default_rate": 0.2499,
+      "gain_if_repaid_median": 2832.72,
+      "loss_if_default_median": 2418.57,
+      "breakeven_pd_median": 0.5378,
+      "share_interest_exceeds_lgd_x_principal": 0.9999,
+      "realized_pnl_mean": 1447.0847
+    },
+    "25\u201330%": {
+      "n": 354,
+      "default_rate": 0.3672,
+      "gain_if_repaid_median": 4313.64,
+      "loss_if_default_median": 3019.2863,
+      "breakeven_pd_median": 0.5871,
+      "share_interest_exceeds_lgd_x_principal": 1.0,
+      "realized_pnl_mean": 1350.1303
+    }
+  },
+  "notes": [
+    "All numbers from the train split (loans issued 2012-01..2014-12); dev and test never read.",
+    "Gain if repaid = installment \u00d7 36 \u2212 funded_amnt is scheduled interest: an upper bound, prepayment lowers it.",
+    "Loss if default = LGD \u00d7 funded_amnt with the overall train LGD; breakeven_pd_median_grade_lgd uses the grade's own LGD.",
+    "Realized P&L = total_pymnt + recoveries \u2212 collection_recovery_fee \u2212 funded_amnt, a post-origination quantity used here only as a population check."
+  ]
+}

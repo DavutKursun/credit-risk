@@ -43,7 +43,7 @@ def main(argv=None) -> int:
         return 2
     rows, by_grade = [], {}
     for b in bundles + [grade_only_model()]:
-        X = make_features(df, b.use_lc_grade) if b.name != "grade_only" else make_features(df, True)
+        X = make_features(df, b.use_lc_grade, b.bureau) if b.name != "grade_only" else make_features(df, True)
         p = b.predict_pd(X)
         s = summary(y, p)
         if b.name == "grade_only":  # a rank score, not a probability: calibration metrics do not apply

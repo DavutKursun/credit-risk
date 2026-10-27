@@ -1,6 +1,6 @@
 """Train the scorecard and/or LightGBM on train, calibrate on dev, save bundles and dev metrics.
 
-Usage: python scripts/train.py [--model lgbm|scorecard|both] [--no-lc-grade] [--calibrate isotonic|platt|none]
+Usage: python scripts/train.py [--model lgbm|scorecard|both] [--no-lc-grade] [--bureau] [--calibrate isotonic|platt|none]
                                [--approval-rate 0.7] [--cohort-dir data/cohort] [--models-dir models] [--out eval/results]
 Never reads the test split.
 """
@@ -21,10 +21,7 @@ sys.path.insert(0, str(ROOT))
 from credit_risk.calibration import fit_calibrator
 from credit_risk.config import COHORT, MODELS, RESULTS, TARGET
 from credit_risk.data import load_split
-from credit_risk.features import (
-    RAW_FEATURE_COLUMNS,
-    make_features,
-)
+from credit_risk.features import RAW_BUREAU, RAW_FEATURE_COLUMNS, make_features
 from credit_risk.leakage import assert_no_leaks, audit
 from credit_risk.metrics import reliability_table, summary
 from credit_risk.models import approved_quantiles, train_lgbm, train_scorecard
@@ -34,6 +31,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="both", choices=["lgbm", "scorecard", "both"])
     ap.add_argument("--no-lc-grade", action="store_true", help="drop grade, sub_grade, int_rate, installment (the 'from scratch' variant)")
+    ap.add_argument("--bureau", action="store_true", help="add the opt-in bureau attribute set (features.BUREAU_FEATURES): the M2 ablation variant")
     ap.add_argument("--calibrate", default="isotonic", choices=["isotonic", "platt", "none"])
     ap.add_argument("--calib-share", type=float, default=0.5, help="earliest share of dev (by issue month) used to fit the calibrator; "
                     "calibration metrics are reported on the remaining, later dev rows so they are out-of-sample")
@@ -43,24 +41,25 @@ def main(argv=None) -> int:
     ap.add_argument("--out", type=Path, default=RESULTS)
     ap.add_argument("--skip-audit", action="store_true")
     a = ap.parse_args(argv)
-    use_lc = not a.no_lc_grade
+    use_lc, use_b = not a.no_lc_grade, a.bureau
 
     train, dev = load_split("train", a.cohort_dir), load_split("dev", a.cohort_dir)
     if not a.skip_audit:
-        assert_no_leaks(audit(train, TARGET, RAW_FEATURE_COLUMNS), RAW_FEATURE_COLUMNS)
+        sources = RAW_FEATURE_COLUMNS + (RAW_BUREAU if use_b else [])
+        assert_no_leaks(audit(train, TARGET, sources), sources)
     dev = dev.sort_values("issue_month", kind="stable").reset_index(drop=True)
-    X_tr, X_dv = make_features(train, use_lc), make_features(dev, use_lc)
+    X_tr, X_dv = make_features(train, use_lc, use_b), make_features(dev, use_lc, use_b)
     y_tr, y_dv = train[TARGET].to_numpy(), dev[TARGET].to_numpy()
     n_cal = int(len(dev) * a.calib_share)  # earliest dev rows calibrate; the later ones measure it
     cal_idx, rep_idx = np.arange(n_cal), np.arange(n_cal, len(dev))
     print(f"train {len(X_tr)} rows ({y_tr.mean():.3%} default) | dev {len(X_dv)} rows ({y_dv.mean():.3%}; calibrate on first {n_cal}, report on last {len(rep_idx)}) "
-          f"| lc-grade features {'on' if use_lc else 'off'}", flush=True)
+          f"| lc-grade features {'on' if use_lc else 'off'} | bureau set {'on' if use_b else 'off'}", flush=True)
 
     names = ["lgbm", "scorecard"] if a.model == "both" else [a.model]
     results = {}
     for name in names:
         t0 = time.time()
-        bundle = train_lgbm(X_tr, y_tr, X_dv, y_dv, use_lc) if name == "lgbm" else train_scorecard(X_tr, y_tr, use_lc)
+        bundle = train_lgbm(X_tr, y_tr, X_dv, y_dv, use_lc, bureau=use_b) if name == "lgbm" else train_scorecard(X_tr, y_tr, use_lc, bureau=use_b)
         fit_s = time.time() - t0
         raw_dv = bundle.predict_raw(X_dv)
         ranking = summary(y_dv, raw_dv)  # ranking on all of dev (early stopping saw it: still optimistic, test is the judge)
@@ -81,7 +80,7 @@ def main(argv=None) -> int:
                                   **{k: v for k, v in bundle.meta.items() if k in ("best_iteration", "selected_features")}}
         print(f"{bundle.variant}: fit {fit_s:.1f}s | dev AUC {ranking['auc']} KS {ranking['ks']} | late-dev Brier {before['brier']}→{after['brier']} "
               f"ECE {before['ece']}→{after['ece']}", flush=True)
-    (a.out / f"train_dev{'' if use_lc else '_no_lc_grade'}.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
+    (a.out / f"train_dev{'' if use_lc else '_no_lc_grade'}{'_bureau' if use_b else ''}.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
     return 0
 
 

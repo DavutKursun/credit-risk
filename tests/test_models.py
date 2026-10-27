@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from credit_risk.calibration import fit_calibrator
 from credit_risk.config import TARGET
-from credit_risk.drift import psi, psi_by_period, psi_table, status
+from credit_risk.drift import psi, psi_by_period, psi_detail, psi_missing, psi_table, status
 from credit_risk.explain import adverse_action_text, contributions, reason_agreement, reason_codes
 from credit_risk.fairness import audit as fairness_audit
 from credit_risk.fairness import four_fifths_ratio, group_report
-from credit_risk.features import make_features
+from credit_risk.features import BUREAU_FEATURES, make_features
 from credit_risk.metrics import auc_by_group, expected_calibration_error, ks_statistic, reliability_table, summary
 from credit_risk.models import ModelBundle, approved_quantiles, grade_only_model, train_lgbm, train_scorecard
 from credit_risk.policy import (
@@ -149,6 +150,23 @@ def test_lgbm_contributions_sum_to_logit(trained):
     assert np.allclose(p, b.predict_raw(X), atol=1e-6)
 
 
+def test_bureau_variant_trains_with_monotone_constraints(cohort):
+    df, _ = cohort
+    tr, dv = df[df["split"] == "train"], df[df["split"] == "dev"]
+    X_tr, X_dv = make_features(tr, bureau=True), make_features(dv, bureau=True)
+    b = train_lgbm(X_tr, tr[TARGET].to_numpy(), X_dv, dv[TARGET].to_numpy(), bureau=True, params={"learning_rate": 0.1, "min_data_in_leaf": 20},
+                   early_stopping_rounds=30, num_boost_round=200)
+    assert b.variant == "lgbm-bureau" and b.bureau and set(BUREAU_FEATURES) <= set(b.features)
+    row = X_dv.iloc[[0]].copy()
+    pds = []
+    for u in (10.0, 40.0, 70.0, 95.0):
+        r = row.copy()
+        r["bc_util"] = u
+        pds.append(float(b.predict_raw(r)[0]))
+    assert pds == sorted(pds), pds  # higher bankcard utilization never lowers the PD (constraint +1)
+    assert np.isfinite(b.predict_raw(X_dv)).all() and X_dv["mths_since_recent_inq"].isna().any()  # NaN (not on file) scores without imputation
+
+
 # --- fairness and drift -----------------------------------------------------------
 def test_fairness_groups(trained):
     dv, X = trained["dev"], trained["X_dv"]
@@ -159,6 +177,20 @@ def test_fairness_groups(trained):
     assert r is None or 0 <= r <= 1
     reports = fairness_audit(dv, trained["y_dv"], d, X)
     assert set(reports) == {"addr_state", "income_band", "emp_band", "home_ownership"}
+
+
+def test_psi_reports_missingness_separately_from_values():
+    rng = np.random.default_rng(1)
+    e = pd.Series(rng.normal(size=20_000))
+    e.iloc[:1_500] = np.nan  # a structural missing block in train (the early-2012 bureau gap) that is absent later
+    a = pd.Series(rng.normal(size=20_000))
+    d = psi_detail(e, a)
+    assert d["psi"] < 0.02 and d["missing_share_expected"] == pytest.approx(0.075, abs=1e-3) and d["missing_share_actual"] == 0.0
+    assert d["psi_missing"] > 0.25 and d["psi_max"] == d["psi_missing"]
+    t = psi_table(pd.DataFrame({"x": e}), pd.DataFrame({"x": a}), ["x"])
+    assert {"feature", "psi", "missing_share_expected", "missing_share_actual", "psi_missing", "psi_max", "status"} <= set(t.columns)
+    assert t.loc[0, "status"] == "act" and t.loc[0, "psi"] < 0.02  # the values did not move; the status comes from missingness
+    assert psi_missing(e, e) == pytest.approx(0.0, abs=1e-9) and psi(e, e) == pytest.approx(0.0, abs=1e-9)
 
 
 def test_psi_zero_for_same_distribution_and_positive_for_shift(trained):

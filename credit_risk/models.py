@@ -38,6 +38,7 @@ class ModelBundle:
     calibrator: object = None  # fitted on dev; see calibration.py
     approved_quantiles: dict = field(default_factory=dict)  # feature → {q: value} on approved train rows, for reason codes
     meta: dict = field(default_factory=dict)
+    bureau: bool = False  # opt-in bureau attribute set (features.BUREAU_FEATURES); the M2 ablation variant
 
     @property
     def features(self) -> list[str]:
@@ -45,7 +46,7 @@ class ModelBundle:
 
     @property
     def variant(self) -> str:
-        return f"{self.name}{'' if self.use_lc_grade else '-no-lc-grade'}"
+        return f"{self.name}{'' if self.use_lc_grade else '-no-lc-grade'}{'-bureau' if self.bureau else ''}"
 
     def predict_raw(self, X: pd.DataFrame) -> np.ndarray:
         """Uncalibrated PD (or, for grade_only, a monotone score in [0, 1])."""
@@ -70,7 +71,7 @@ class ModelBundle:
     def save(self, path: Path) -> Path:
         path.parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(self, path)
-        (path.with_suffix(".json")).write_text(json.dumps({"variant": self.variant, "numeric": self.numeric, "categorical": self.categorical, **self.meta}, indent=2, default=str), encoding="utf-8")
+        (path.with_suffix(".json")).write_text(json.dumps({"variant": self.variant, "bureau": self.bureau, "numeric": self.numeric, "categorical": self.categorical, **self.meta}, indent=2, default=str), encoding="utf-8")
         return path
 
     @staticmethod
@@ -92,12 +93,12 @@ def _monotone_vector(numeric: list[str], categorical: list[str]) -> list[int]:
 
 
 def train_lgbm(X_train: pd.DataFrame, y_train, X_dev: pd.DataFrame, y_dev, use_lc_grade: bool = True, params: dict | None = None,
-               monotone: bool = True, early_stopping_rounds: int = 100, num_boost_round: int = LGBM_ROUNDS) -> ModelBundle:
+               monotone: bool = True, early_stopping_rounds: int = 100, num_boost_round: int = LGBM_ROUNDS, bureau: bool = False) -> ModelBundle:
     """Native lightgbm.train (stable across versions): early stopping on dev AUC; pandas categoricals are stored in the model so
     scoring one Application uses the same codes."""
     import lightgbm as lgb
 
-    numeric, categorical = feature_list(use_lc_grade)
+    numeric, categorical = feature_list(use_lc_grade, bureau)
     feats = numeric + categorical
     p = {**LGBM_PARAMS, **(params or {})}
     if monotone:
@@ -108,14 +109,15 @@ def train_lgbm(X_train: pd.DataFrame, y_train, X_dev: pd.DataFrame, y_dev, use_l
                         callbacks=[lgb.early_stopping(early_stopping_rounds, verbose=False)])
     meta = {"best_iteration": int(booster.best_iteration or num_boost_round), "params": {k: v for k, v in p.items() if k != "monotone_constraints"},
             "monotone": monotone, "n_train": len(X_train), "n_dev": len(X_dev)}
-    return ModelBundle("lgbm", use_lc_grade, numeric, categorical, booster, meta=meta)
+    return ModelBundle("lgbm", use_lc_grade, numeric, categorical, booster, meta=meta, bureau=bureau)
 
 
-def train_scorecard(X_train: pd.DataFrame, y_train, use_lc_grade: bool = True, min_iv: float = 0.02, scale: dict | None = None) -> ModelBundle:
+def train_scorecard(X_train: pd.DataFrame, y_train, use_lc_grade: bool = True, min_iv: float = 0.02, scale: dict | None = None,
+                    bureau: bool = False) -> ModelBundle:
     from optbinning import BinningProcess, Scorecard
     from sklearn.linear_model import LogisticRegression
 
-    numeric, categorical = feature_list(use_lc_grade)
+    numeric, categorical = feature_list(use_lc_grade, bureau)
     feats = numeric + categorical
     scale = scale or SCORECARD_SCALE
     binning = BinningProcess(variable_names=feats, categorical_variables=categorical, selection_criteria={"iv": {"min": min_iv}},
@@ -125,7 +127,7 @@ def train_scorecard(X_train: pd.DataFrame, y_train, use_lc_grade: bool = True, m
     card.fit(_as_scorecard_frame(X_train[feats]), np.asarray(y_train))
     selected = [f for f, keep in zip(feats, card.binning_process_.get_support(), strict=True) if keep]  # Scorecard clones and fits its own copy
     meta = {"selected_features": selected, "min_iv": min_iv, "scale": scale, "n_train": len(X_train)}
-    return ModelBundle("scorecard", use_lc_grade, numeric, categorical, card, meta=meta)
+    return ModelBundle("scorecard", use_lc_grade, numeric, categorical, card, meta=meta, bureau=bureau)
 
 
 def grade_only_model() -> ModelBundle:

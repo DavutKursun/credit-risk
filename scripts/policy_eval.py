@@ -49,7 +49,7 @@ def main(argv=None) -> int:
     curves, chosen = {}, {}
     for p in sorted(a.models_dir.glob("*.joblib")):
         b = ModelBundle.load(p)
-        pd_ = b.predict_pd(make_features(df, b.use_lc_grade))
+        pd_ = b.predict_pd(make_features(df, b.use_lc_grade, b.bureau))
         curve = profit_curve(y, pd_, funded, inst, econ["lgd"], realized)
         curves[b.variant] = curve
         t = a.threshold if a.threshold is not None else best_threshold(curve, min_approval_rate=a.min_approval_rate)

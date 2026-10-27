@@ -35,6 +35,12 @@ RAW_NUMERIC = ["loan_amnt", "int_rate", "installment", "annual_inc", "dti", "fic
 RAW_TEXTUAL = ["earliest_cr_line", "issue_d", "emp_length"]
 RAW_CATEGORICAL = list(CATEGORY_LEVELS)
 RAW_FEATURE_COLUMNS = RAW_NUMERIC + RAW_TEXTUAL + RAW_CATEGORICAL
+# Opt-in bureau attributes (flagged True in leakage.ORIGINATION_BUREAU since M1). Raw numeric, no transform; missing = not on file and
+# stays NaN (LightGBM handles it natively, optbinning gives it its own bin). Not in the default list: M2 runs them as an ablation.
+RAW_BUREAU = ["acc_open_past_24mths", "bc_open_to_buy", "total_bc_limit", "bc_util", "tot_cur_bal", "num_tl_op_past_12m", "mo_sin_rcnt_tl",
+              "mths_since_recent_inq", "percent_bc_gt_75"]
+BUREAU_FEATURES = list(RAW_BUREAU)
+ALL_RAW_COLUMNS = RAW_FEATURE_COLUMNS + RAW_BUREAU
 
 NUMERIC_FEATURES = ["loan_amnt", "int_rate", "installment", "annual_inc", "dti", "fico", "delinq_2yrs", "inq_last_6mths", "open_acc", "pub_rec",
                     "revol_bal", "revol_util", "total_acc", "mort_acc", "pub_rec_bankruptcies", "credit_age_years", "emp_years",
@@ -45,7 +51,10 @@ LC_GRADE_FEATURES = ["grade", "sub_grade", "int_rate", "installment", "installme
 
 # LightGBM monotone constraints: +1 = PD rises with the feature, -1 = falls, 0 = free.
 MONOTONE = {"int_rate": 1, "fico": -1, "dti": 1, "revol_util": 1, "annual_inc": -1, "inq_last_6mths": 1, "delinq_2yrs": 1, "credit_age_years": -1,
-            "loan_to_income": 1, "installment_to_income": 1, "pub_rec": 1, "pub_rec_bankruptcies": 1}
+            "loan_to_income": 1, "installment_to_income": 1, "pub_rec": 1, "pub_rec_bankruptcies": 1,
+            # bureau set: more recent credit seeking / higher utilization → PD up; more limit or open-to-buy, longer since last account → PD down
+            "acc_open_past_24mths": 1, "bc_open_to_buy": -1, "total_bc_limit": -1, "bc_util": 1, "num_tl_op_past_12m": 1, "mo_sin_rcnt_tl": -1,
+            "mths_since_recent_inq": -1, "percent_bc_gt_75": 1, "tot_cur_bal": 0}
 
 FEATURE_LABELS = {
     "loan_amnt": "Loan amount", "int_rate": "Interest rate", "installment": "Monthly installment", "annual_inc": "Annual income",
@@ -55,15 +64,22 @@ FEATURE_LABELS = {
     "emp_years": "Employment length", "loan_to_income": "Loan amount relative to income", "installment_to_income": "Installment relative to income",
     "grade": "Lending Club grade", "sub_grade": "Lending Club sub-grade", "home_ownership": "Home ownership", "verification_status": "Income verification",
     "purpose": "Loan purpose", "addr_state": "State", "initial_list_status": "Listing status", "application_type": "Application type",
+    "acc_open_past_24mths": "Accounts opened in the last 24 months", "bc_open_to_buy": "Bankcard open-to-buy", "total_bc_limit": "Total bankcard credit limit",
+    "bc_util": "Bankcard utilization", "tot_cur_bal": "Total current balance of all accounts", "num_tl_op_past_12m": "Accounts opened in the last 12 months",
+    "mo_sin_rcnt_tl": "Months since the most recent account was opened", "mths_since_recent_inq": "Months since the most recent credit inquiry",
+    "percent_bc_gt_75": "Share of bankcards above 75% of their limit",
 }
 FEATURE_UNITS = {"int_rate": "%", "dti": "%", "revol_util": "%", "annual_inc": "$", "loan_amnt": "$", "installment": "$", "revol_bal": "$",
-                 "credit_age_years": "years", "emp_years": "years"}
+                 "credit_age_years": "years", "emp_years": "years", "bc_open_to_buy": "$", "total_bc_limit": "$", "tot_cur_bal": "$", "bc_util": "%",
+                 "percent_bc_gt_75": "%", "mo_sin_rcnt_tl": "months", "mths_since_recent_inq": "months"}
 
 
-def feature_list(use_lc_grade: bool = True) -> tuple[list[str], list[str]]:
-    """(numeric, categorical) feature names for a model variant."""
+def feature_list(use_lc_grade: bool = True, bureau: bool = False) -> tuple[list[str], list[str]]:
+    """(numeric, categorical) feature names for a model variant; `bureau=True` appends the opt-in bureau set (the M2 ablation)."""
     num = [f for f in NUMERIC_FEATURES if use_lc_grade or f not in LC_GRADE_FEATURES]
     cat = [f for f in CATEGORICAL_FEATURES if use_lc_grade or f not in LC_GRADE_FEATURES]
+    if bureau:
+        num = num + BUREAU_FEATURES
     return num, cat
 
 
@@ -98,10 +114,11 @@ def to_category(s: pd.Series, levels: list[str]) -> pd.Series:
     return pd.Categorical(vals.astype(object).where(vals.isin(levels), None), categories=levels)
 
 
-def make_features(df: pd.DataFrame, use_lc_grade: bool = True) -> pd.DataFrame:
-    """Raw rows (DataFrame with RAW_FEATURE_COLUMNS, extra columns ignored) → model matrix.
-    Works on one Application row exactly as on the training frame."""
-    missing = [c for c in RAW_FEATURE_COLUMNS if c not in df.columns]
+def make_features(df: pd.DataFrame, use_lc_grade: bool = True, bureau: bool = False) -> pd.DataFrame:
+    """Raw rows (DataFrame with RAW_FEATURE_COLUMNS, plus RAW_BUREAU when `bureau=True`; extra columns ignored) → model matrix.
+    Works on one Application row exactly as on the training frame. Bureau values not on file stay NaN: no imputation."""
+    required = RAW_FEATURE_COLUMNS + (RAW_BUREAU if bureau else [])
+    missing = [c for c in required if c not in df.columns]
     if missing:
         raise KeyError(f"raw columns missing: {missing}")
     out = pd.DataFrame(index=df.index)
@@ -117,16 +134,19 @@ def make_features(df: pd.DataFrame, use_lc_grade: bool = True) -> pd.DataFrame:
     out["installment_to_income"] = out["installment"] * 12 / income
     for c, levels in CATEGORY_LEVELS.items():
         out[c] = to_category(df[c], levels)
-    num, cat = feature_list(use_lc_grade)
+    if bureau:
+        for c in RAW_BUREAU:
+            out[c] = pd.to_numeric(df[c], errors="coerce").astype(float)
+    num, cat = feature_list(use_lc_grade, bureau)
     return out[num + cat]
 
 
 def application_frame(app: dict) -> pd.DataFrame:
     """One Application (dict from the Pydantic model) → a one-row raw frame with every raw column present."""
-    row = {c: app.get(c) for c in RAW_FEATURE_COLUMNS}
+    row = {c: app.get(c) for c in ALL_RAW_COLUMNS}
     return pd.DataFrame([row])
 
 
 def check_raw_columns_are_usable() -> list[str]:
     """Guard for tests: every raw column a feature reads must be flagged known-at-origination."""
-    return [c for c in RAW_FEATURE_COLUMNS if c not in usable_columns(RAW_FEATURE_COLUMNS)]
+    return [c for c in ALL_RAW_COLUMNS if c not in usable_columns(ALL_RAW_COLUMNS)]

@@ -8,7 +8,9 @@ from pydantic import ValidationError
 from credit_risk.config import COHORT_RULES, SPLIT_RULES, TARGET
 from credit_risk.data import RAW_COLUMNS, assign_split, cohort_summary, load_raw, load_split, save_cohort
 from credit_risk.features import (
-    RAW_FEATURE_COLUMNS,
+    ALL_RAW_COLUMNS,
+    BUREAU_FEATURES,
+    RAW_BUREAU,
     application_frame,
     check_raw_columns_are_usable,
     emp_length_years,
@@ -17,7 +19,17 @@ from credit_risk.features import (
     parse_month,
     to_percent,
 )
-from credit_risk.leakage import ECONOMICS_COLUMNS, SUSPICIOUS_AUC, assert_no_leaks, audit, flag, usable_columns
+from credit_risk.leakage import (
+    ECONOMICS_COLUMNS,
+    IDENTIFIERS,
+    ORIGINATION_BUREAU,
+    SUSPICIOUS_AUC,
+    UNCERTAIN,
+    assert_no_leaks,
+    audit,
+    flag,
+    usable_columns,
+)
 from credit_risk.schema import SAMPLE_APPLICATIONS, Application
 from credit_risk.synthetic import write_raw_csv
 
@@ -74,23 +86,32 @@ def test_save_and_load_cohort(tmp_path, cohort):
 # --- leakage --------------------------------------------------------------------
 def test_every_feature_source_is_flagged_known_at_origination():
     assert check_raw_columns_are_usable() == []
-    assert flag("total_pymnt") is False and flag("last_fico_range_low") is False and flag("tot_cur_bal") is None and flag("made_up") is None
-    assert usable_columns(["loan_amnt", "recoveries", "tot_cur_bal"]) == ["loan_amnt"]
+    assert flag("total_pymnt") is False and flag("last_fico_range_low") is False and flag("made_up") is None
+    # M1 decision: the 37 bureau columns with cohort data are origination-time; the Dec-2015 and joint groups have no data
+    assert flag("tot_cur_bal") is True and flag("open_acc_6m") is None and flag("sec_app_fico_range_low") is None
+    assert len(ORIGINATION_BUREAU) == 37 and len(UNCERTAIN) == 27 and set(RAW_BUREAU) <= set(ORIGINATION_BUREAU)
+    assert usable_columns(["loan_amnt", "recoveries", "tot_cur_bal", "open_acc_6m"]) == ["loan_amnt", "tot_cur_bal"]
     assert "loan_status" in ECONOMICS_COLUMNS
+
+
+def test_identifiers_are_flagged_true_but_never_feature_sources():
+    assert IDENTIFIERS == ("id", "member_id") and flag("id") is True and flag("member_id") is True
+    assert usable_columns(["id", "member_id", "loan_amnt"]) == ["loan_amnt"]
+    assert not set(IDENTIFIERS) & set(ALL_RAW_COLUMNS)
 
 
 def test_audit_flags_leaky_columns_and_not_features(cohort, raw):
     df, _ = cohort  # built straight from the synthetic export, so the two leaky columns are still present
     assert {"last_fico_range_low", "total_rec_prncp"} <= set(df.columns)
-    table = audit(df, TARGET, RAW_FEATURE_COLUMNS + ["last_fico_range_low", "total_rec_prncp", "total_pymnt"])
+    table = audit(df, TARGET, ALL_RAW_COLUMNS + ["last_fico_range_low", "total_rec_prncp", "total_pymnt"])
     top = table.set_index("column")
     assert top.loc["last_fico_range_low", "auc_value"] > SUSPICIOUS_AUC and top.loc["total_rec_prncp", "auc_value"] > SUSPICIOUS_AUC
     # flagged False → high AUC is expected, not suspicious; a feature column must never be suspicious on this data
     assert not top.loc["total_pymnt", "suspicious"] and not top.loc["last_fico_range_low", "suspicious"]
-    assert not top.loc[RAW_FEATURE_COLUMNS, "suspicious"].any()
-    assert_no_leaks(table, RAW_FEATURE_COLUMNS)
+    assert not top.loc[ALL_RAW_COLUMNS, "suspicious"].any()
+    assert_no_leaks(table, ALL_RAW_COLUMNS)
     with pytest.raises(ValueError):
-        assert_no_leaks(table, RAW_FEATURE_COLUMNS + ["total_pymnt"])
+        assert_no_leaks(table, ALL_RAW_COLUMNS + ["total_pymnt"])
 
 
 def test_audit_catches_an_unflagged_leak(cohort):
@@ -123,15 +144,20 @@ def test_make_features_shapes_and_categories(cohort):
     assert X["int_rate"].dtype == float and X["revol_util"].isna().sum() > 0  # NaN preserved, no fill here
     X2 = make_features(df, use_lc_grade=False)
     assert not {"grade", "sub_grade", "int_rate", "installment", "installment_to_income"} & set(X2.columns)
+    X3 = make_features(df, bureau=True)  # the opt-in bureau set: appended, raw numeric, missing stays NaN (no imputation)
+    num3, cat3 = feature_list(True, bureau=True)
+    assert list(X3.columns) == num3 + cat3 and set(BUREAU_FEATURES) <= set(X3.columns) and not set(BUREAU_FEATURES) & set(X.columns)
+    assert X3["bc_util"].isna().sum() > 0 and X3["mths_since_recent_inq"].isna().sum() > 0
+    assert X3["bc_util"].dropna().between(0, 100).all() and (X3["num_tl_op_past_12m"].dropna() <= X3["acc_open_past_24mths"].dropna()).all()
 
 
 def test_single_application_matches_batch(cohort):
     df, _ = cohort
-    X_batch = make_features(df.head(5))
+    X_batch = make_features(df.head(5), bureau=True)  # covers the bureau fields too
     for i in range(5):
         row = df.iloc[i]
-        app = {c: (None if pd.isna(row[c]) else row[c]) for c in RAW_FEATURE_COLUMNS}
-        X_one = make_features(application_frame(app))
+        app = {c: (None if pd.isna(row[c]) else row[c]) for c in ALL_RAW_COLUMNS}
+        X_one = make_features(application_frame(app), bureau=True)
         for c in X_batch.columns:
             a, b = X_batch.iloc[i][c], X_one.iloc[0][c]
             assert (pd.isna(a) and pd.isna(b)) or a == b, (c, a, b)
@@ -151,6 +177,13 @@ def test_application_schema_validates_samples_and_rejects_bad_input():
         a = Application(**app)
         X = make_features(application_frame(a.model_dump()))
         assert X.shape == (1, len(feature_list(True)[0]) + len(feature_list(True)[1]))
+    for app in SAMPLE_APPLICATIONS.values():  # the samples carry the bureau fields; omitted fields mean 'not on file' → NaN
+        Xb = make_features(application_frame(Application(**app).model_dump()), bureau=True)
+        assert Xb.shape[1] == len(feature_list(True, True)[0]) + len(feature_list(True, True)[1]) and Xb["bc_util"].notna().all()
+    bare = Application(**{k: v for k, v in SAMPLE_APPLICATIONS["borderline"].items() if k not in RAW_BUREAU})
+    assert make_features(application_frame(bare.model_dump()), bureau=True)[BUREAU_FEATURES].isna().all().all()
+    with pytest.raises(ValidationError):
+        Application(**{**SAMPLE_APPLICATIONS["borderline"], "bc_util": 250})
     with pytest.raises(ValidationError):
         Application(**{**SAMPLE_APPLICATIONS["borderline"], "fico_range_low": 200})
     with pytest.raises(ValidationError):
