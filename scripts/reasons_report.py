@@ -23,7 +23,7 @@ sys.path.insert(0, str(ROOT))
 
 from credit_risk.config import COHORT, ID_COL, MODELS, RESULTS, REVIEW_BAND, SEED, TARGET
 from credit_risk.data import load_split
-from credit_risk.explain import adverse_action_text, contributions, reason_agreement, reason_codes
+from credit_risk.explain import NOT_A_REASON, adverse_action_text, contributions, reason_agreement, reason_codes
 from credit_risk.features import ALL_RAW_COLUMNS, FEATURE_LABELS, application_frame, make_features
 from credit_risk.models import ModelBundle
 from credit_risk.policy import decide
@@ -147,7 +147,7 @@ def main(argv=None) -> int:
         dec = np.where(decisions[v] == "decline")[0]
         if len(dec) == 0:
             continue
-        c = contributions(b, feats[v].iloc[dec])
+        c = contributions(b, feats[v].iloc[dec]).drop(columns=list(NOT_A_REASON), errors="ignore")  # displayed reasons only
         lead_feat = c.where(c > 0).idxmax(axis=1).fillna("none")
         dist = Counter(lead_feat.tolist())
         total = sum(dist.values())

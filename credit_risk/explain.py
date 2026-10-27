@@ -2,7 +2,8 @@
 
 LightGBM: per-feature SHAP contributions from `predict(pred_contrib=True)` (exact TreeSHAP, built into LightGBM, no extra
 dependency). Scorecard: points per feature relative to the average approved applicant. Numeric reasons are phrased
-against the approved training population ("higher than 90% of approved borrowers"); categorical reasons name the value.
+against the approved training population ("higher than 90% of approved borrowers"); categorical reasons name the value. The
+Lending Club grade, sub-grade, rate and installment never appear as a reason: they are a score, not something the applicant did.
 """
 
 from __future__ import annotations
@@ -10,11 +11,14 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from .features import FEATURE_LABELS, FEATURE_UNITS
+from .features import FEATURE_LABELS, FEATURE_UNITS, LC_GRADE_FEATURES
 from .models import ModelBundle, _as_scorecard_frame
 from .schema import Reason
 
 TOP_K = 5
+# Lending Club's own risk outputs (grade, sub_grade, int_rate, installment and the installment ratio) are a score, not a cause an
+# applicant can act on. They stay in the model and in the contributions; the displayed reasons are the next underlying attributes.
+NOT_A_REASON = tuple(LC_GRADE_FEATURES)
 
 
 def _fmt(feature: str, value) -> str:
@@ -74,12 +78,14 @@ def contributions(bundle: ModelBundle, X: pd.DataFrame) -> pd.DataFrame:
     raise ValueError(f"no explanations for {bundle.name}")
 
 
-def reason_codes(bundle: ModelBundle, X: pd.DataFrame, k: int = TOP_K) -> list[list[Reason]]:
-    """Top-k reasons per row, strongest first. Positive contribution = raises the PD."""
+def reason_codes(bundle: ModelBundle, X: pd.DataFrame, k: int = TOP_K, exclude: tuple[str, ...] = NOT_A_REASON) -> list[list[Reason]]:
+    """Top-k reasons per row, strongest first, among the features not in `exclude` (by default the Lending Club-derived ones).
+    Positive contribution = raises the PD."""
     contrib = contributions(bundle, X)
+    shown = [f for f in contrib.columns if f not in exclude]
     out: list[list[Reason]] = []
     for i, idx in enumerate(X.index):
-        row = contrib.loc[idx]
+        row = contrib.loc[idx, shown]
         order = row.abs().sort_values(ascending=False).index[:k]
         reasons = []
         for f in order:

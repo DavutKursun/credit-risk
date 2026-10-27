@@ -10,7 +10,7 @@ from credit_risk.drift import psi, psi_by_period, psi_detail, psi_missing, psi_t
 from credit_risk.explain import adverse_action_text, contributions, reason_agreement, reason_codes
 from credit_risk.fairness import audit as fairness_audit
 from credit_risk.fairness import four_fifths_ratio, group_report
-from credit_risk.features import BUREAU_FEATURES, make_features
+from credit_risk.features import BUREAU_FEATURES, LC_GRADE_FEATURES, make_features
 from credit_risk.metrics import auc_by_group, expected_calibration_error, ks_statistic, reliability_table, summary
 from credit_risk.models import ModelBundle, approved_quantiles, grade_only_model, train_lgbm, train_scorecard
 from credit_risk.policy import (
@@ -150,8 +150,10 @@ def test_reason_codes_for_both_models(trained):
         assert len(reasons) == 3 and all(len(r) == 5 for r in reasons)
         for r in reasons[0]:
             assert r.direction in ("raises", "lowers") and r.text and r.feature in b.features
+        assert not any(r.feature in LC_GRADE_FEATURES for rs in reasons for r in rs)  # a score is not a reason an applicant can act on
         c = contributions(b, X)
-        assert c.shape == (3, len(b.features))
+        assert c.shape == (3, len(b.features)) and set(LC_GRADE_FEATURES) & set(c.columns)  # but it still counts in the contributions
+        assert any(r.feature in LC_GRADE_FEATURES for r in reason_codes(b, X, k=5, exclude=())[0])  # opt-in: the raw top-5 would show it
     text = adverse_action_text(reason_codes(trained["lgbm"], X, k=5)[0])
     assert text.startswith("Principal reasons") or text.startswith("No principal")
     assert 0 <= reason_agreement(reason_codes(trained["lgbm"], X), reason_codes(trained["card"], X)) <= 1

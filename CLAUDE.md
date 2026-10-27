@@ -20,8 +20,8 @@ Done in M3 (`docs/DESIGN.md` §4–8; dev only, test never read):
   rates 80/85/90% against approve-all, grades A–C and the exact sub-grade cut; profit-curve PNGs; `--variants`; test needs
   `--final --thresholds-from eval/results/policy_dev.json`. Thresholds for M4: EV 0.41 / 0.40 (approves 99.5%),
   85% operating point 0.253 / 0.248. At 85% LightGBM approves 12.3% defaulters vs 12.8% for the sub-grade cut, $1,063 vs $1,015 per loan.
-- `reasons_report.py` (`--policy-rate 0.85`): top-3 agreement 99.7%, same #1 reason 64.8%; sub-grade leads 60% of declines, accounts
-  opened in 24 months 23%; text check clean. `fairness_report.py` (`--tag`, `--min-n`, group default rate and gaps): at 85% the income
+- `reasons_report.py` (`--policy-rate 0.85`): displayed reasons skip the LC-derived features (M4 rule, `explain.NOT_A_REASON`); top-3
+  agreement 98.7%, same #1 reason 61.8%; accounts opened in 24 months lead 42% / 53% of declines, then income and DTI; text check clean. `fairness_report.py` (`--tag`, `--min-n`, group default rate and gaps): at 85% the income
   quintile four-fifths ratio is 0.69 (LightGBM) / 0.59 (scorecard), home ownership 0.85 / 0.81; by state 0.96 / 0.94.
 - `drift_report.py` (`--variants`): int_rate 0.18 → 0.32, initial_list_status 0.61 in Q4, bureau columns 0.49 from missingness only,
   deployed scores 0.01–0.02. 35 tests; `eval/results/*.png` are committed.

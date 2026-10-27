@@ -16,13 +16,6 @@
         "decision": "approve",
         "reasons": [
           {
-            "feature": "sub_grade",
-            "value": "A3",
-            "direction": "lowers",
-            "text": "Lending Club sub-grade: A3 (associated with fewer defaults)",
-            "contribution": -0.3006
-          },
-          {
             "feature": "fico",
             "value": "762",
             "direction": "lowers",
@@ -49,6 +42,13 @@
             "direction": "lowers",
             "text": "Accounts opened in the last 24 months 2 supports approval (better than 75% of approved borrowers)",
             "contribution": -0.1418
+          },
+          {
+            "feature": "dti",
+            "value": "9.5%",
+            "direction": "lowers",
+            "text": "Debt-to-income ratio 9.5% supports approval (better than 90% of approved borrowers)",
+            "contribution": -0.1155
           }
         ],
         "adverse_action": null
@@ -57,13 +57,6 @@
         "pd": 0.006,
         "decision": "approve",
         "reasons": [
-          {
-            "feature": "sub_grade",
-            "value": "A3",
-            "direction": "lowers",
-            "text": "Lending Club sub-grade: A3 (associated with fewer defaults)",
-            "contribution": -0.6798
-          },
           {
             "feature": "fico",
             "value": "762",
@@ -79,18 +72,25 @@
             "contribution": -0.1622
           },
           {
-            "feature": "installment_to_income",
-            "value": "0.03",
-            "direction": "lowers",
-            "text": "Installment relative to income 0.03 supports approval (better than 90% of approved borrowers)",
-            "contribution": -0.1244
-          },
-          {
             "feature": "annual_inc",
             "value": "$95,000",
             "direction": "lowers",
             "text": "Annual income $95,000 supports approval (better than 75% of approved borrowers)",
             "contribution": -0.1158
+          },
+          {
+            "feature": "dti",
+            "value": "9.5%",
+            "direction": "lowers",
+            "text": "Debt-to-income ratio 9.5% supports approval (better than 90% of approved borrowers)",
+            "contribution": -0.0878
+          },
+          {
+            "feature": "purpose",
+            "value": "credit_card",
+            "direction": "lowers",
+            "text": "Loan purpose: credit_card (associated with fewer defaults)",
+            "contribution": -0.0756
           }
         ],
         "adverse_action": null
@@ -101,20 +101,6 @@
         "pd": 0.253,
         "decision": "review",
         "reasons": [
-          {
-            "feature": "sub_grade",
-            "value": "C5",
-            "direction": "raises",
-            "text": "Lending Club sub-grade: C5 (associated with more defaults)",
-            "contribution": 0.2996
-          },
-          {
-            "feature": "installment_to_income",
-            "value": "0.12",
-            "direction": "raises",
-            "text": "Installment relative to income 0.12 is higher than 75% of approved borrowers",
-            "contribution": 0.1062
-          },
           {
             "feature": "home_ownership",
             "value": "RENT",
@@ -135,6 +121,20 @@
             "direction": "raises",
             "text": "Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers",
             "contribution": 0.0691
+          },
+          {
+            "feature": "loan_to_income",
+            "value": "0.29",
+            "direction": "raises",
+            "text": "Loan amount relative to income 0.29 is higher than 75% of approved borrowers",
+            "contribution": 0.0493
+          },
+          {
+            "feature": "fico",
+            "value": "682",
+            "direction": "raises",
+            "text": "FICO score 682 is lower than 75% of approved borrowers",
+            "contribution": 0.0477
           }
         ],
         "adverse_action": null
@@ -143,20 +143,6 @@
         "pd": 0.2833,
         "decision": "decline",
         "reasons": [
-          {
-            "feature": "sub_grade",
-            "value": "C5",
-            "direction": "raises",
-            "text": "Lending Club sub-grade: C5 (associated with more defaults)",
-            "contribution": 0.2073
-          },
-          {
-            "feature": "installment_to_income",
-            "value": "0.12",
-            "direction": "raises",
-            "text": "Installment relative to income 0.12 is higher than 75% of approved borrowers",
-            "contribution": 0.133
-          },
           {
             "feature": "home_ownership",
             "value": "RENT",
@@ -177,9 +163,23 @@
             "direction": "raises",
             "text": "Credit inquiries in the last 6 months 2 is higher than 90% of approved borrowers",
             "contribution": 0.0577
+          },
+          {
+            "feature": "dti",
+            "value": "21.8%",
+            "direction": "raises",
+            "text": "Debt-to-income ratio 21.8% is higher than 75% of approved borrowers",
+            "contribution": 0.0466
+          },
+          {
+            "feature": "loan_to_income",
+            "value": "0.29",
+            "direction": "raises",
+            "text": "Loan amount relative to income 0.29 is higher than 75% of approved borrowers",
+            "contribution": 0.0414
           }
         ],
-        "adverse_action": "Principal reasons for this decision: Lending Club sub-grade: C5 (associated with more defaults); Installment relative to income 0.12 is higher than 75% of approved borrowers; Home ownership: RENT (associated with more defaults); Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers."
+        "adverse_action": "Principal reasons for this decision: Home ownership: RENT (associated with more defaults); Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers; Credit inquiries in the last 6 months 2 is higher than 90% of approved borrowers; Debt-to-income ratio 21.8% is higher than 75% of approved borrowers."
       }
     },
     "clear_decline": {
@@ -195,13 +195,6 @@
             "contribution": 0.5024
           },
           {
-            "feature": "sub_grade",
-            "value": "F2",
-            "direction": "raises",
-            "text": "Lending Club sub-grade: F2 (associated with more defaults)",
-            "contribution": 0.3517
-          },
-          {
             "feature": "acc_open_past_24mths",
             "value": "9",
             "direction": "raises",
@@ -209,46 +202,39 @@
             "contribution": 0.3177
           },
           {
-            "feature": "installment_to_income",
-            "value": "0.30",
-            "direction": "raises",
-            "text": "Installment relative to income 0.30 is higher than 95% of approved borrowers",
-            "contribution": 0.246
-          },
-          {
             "feature": "dti",
             "value": "33.9%",
             "direction": "raises",
             "text": "Debt-to-income ratio 33.9% is higher than 95% of approved borrowers",
             "contribution": 0.1944
+          },
+          {
+            "feature": "inq_last_6mths",
+            "value": "5",
+            "direction": "raises",
+            "text": "Credit inquiries in the last 6 months 5 is higher than 95% of approved borrowers",
+            "contribution": 0.1679
+          },
+          {
+            "feature": "loan_to_income",
+            "value": "0.63",
+            "direction": "raises",
+            "text": "Loan amount relative to income 0.63 is higher than 95% of approved borrowers",
+            "contribution": 0.1578
           }
         ],
-        "adverse_action": "Principal reasons for this decision: Loan purpose: small_business (associated with more defaults); Lending Club sub-grade: F2 (associated with more defaults); Accounts opened in the last 24 months 9 is higher than 95% of approved borrowers; Installment relative to income 0.30 is higher than 95% of approved borrowers."
+        "adverse_action": "Principal reasons for this decision: Loan purpose: small_business (associated with more defaults); Accounts opened in the last 24 months 9 is higher than 95% of approved borrowers; Debt-to-income ratio 33.9% is higher than 95% of approved borrowers; Credit inquiries in the last 6 months 5 is higher than 95% of approved borrowers."
       },
       "scorecard-bureau-no-state": {
         "pd": 0.3917,
         "decision": "decline",
         "reasons": [
           {
-            "feature": "sub_grade",
-            "value": "F2",
-            "direction": "raises",
-            "text": "Lending Club sub-grade: F2 (associated with more defaults)",
-            "contribution": 0.4095
-          },
-          {
             "feature": "acc_open_past_24mths",
             "value": "9",
             "direction": "raises",
             "text": "Accounts opened in the last 24 months 9 is higher than 95% of approved borrowers",
             "contribution": 0.2869
-          },
-          {
-            "feature": "installment_to_income",
-            "value": "0.30",
-            "direction": "raises",
-            "text": "Installment relative to income 0.30 is higher than 95% of approved borrowers",
-            "contribution": 0.2488
           },
           {
             "feature": "dti",
@@ -263,9 +249,23 @@
             "direction": "raises",
             "text": "Loan purpose: small_business (associated with more defaults)",
             "contribution": 0.1209
+          },
+          {
+            "feature": "loan_to_income",
+            "value": "0.63",
+            "direction": "raises",
+            "text": "Loan amount relative to income 0.63 is higher than 95% of approved borrowers",
+            "contribution": 0.0862
+          },
+          {
+            "feature": "fico",
+            "value": "662",
+            "direction": "raises",
+            "text": "FICO score 662 is lower than 95% of approved borrowers",
+            "contribution": 0.0819
           }
         ],
-        "adverse_action": "Principal reasons for this decision: Lending Club sub-grade: F2 (associated with more defaults); Accounts opened in the last 24 months 9 is higher than 95% of approved borrowers; Installment relative to income 0.30 is higher than 95% of approved borrowers; Debt-to-income ratio 33.9% is higher than 95% of approved borrowers."
+        "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 9 is higher than 95% of approved borrowers; Debt-to-income ratio 33.9% is higher than 95% of approved borrowers; Loan purpose: small_business (associated with more defaults); Loan amount relative to income 0.63 is higher than 95% of approved borrowers."
       }
     }
   },
@@ -289,13 +289,6 @@
               "contribution": 0.4174
             },
             {
-              "feature": "sub_grade",
-              "value": "D4",
-              "direction": "raises",
-              "text": "Lending Club sub-grade: D4 (associated with more defaults)",
-              "contribution": 0.2648
-            },
-            {
               "feature": "dti",
               "value": "30.6%",
               "direction": "raises",
@@ -315,21 +308,21 @@
               "direction": "raises",
               "text": "Total bankcard credit limit $3,000 is lower than 95% of approved borrowers",
               "contribution": 0.1015
+            },
+            {
+              "feature": "percent_bc_gt_75",
+              "value": "0.0%",
+              "direction": "lowers",
+              "text": "Share of bankcards above 75% of their limit 0.0% supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.085
             }
           ],
-          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Lending Club sub-grade: D4 (associated with more defaults); Debt-to-income ratio 30.6% is higher than 95% of approved borrowers; Accounts opened in the last 12 months 8 is higher than 95% of approved borrowers."
+          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Debt-to-income ratio 30.6% is higher than 95% of approved borrowers; Accounts opened in the last 12 months 8 is higher than 95% of approved borrowers; Total bankcard credit limit $3,000 is lower than 95% of approved borrowers."
         },
         "scorecard-bureau-no-state": {
           "pd": 0.2833,
           "decision": "decline",
           "reasons": [
-            {
-              "feature": "sub_grade",
-              "value": "D4",
-              "direction": "raises",
-              "text": "Lending Club sub-grade: D4 (associated with more defaults)",
-              "contribution": 0.3137
-            },
             {
               "feature": "acc_open_past_24mths",
               "value": "12",
@@ -357,9 +350,16 @@
               "direction": "lowers",
               "text": "Share of bankcards above 75% of their limit 0.0% supports approval (better than 90% of approved borrowers)",
               "contribution": -0.0618
+            },
+            {
+              "feature": "total_bc_limit",
+              "value": "$3,000",
+              "direction": "raises",
+              "text": "Total bankcard credit limit $3,000 is lower than 95% of approved borrowers",
+              "contribution": 0.0383
             }
           ],
-          "adverse_action": "Principal reasons for this decision: Lending Club sub-grade: D4 (associated with more defaults); Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Debt-to-income ratio 30.6% is higher than 95% of approved borrowers; Accounts opened in the last 12 months 8 is higher than 95% of approved borrowers."
+          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Debt-to-income ratio 30.6% is higher than 95% of approved borrowers; Accounts opened in the last 12 months 8 is higher than 95% of approved borrowers; Total bankcard credit limit $3,000 is lower than 95% of approved borrowers."
         }
       }
     },
@@ -375,25 +375,11 @@
           "decision": "decline",
           "reasons": [
             {
-              "feature": "sub_grade",
-              "value": "D3",
-              "direction": "raises",
-              "text": "Lending Club sub-grade: D3 (associated with more defaults)",
-              "contribution": 0.2476
-            },
-            {
               "feature": "annual_inc",
               "value": "$24,669",
               "direction": "raises",
               "text": "Annual income $24,669 is lower than 95% of approved borrowers",
               "contribution": 0.1568
-            },
-            {
-              "feature": "installment_to_income",
-              "value": "0.14",
-              "direction": "raises",
-              "text": "Installment relative to income 0.14 is higher than 90% of approved borrowers",
-              "contribution": 0.1459
             },
             {
               "feature": "home_ownership",
@@ -403,39 +389,39 @@
               "contribution": 0.1118
             },
             {
-              "feature": "int_rate",
-              "value": "17.0%",
+              "feature": "acc_open_past_24mths",
+              "value": "5",
               "direction": "raises",
-              "text": "Interest rate 17.0% is higher than 95% of approved borrowers",
-              "contribution": 0.0822
+              "text": "Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers",
+              "contribution": 0.0763
+            },
+            {
+              "feature": "fico",
+              "value": "672",
+              "direction": "raises",
+              "text": "FICO score 672 is lower than 90% of approved borrowers",
+              "contribution": 0.0732
+            },
+            {
+              "feature": "num_tl_op_past_12m",
+              "value": "4",
+              "direction": "raises",
+              "text": "Accounts opened in the last 12 months 4 is higher than 95% of approved borrowers",
+              "contribution": 0.0657
             }
           ],
-          "adverse_action": "Principal reasons for this decision: Lending Club sub-grade: D3 (associated with more defaults); Annual income $24,669 is lower than 95% of approved borrowers; Installment relative to income 0.14 is higher than 90% of approved borrowers; Home ownership: RENT (associated with more defaults)."
+          "adverse_action": "Principal reasons for this decision: Annual income $24,669 is lower than 95% of approved borrowers; Home ownership: RENT (associated with more defaults); Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers; FICO score 672 is lower than 90% of approved borrowers."
         },
         "scorecard-bureau-no-state": {
           "pd": 0.2833,
           "decision": "decline",
           "reasons": [
             {
-              "feature": "sub_grade",
-              "value": "D3",
-              "direction": "raises",
-              "text": "Lending Club sub-grade: D3 (associated with more defaults)",
-              "contribution": 0.274
-            },
-            {
               "feature": "annual_inc",
               "value": "$24,669",
               "direction": "raises",
               "text": "Annual income $24,669 is lower than 95% of approved borrowers",
               "contribution": 0.1778
-            },
-            {
-              "feature": "installment_to_income",
-              "value": "0.14",
-              "direction": "raises",
-              "text": "Installment relative to income 0.14 is higher than 90% of approved borrowers",
-              "contribution": 0.17
             },
             {
               "feature": "home_ownership",
@@ -450,9 +436,23 @@
               "direction": "raises",
               "text": "Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers",
               "contribution": 0.0611
+            },
+            {
+              "feature": "fico",
+              "value": "672",
+              "direction": "raises",
+              "text": "FICO score 672 is lower than 90% of approved borrowers",
+              "contribution": 0.0609
+            },
+            {
+              "feature": "loan_to_income",
+              "value": "0.32",
+              "direction": "raises",
+              "text": "Loan amount relative to income 0.32 is higher than 90% of approved borrowers",
+              "contribution": 0.0582
             }
           ],
-          "adverse_action": "Principal reasons for this decision: Lending Club sub-grade: D3 (associated with more defaults); Annual income $24,669 is lower than 95% of approved borrowers; Installment relative to income 0.14 is higher than 90% of approved borrowers; Home ownership: RENT (associated with more defaults)."
+          "adverse_action": "Principal reasons for this decision: Annual income $24,669 is lower than 95% of approved borrowers; Home ownership: RENT (associated with more defaults); Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers; FICO score 672 is lower than 90% of approved borrowers."
         }
       }
     },
@@ -482,13 +482,6 @@
               "contribution": 0.2229
             },
             {
-              "feature": "sub_grade",
-              "value": "C5",
-              "direction": "raises",
-              "text": "Lending Club sub-grade: C5 (associated with more defaults)",
-              "contribution": 0.1741
-            },
-            {
               "feature": "annual_inc",
               "value": "$30,000",
               "direction": "raises",
@@ -501,9 +494,16 @@
               "direction": "raises",
               "text": "Accounts opened in the last 12 months 7 is higher than 95% of approved borrowers",
               "contribution": 0.1279
+            },
+            {
+              "feature": "mths_since_recent_inq",
+              "value": "1.0 months",
+              "direction": "raises",
+              "text": "Months since the most recent credit inquiry 1.0 months is lower than 90% of approved borrowers",
+              "contribution": 0.1122
             }
           ],
-          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Debt-to-income ratio 34.5% is higher than 95% of approved borrowers; Lending Club sub-grade: C5 (associated with more defaults); Annual income $30,000 is lower than 95% of approved borrowers."
+          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Debt-to-income ratio 34.5% is higher than 95% of approved borrowers; Annual income $30,000 is lower than 95% of approved borrowers; Accounts opened in the last 12 months 7 is higher than 95% of approved borrowers."
         },
         "scorecard-bureau-no-state": {
           "pd": 0.2791,
@@ -515,13 +515,6 @@
               "direction": "raises",
               "text": "Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers",
               "contribution": 0.2869
-            },
-            {
-              "feature": "sub_grade",
-              "value": "C5",
-              "direction": "raises",
-              "text": "Lending Club sub-grade: C5 (associated with more defaults)",
-              "contribution": 0.2073
             },
             {
               "feature": "dti",
@@ -538,14 +531,21 @@
               "contribution": 0.1343
             },
             {
-              "feature": "installment_to_income",
-              "value": "0.05",
+              "feature": "inq_last_6mths",
+              "value": "3",
+              "direction": "raises",
+              "text": "Credit inquiries in the last 6 months 3 is higher than 95% of approved borrowers",
+              "contribution": 0.0786
+            },
+            {
+              "feature": "purpose",
+              "value": "credit_card",
               "direction": "lowers",
-              "text": "Installment relative to income 0.05 supports approval (better than 75% of approved borrowers)",
-              "contribution": -0.0877
+              "text": "Loan purpose: credit_card (associated with fewer defaults)",
+              "contribution": -0.0756
             }
           ],
-          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Lending Club sub-grade: C5 (associated with more defaults); Debt-to-income ratio 34.5% is higher than 95% of approved borrowers; Annual income $30,000 is lower than 95% of approved borrowers."
+          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Debt-to-income ratio 34.5% is higher than 95% of approved borrowers; Annual income $30,000 is lower than 95% of approved borrowers; Credit inquiries in the last 6 months 3 is higher than 95% of approved borrowers."
         }
       }
     },
@@ -560,13 +560,6 @@
           "pd": 0.3347,
           "decision": "decline",
           "reasons": [
-            {
-              "feature": "sub_grade",
-              "value": "E1",
-              "direction": "raises",
-              "text": "Lending Club sub-grade: E1 (associated with more defaults)",
-              "contribution": 0.2525
-            },
             {
               "feature": "emp_years",
               "value": "missing",
@@ -594,21 +587,21 @@
               "direction": "raises",
               "text": "Months since the most recent credit inquiry 1.0 months is lower than 90% of approved borrowers",
               "contribution": 0.1147
+            },
+            {
+              "feature": "home_ownership",
+              "value": "RENT",
+              "direction": "raises",
+              "text": "Home ownership: RENT (associated with more defaults)",
+              "contribution": 0.0973
             }
           ],
-          "adverse_action": "Principal reasons for this decision: Lending Club sub-grade: E1 (associated with more defaults); Employment length: missing (associated with more defaults); Annual income $24,000 is lower than 95% of approved borrowers; Total credit lines 5 is lower than 95% of approved borrowers."
+          "adverse_action": "Principal reasons for this decision: Employment length: missing (associated with more defaults); Annual income $24,000 is lower than 95% of approved borrowers; Total credit lines 5 is lower than 95% of approved borrowers; Months since the most recent credit inquiry 1.0 months is lower than 90% of approved borrowers."
         },
         "scorecard-bureau-no-state": {
           "pd": 0.3062,
           "decision": "decline",
           "reasons": [
-            {
-              "feature": "sub_grade",
-              "value": "E1",
-              "direction": "raises",
-              "text": "Lending Club sub-grade: E1 (associated with more defaults)",
-              "contribution": 0.4095
-            },
             {
               "feature": "annual_inc",
               "value": "$24,000",
@@ -636,9 +629,16 @@
               "direction": "raises",
               "text": "Home ownership: RENT (associated with more defaults)",
               "contribution": 0.064
+            },
+            {
+              "feature": "fico",
+              "value": "672",
+              "direction": "raises",
+              "text": "FICO score 672 is lower than 90% of approved borrowers",
+              "contribution": 0.0609
             }
           ],
-          "adverse_action": "Principal reasons for this decision: Lending Club sub-grade: E1 (associated with more defaults); Annual income $24,000 is lower than 95% of approved borrowers; Loan purpose: other (associated with more defaults); Home ownership: RENT (associated with more defaults)."
+          "adverse_action": "Principal reasons for this decision: Annual income $24,000 is lower than 95% of approved borrowers; Loan purpose: other (associated with more defaults); Home ownership: RENT (associated with more defaults); FICO score 672 is lower than 90% of approved borrowers."
         }
       }
     },
@@ -661,13 +661,6 @@
               "contribution": 0.5066
             },
             {
-              "feature": "sub_grade",
-              "value": "D2",
-              "direction": "raises",
-              "text": "Lending Club sub-grade: D2 (associated with more defaults)",
-              "contribution": 0.4613
-            },
-            {
               "feature": "delinq_2yrs",
               "value": "4",
               "direction": "raises",
@@ -687,21 +680,21 @@
               "direction": "raises",
               "text": "Accounts opened in the last 12 months 8 is higher than 95% of approved borrowers",
               "contribution": 0.1501
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$89,000",
+              "direction": "lowers",
+              "text": "Annual income $89,000 supports approval (better than 50% of approved borrowers)",
+              "contribution": -0.1094
             }
           ],
-          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Lending Club sub-grade: D2 (associated with more defaults); Delinquencies in the last 2 years 4 is higher than 95% of approved borrowers; FICO score 662 is lower than 95% of approved borrowers."
+          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Delinquencies in the last 2 years 4 is higher than 95% of approved borrowers; FICO score 662 is lower than 95% of approved borrowers; Accounts opened in the last 12 months 8 is higher than 95% of approved borrowers."
         },
         "scorecard-bureau-no-state": {
           "pd": 0.2833,
           "decision": "decline",
           "reasons": [
-            {
-              "feature": "sub_grade",
-              "value": "D2",
-              "direction": "raises",
-              "text": "Lending Club sub-grade: D2 (associated with more defaults)",
-              "contribution": 0.3137
-            },
             {
               "feature": "acc_open_past_24mths",
               "value": "12",
@@ -717,21 +710,28 @@
               "contribution": -0.1158
             },
             {
-              "feature": "installment_to_income",
-              "value": "0.04",
-              "direction": "lowers",
-              "text": "Installment relative to income 0.04 supports approval (better than 75% of approved borrowers)",
-              "contribution": -0.1082
-            },
-            {
               "feature": "fico",
               "value": "662",
               "direction": "raises",
               "text": "FICO score 662 is lower than 95% of approved borrowers",
               "contribution": 0.0819
+            },
+            {
+              "feature": "home_ownership",
+              "value": "RENT",
+              "direction": "raises",
+              "text": "Home ownership: RENT (associated with more defaults)",
+              "contribution": 0.064
+            },
+            {
+              "feature": "num_tl_op_past_12m",
+              "value": "8",
+              "direction": "raises",
+              "text": "Accounts opened in the last 12 months 8 is higher than 95% of approved borrowers",
+              "contribution": 0.0639
             }
           ],
-          "adverse_action": "Principal reasons for this decision: Lending Club sub-grade: D2 (associated with more defaults); Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; FICO score 662 is lower than 95% of approved borrowers."
+          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; FICO score 662 is lower than 95% of approved borrowers; Home ownership: RENT (associated with more defaults); Accounts opened in the last 12 months 8 is higher than 95% of approved borrowers."
         }
       }
     },
@@ -746,20 +746,6 @@
           "pd": 0.0099,
           "decision": "approve",
           "reasons": [
-            {
-              "feature": "sub_grade",
-              "value": "A1",
-              "direction": "lowers",
-              "text": "Lending Club sub-grade: A1 (associated with fewer defaults)",
-              "contribution": -0.4565
-            },
-            {
-              "feature": "int_rate",
-              "value": "5.3%",
-              "direction": "lowers",
-              "text": "Interest rate 5.3% supports approval (better than 95% of approved borrowers)",
-              "contribution": -0.424
-            },
             {
               "feature": "fico",
               "value": "777",
@@ -780,6 +766,20 @@
               "direction": "lowers",
               "text": "Annual income $140,000 supports approval (better than 90% of approved borrowers)",
               "contribution": -0.2114
+            },
+            {
+              "feature": "dti",
+              "value": "7.5%",
+              "direction": "lowers",
+              "text": "Debt-to-income ratio 7.5% supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.1707
+            },
+            {
+              "feature": "percent_bc_gt_75",
+              "value": "0.0%",
+              "direction": "lowers",
+              "text": "Share of bankcards above 75% of their limit 0.0% supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.1534
             }
           ],
           "adverse_action": null
@@ -789,25 +789,11 @@
           "decision": "approve",
           "reasons": [
             {
-              "feature": "sub_grade",
-              "value": "A1",
-              "direction": "lowers",
-              "text": "Lending Club sub-grade: A1 (associated with fewer defaults)",
-              "contribution": -0.6798
-            },
-            {
               "feature": "fico",
               "value": "777",
               "direction": "lowers",
               "text": "FICO score 777 supports approval (better than 95% of approved borrowers)",
               "contribution": -0.2218
-            },
-            {
-              "feature": "installment_to_income",
-              "value": "0.02",
-              "direction": "lowers",
-              "text": "Installment relative to income 0.02 supports approval (better than 95% of approved borrowers)",
-              "contribution": -0.1814
             },
             {
               "feature": "annual_inc",
@@ -822,6 +808,20 @@
               "direction": "lowers",
               "text": "Total current balance of all accounts $441,808 supports approval (better than 90% of approved borrowers)",
               "contribution": -0.1192
+            },
+            {
+              "feature": "total_bc_limit",
+              "value": "$151,000",
+              "direction": "lowers",
+              "text": "Total bankcard credit limit $151,000 supports approval (better than 95% of approved borrowers)",
+              "contribution": -0.1041
+            },
+            {
+              "feature": "bc_open_to_buy",
+              "value": "$106,550",
+              "direction": "lowers",
+              "text": "Bankcard open-to-buy $106,550 supports approval (better than 95% of approved borrowers)",
+              "contribution": -0.1021
             }
           ],
           "adverse_action": null
@@ -839,13 +839,6 @@
           "pd": 0.2028,
           "decision": "approve",
           "reasons": [
-            {
-              "feature": "sub_grade",
-              "value": "D3",
-              "direction": "raises",
-              "text": "Lending Club sub-grade: D3 (associated with more defaults)",
-              "contribution": 0.22
-            },
             {
               "feature": "acc_open_past_24mths",
               "value": "2",
@@ -873,6 +866,13 @@
               "direction": "raises",
               "text": "FICO score 662 is lower than 95% of approved borrowers",
               "contribution": 0.1097
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$46,000",
+              "direction": "raises",
+              "text": "Annual income $46,000 is lower than 90% of approved borrowers",
+              "contribution": 0.093
             }
           ],
           "adverse_action": null
@@ -881,13 +881,6 @@
           "pd": 0.1745,
           "decision": "approve",
           "reasons": [
-            {
-              "feature": "sub_grade",
-              "value": "D3",
-              "direction": "raises",
-              "text": "Lending Club sub-grade: D3 (associated with more defaults)",
-              "contribution": 0.274
-            },
             {
               "feature": "acc_open_past_24mths",
               "value": "2",
@@ -910,11 +903,18 @@
               "contribution": 0.1209
             },
             {
-              "feature": "installment_to_income",
-              "value": "0.05",
+              "feature": "fico",
+              "value": "662",
+              "direction": "raises",
+              "text": "FICO score 662 is lower than 95% of approved borrowers",
+              "contribution": 0.0819
+            },
+            {
+              "feature": "tot_cur_bal",
+              "value": "$186,298",
               "direction": "lowers",
-              "text": "Installment relative to income 0.05 supports approval (better than 75% of approved borrowers)",
-              "contribution": -0.1082
+              "text": "Total current balance of all accounts $186,298 supports approval (better than 50% of approved borrowers)",
+              "contribution": -0.0413
             }
           ],
           "adverse_action": null
@@ -926,40 +926,52 @@
   "examples_note": "five declined rows spread over the decline range, two approved rows",
   "agreement": {
     "n": 2000,
-    "top3_any_overlap": 0.997,
-    "top1_same": 0.6485
+    "top3_any_overlap": 0.987,
+    "top1_same": 0.6175
   },
   "lead_reason_among_declines": {
     "lgbm-bureau-no-state": {
       "n_declined": 13981,
       "share": {
-        "sub_grade": 0.598,
-        "acc_open_past_24mths": 0.234,
-        "emp_years": 0.0786,
-        "purpose": 0.0244,
-        "dti": 0.0166,
-        "annual_inc": 0.0165,
-        "installment_to_income": 0.0139,
-        "revol_bal": 0.0092,
-        "bc_util": 0.0054,
-        "total_bc_limit": 0.0019,
-        "inq_last_6mths": 0.0004,
-        "revol_util": 0.0004,
-        "fico": 0.0003,
-        "delinq_2yrs": 0.0003,
-        "bc_open_to_buy": 0.0001,
-        "mths_since_recent_inq": 0.0001
+        "acc_open_past_24mths": 0.4201,
+        "annual_inc": 0.1362,
+        "dti": 0.134,
+        "emp_years": 0.1104,
+        "purpose": 0.0411,
+        "revol_bal": 0.0296,
+        "total_bc_limit": 0.0282,
+        "bc_util": 0.024,
+        "delinq_2yrs": 0.0193,
+        "mths_since_recent_inq": 0.0129,
+        "home_ownership": 0.0097,
+        "revol_util": 0.0083,
+        "loan_to_income": 0.0077,
+        "loan_amnt": 0.0065,
+        "fico": 0.0052,
+        "bc_open_to_buy": 0.0023,
+        "inq_last_6mths": 0.0014,
+        "total_acc": 0.0012,
+        "tot_cur_bal": 0.0009,
+        "num_tl_op_past_12m": 0.0006,
+        "verification_status": 0.0001,
+        "mo_sin_rcnt_tl": 0.0001,
+        "open_acc": 0.0001,
+        "credit_age_years": 0.0001
       }
     },
     "scorecard-bureau-no-state": {
       "n_declined": 13351,
       "share": {
-        "sub_grade": 0.7154,
-        "acc_open_past_24mths": 0.1977,
-        "installment_to_income": 0.0743,
-        "annual_inc": 0.0109,
-        "dti": 0.0016,
-        "purpose": 0.0001
+        "acc_open_past_24mths": 0.5257,
+        "annual_inc": 0.2614,
+        "dti": 0.1395,
+        "loan_to_income": 0.0357,
+        "purpose": 0.0243,
+        "fico": 0.0073,
+        "home_ownership": 0.0049,
+        "inq_last_6mths": 0.001,
+        "total_bc_limit": 0.0001,
+        "mths_since_recent_inq": 0.0001
       }
     }
   },
