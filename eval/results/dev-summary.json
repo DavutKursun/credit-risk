@@ -4,82 +4,134 @@
   "n": 120790,
   "metrics": [
     {
-      "model": "lgbm-bureau",
+      "model": "lgbm-bureau-no-state",
       "n": 120790,
       "default_rate": 0.1512,
       "mean_pd": 0.1475,
-      "auc": 0.6981,
-      "gini": 0.3962,
-      "ks": 0.2893,
-      "pr_auc": 0.2739,
-      "brier": 0.12008,
-      "log_loss": 0.39234,
-      "ece": 0.00391
+      "auc": 0.6966,
+      "gini": 0.3933,
+      "ks": 0.2857,
+      "pr_auc": 0.2734,
+      "brier": 0.12028,
+      "log_loss": 0.39291,
+      "ece": 0.00375
+    },
+    {
+      "model": "lgbm-bureau",
+      "n": 120790,
+      "default_rate": 0.1512,
+      "mean_pd": 0.1474,
+      "auc": 0.6978,
+      "gini": 0.3955,
+      "ks": 0.2876,
+      "pr_auc": 0.2748,
+      "brier": 0.12015,
+      "log_loss": 0.39249,
+      "ece": 0.00408
     },
     {
       "model": "lgbm-no-lc-grade",
       "n": 120790,
       "default_rate": 0.1512,
       "mean_pd": 0.1473,
-      "auc": 0.6716,
-      "gini": 0.3433,
-      "ks": 0.2494,
-      "pr_auc": 0.2487,
-      "brier": 0.12229,
-      "log_loss": 0.40056,
-      "ece": 0.00405
+      "auc": 0.6712,
+      "gini": 0.3423,
+      "ks": 0.2492,
+      "pr_auc": 0.2498,
+      "brier": 0.12233,
+      "log_loss": 0.40069,
+      "ece": 0.00406
+    },
+    {
+      "model": "lgbm-no-state",
+      "n": 120790,
+      "default_rate": 0.1512,
+      "mean_pd": 0.1473,
+      "auc": 0.6908,
+      "gini": 0.3815,
+      "ks": 0.2788,
+      "pr_auc": 0.2662,
+      "brier": 0.12082,
+      "log_loss": 0.39489,
+      "ece": 0.00412
     },
     {
       "model": "lgbm",
       "n": 120790,
       "default_rate": 0.1512,
       "mean_pd": 0.1473,
-      "auc": 0.6922,
-      "gini": 0.3843,
-      "ks": 0.281,
-      "pr_auc": 0.2655,
-      "brier": 0.12066,
-      "log_loss": 0.3944,
-      "ece": 0.0039
+      "auc": 0.6918,
+      "gini": 0.3836,
+      "ks": 0.2808,
+      "pr_auc": 0.2669,
+      "brier": 0.12071,
+      "log_loss": 0.3945,
+      "ece": 0.00395
+    },
+    {
+      "model": "scorecard-bureau-no-state",
+      "n": 120790,
+      "default_rate": 0.1512,
+      "mean_pd": 0.1475,
+      "auc": 0.689,
+      "gini": 0.378,
+      "ks": 0.2754,
+      "pr_auc": 0.264,
+      "brier": 0.121,
+      "log_loss": 0.39551,
+      "ece": 0.00419
     },
     {
       "model": "scorecard-bureau",
       "n": 120790,
       "default_rate": 0.1512,
-      "mean_pd": 0.1476,
-      "auc": 0.6893,
-      "gini": 0.3785,
-      "ks": 0.2756,
-      "pr_auc": 0.262,
-      "brier": 0.12098,
-      "log_loss": 0.39549,
-      "ece": 0.0041
+      "mean_pd": 0.1475,
+      "auc": 0.689,
+      "gini": 0.378,
+      "ks": 0.2754,
+      "pr_auc": 0.264,
+      "brier": 0.121,
+      "log_loss": 0.39551,
+      "ece": 0.00419
     },
     {
       "model": "scorecard-no-lc-grade",
       "n": 120790,
       "default_rate": 0.1512,
       "mean_pd": 0.1468,
-      "auc": 0.6502,
-      "gini": 0.3004,
-      "ks": 0.2179,
+      "auc": 0.6497,
+      "gini": 0.2995,
+      "ks": 0.2177,
       "pr_auc": 0.2286,
-      "brier": 0.12382,
-      "log_loss": 0.40639,
-      "ece": 0.00492
+      "brier": 0.12385,
+      "log_loss": 0.40644,
+      "ece": 0.0047
+    },
+    {
+      "model": "scorecard-no-state",
+      "n": 120790,
+      "default_rate": 0.1512,
+      "mean_pd": 0.1472,
+      "auc": 0.6821,
+      "gini": 0.3642,
+      "ks": 0.2674,
+      "pr_auc": 0.2531,
+      "brier": 0.12164,
+      "log_loss": 0.39768,
+      "ece": 0.00402
     },
     {
       "model": "scorecard",
       "n": 120790,
       "default_rate": 0.1512,
-      "mean_pd": 0.1473,
-      "auc": 0.6825,
-      "gini": 0.365,
-      "ks": 0.2677,
-      "pr_auc": 0.2528,
-      "brier": 0.12161,
-      "log_loss": 0.39762,
-      "ece": 0.00409
+      "mean_pd": 0.1472,
+      "auc": 0.6821,
+      "gini": 0.3642,
+      "ks": 0.2674,
+      "pr_auc": 0.2531,
+      "brier": 0.12164,
+      "log_loss": 0.39768,
+      "ece": 0.00402
     },
     {
       "model": "grade_only",
@@ -96,48 +148,92 @@
     }
   ],
   "auc_by_grade": {
-    "lgbm-bureau": [
+    "lgbm-bureau-no-state": [
       {
         "group": "A",
         "n": 30625,
         "default_rate": 0.0578,
-        "auc": 0.6591
+        "auc": 0.6581
       },
       {
         "group": "B",
         "n": 35746,
         "default_rate": 0.121,
-        "auc": 0.6142
+        "auc": 0.6098
       },
       {
         "group": "C",
         "n": 33681,
         "default_rate": 0.1897,
-        "auc": 0.6031
+        "auc": 0.6007
       },
       {
         "group": "D",
         "n": 15389,
         "default_rate": 0.2604,
-        "auc": 0.5954
+        "auc": 0.591
       },
       {
         "group": "E",
         "n": 4626,
         "default_rate": 0.3212,
-        "auc": 0.5865
+        "auc": 0.5796
       },
       {
         "group": "F",
         "n": 628,
         "default_rate": 0.4156,
-        "auc": 0.5931
+        "auc": 0.5928
       },
       {
         "group": "G",
         "n": 95,
         "default_rate": 0.3474,
-        "auc": 0.673
+        "auc": 0.6268
+      }
+    ],
+    "lgbm-bureau": [
+      {
+        "group": "A",
+        "n": 30625,
+        "default_rate": 0.0578,
+        "auc": 0.6583
+      },
+      {
+        "group": "B",
+        "n": 35746,
+        "default_rate": 0.121,
+        "auc": 0.6139
+      },
+      {
+        "group": "C",
+        "n": 33681,
+        "default_rate": 0.1897,
+        "auc": 0.6024
+      },
+      {
+        "group": "D",
+        "n": 15389,
+        "default_rate": 0.2604,
+        "auc": 0.5944
+      },
+      {
+        "group": "E",
+        "n": 4626,
+        "default_rate": 0.3212,
+        "auc": 0.5847
+      },
+      {
+        "group": "F",
+        "n": 628,
+        "default_rate": 0.4156,
+        "auc": 0.5877
+      },
+      {
+        "group": "G",
+        "n": 95,
+        "default_rate": 0.3474,
+        "auc": 0.6835
       }
     ],
     "lgbm-no-lc-grade": [
@@ -145,43 +241,87 @@
         "group": "A",
         "n": 30625,
         "default_rate": 0.0578,
-        "auc": 0.6413
+        "auc": 0.6406
       },
       {
         "group": "B",
         "n": 35746,
         "default_rate": 0.121,
-        "auc": 0.5959
+        "auc": 0.5952
       },
       {
         "group": "C",
         "n": 33681,
         "default_rate": 0.1897,
-        "auc": 0.5882
+        "auc": 0.5873
       },
       {
         "group": "D",
         "n": 15389,
         "default_rate": 0.2604,
-        "auc": 0.5804
+        "auc": 0.5797
       },
       {
         "group": "E",
         "n": 4626,
         "default_rate": 0.3212,
-        "auc": 0.5609
+        "auc": 0.5604
       },
       {
         "group": "F",
         "n": 628,
         "default_rate": 0.4156,
-        "auc": 0.5555
+        "auc": 0.556
       },
       {
         "group": "G",
         "n": 95,
         "default_rate": 0.3474,
-        "auc": 0.6386
+        "auc": 0.6376
+      }
+    ],
+    "lgbm-no-state": [
+      {
+        "group": "A",
+        "n": 30625,
+        "default_rate": 0.0578,
+        "auc": 0.6424
+      },
+      {
+        "group": "B",
+        "n": 35746,
+        "default_rate": 0.121,
+        "auc": 0.5948
+      },
+      {
+        "group": "C",
+        "n": 33681,
+        "default_rate": 0.1897,
+        "auc": 0.5903
+      },
+      {
+        "group": "D",
+        "n": 15389,
+        "default_rate": 0.2604,
+        "auc": 0.5802
+      },
+      {
+        "group": "E",
+        "n": 4626,
+        "default_rate": 0.3212,
+        "auc": 0.5664
+      },
+      {
+        "group": "F",
+        "n": 628,
+        "default_rate": 0.4156,
+        "auc": 0.5915
+      },
+      {
+        "group": "G",
+        "n": 95,
+        "default_rate": 0.3474,
+        "auc": 0.6012
       }
     ],
     "lgbm": [
@@ -189,43 +329,87 @@
         "group": "A",
         "n": 30625,
         "default_rate": 0.0578,
-        "auc": 0.6457
+        "auc": 0.6439
       },
       {
         "group": "B",
         "n": 35746,
         "default_rate": 0.121,
-        "auc": 0.6007
+        "auc": 0.6
       },
       {
         "group": "C",
         "n": 33681,
         "default_rate": 0.1897,
-        "auc": 0.5891
+        "auc": 0.5884
       },
       {
         "group": "D",
         "n": 15389,
         "default_rate": 0.2604,
-        "auc": 0.5849
+        "auc": 0.5842
       },
       {
         "group": "E",
         "n": 4626,
         "default_rate": 0.3212,
-        "auc": 0.5713
+        "auc": 0.5702
       },
       {
         "group": "F",
         "n": 628,
         "default_rate": 0.4156,
-        "auc": 0.5905
+        "auc": 0.5838
       },
       {
         "group": "G",
         "n": 95,
         "default_rate": 0.3474,
-        "auc": 0.6764
+        "auc": 0.6826
+      }
+    ],
+    "scorecard-bureau-no-state": [
+      {
+        "group": "A",
+        "n": 30625,
+        "default_rate": 0.0578,
+        "auc": 0.6455
+      },
+      {
+        "group": "B",
+        "n": 35746,
+        "default_rate": 0.121,
+        "auc": 0.5964
+      },
+      {
+        "group": "C",
+        "n": 33681,
+        "default_rate": 0.1897,
+        "auc": 0.5859
+      },
+      {
+        "group": "D",
+        "n": 15389,
+        "default_rate": 0.2604,
+        "auc": 0.5733
+      },
+      {
+        "group": "E",
+        "n": 4626,
+        "default_rate": 0.3212,
+        "auc": 0.5661
+      },
+      {
+        "group": "F",
+        "n": 628,
+        "default_rate": 0.4156,
+        "auc": 0.5806
+      },
+      {
+        "group": "G",
+        "n": 95,
+        "default_rate": 0.3474,
+        "auc": 0.5882
       }
     ],
     "scorecard-bureau": [
@@ -233,43 +417,43 @@
         "group": "A",
         "n": 30625,
         "default_rate": 0.0578,
-        "auc": 0.6466
+        "auc": 0.6455
       },
       {
         "group": "B",
         "n": 35746,
         "default_rate": 0.121,
-        "auc": 0.5972
+        "auc": 0.5964
       },
       {
         "group": "C",
         "n": 33681,
         "default_rate": 0.1897,
-        "auc": 0.5866
+        "auc": 0.5859
       },
       {
         "group": "D",
         "n": 15389,
         "default_rate": 0.2604,
-        "auc": 0.5732
+        "auc": 0.5733
       },
       {
         "group": "E",
         "n": 4626,
         "default_rate": 0.3212,
-        "auc": 0.5672
+        "auc": 0.5661
       },
       {
         "group": "F",
         "n": 628,
         "default_rate": 0.4156,
-        "auc": 0.5828
+        "auc": 0.5806
       },
       {
         "group": "G",
         "n": 95,
         "default_rate": 0.3474,
-        "auc": 0.5938
+        "auc": 0.5882
       }
     ],
     "scorecard-no-lc-grade": [
@@ -277,43 +461,87 @@
         "group": "A",
         "n": 30625,
         "default_rate": 0.0578,
-        "auc": 0.6223
+        "auc": 0.622
       },
       {
         "group": "B",
         "n": 35746,
         "default_rate": 0.121,
-        "auc": 0.5718
+        "auc": 0.571
       },
       {
         "group": "C",
         "n": 33681,
         "default_rate": 0.1897,
-        "auc": 0.5676
+        "auc": 0.5673
       },
       {
         "group": "D",
         "n": 15389,
         "default_rate": 0.2604,
-        "auc": 0.5532
+        "auc": 0.5522
       },
       {
         "group": "E",
         "n": 4626,
         "default_rate": 0.3212,
-        "auc": 0.5411
+        "auc": 0.5398
       },
       {
         "group": "F",
         "n": 628,
         "default_rate": 0.4156,
-        "auc": 0.5435
+        "auc": 0.5406
       },
       {
         "group": "G",
         "n": 95,
         "default_rate": 0.3474,
-        "auc": 0.6163
+        "auc": 0.6043
+      }
+    ],
+    "scorecard-no-state": [
+      {
+        "group": "A",
+        "n": 30625,
+        "default_rate": 0.0578,
+        "auc": 0.6307
+      },
+      {
+        "group": "B",
+        "n": 35746,
+        "default_rate": 0.121,
+        "auc": 0.5798
+      },
+      {
+        "group": "C",
+        "n": 33681,
+        "default_rate": 0.1897,
+        "auc": 0.5716
+      },
+      {
+        "group": "D",
+        "n": 15389,
+        "default_rate": 0.2604,
+        "auc": 0.5577
+      },
+      {
+        "group": "E",
+        "n": 4626,
+        "default_rate": 0.3212,
+        "auc": 0.5433
+      },
+      {
+        "group": "F",
+        "n": 628,
+        "default_rate": 0.4156,
+        "auc": 0.5593
+      },
+      {
+        "group": "G",
+        "n": 95,
+        "default_rate": 0.3474,
+        "auc": 0.5992
       }
     ],
     "scorecard": [
@@ -321,43 +549,43 @@
         "group": "A",
         "n": 30625,
         "default_rate": 0.0578,
-        "auc": 0.6326
+        "auc": 0.6307
       },
       {
         "group": "B",
         "n": 35746,
         "default_rate": 0.121,
-        "auc": 0.5805
+        "auc": 0.5798
       },
       {
         "group": "C",
         "n": 33681,
         "default_rate": 0.1897,
-        "auc": 0.5722
+        "auc": 0.5716
       },
       {
         "group": "D",
         "n": 15389,
         "default_rate": 0.2604,
-        "auc": 0.5594
+        "auc": 0.5577
       },
       {
         "group": "E",
         "n": 4626,
         "default_rate": 0.3212,
-        "auc": 0.5448
+        "auc": 0.5433
       },
       {
         "group": "F",
         "n": 628,
         "default_rate": 0.4156,
-        "auc": 0.5629
+        "auc": 0.5593
       },
       {
         "group": "G",
         "n": 95,
         "default_rate": 0.3474,
-        "auc": 0.588
+        "auc": 0.5992
       }
     ]
   }

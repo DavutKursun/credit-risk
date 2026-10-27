@@ -1,6 +1,7 @@
 {
   "variant": "scorecard-no-lc-grade",
   "bureau": false,
+  "state": true,
   "numeric": [
     "loan_amnt",
     "annual_inc",
@@ -49,7 +50,7 @@
   "n_train": 306462,
   "calibration": "isotonic",
   "calib_share": 0.5,
-  "fit_seconds": 3.6,
+  "fit_seconds": 3.8,
   "dev_ranking": {
     "n": 120790,
     "default_rate": 0.1512,
@@ -77,14 +78,14 @@
   "dev_late_after_calibration": {
     "n": 60395,
     "default_rate": 0.1547,
-    "mean_pd": 0.1458,
+    "mean_pd": 0.1457,
     "auc": 0.6507,
-    "gini": 0.3013,
-    "ks": 0.2238,
-    "pr_auc": 0.234,
+    "gini": 0.3014,
+    "ks": 0.2235,
+    "pr_auc": 0.2342,
     "brier": 0.12612,
-    "log_loss": 0.41245,
-    "ece": 0.00984
+    "log_loss": 0.41225,
+    "ece": 0.009
   },
-  "approved_quantiles_pd_cut": 0.1926
+  "approved_quantiles_pd_cut": 0.1945
 }

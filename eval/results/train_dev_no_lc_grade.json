@@ -27,14 +27,14 @@
     "dev_late_after": {
       "n": 60395,
       "default_rate": 0.1547,
-      "mean_pd": 0.1468,
-      "auc": 0.6723,
-      "gini": 0.3446,
-      "ks": 0.2526,
-      "pr_auc": 0.2537,
-      "brier": 0.1245,
-      "log_loss": 0.40625,
-      "ece": 0.00832
+      "mean_pd": 0.1467,
+      "auc": 0.6722,
+      "gini": 0.3444,
+      "ks": 0.2523,
+      "pr_auc": 0.2557,
+      "brier": 0.12451,
+      "log_loss": 0.40618,
+      "ece": 0.00807
     },
     "fit_seconds": 10.5,
     "model_path": "/Users/davutkursun/Downloads/credit-risk/models/lgbm-no-lc-grade.joblib",
@@ -68,16 +68,16 @@
     "dev_late_after": {
       "n": 60395,
       "default_rate": 0.1547,
-      "mean_pd": 0.1458,
+      "mean_pd": 0.1457,
       "auc": 0.6507,
-      "gini": 0.3013,
-      "ks": 0.2238,
-      "pr_auc": 0.234,
+      "gini": 0.3014,
+      "ks": 0.2235,
+      "pr_auc": 0.2342,
       "brier": 0.12612,
-      "log_loss": 0.41245,
-      "ece": 0.00984
+      "log_loss": 0.41225,
+      "ece": 0.009
     },
-    "fit_seconds": 3.6,
+    "fit_seconds": 3.8,
     "model_path": "/Users/davutkursun/Downloads/credit-risk/models/scorecard-no-lc-grade.joblib",
     "selected_features": [
       "annual_inc",

@@ -53,7 +53,7 @@ ID_COL = "id"
 # Scorecard scaling: 600 points at odds 1:19 (PD 5%), 20 points to double the odds.
 SCORECARD_SCALE = {"target_score": 600, "target_odds": 19, "pdo": 20}
 
-# Three-way decision: PD below the threshold → approve; within the band above it → review; else decline.
+# Three-way decision: PD more than REVIEW_BAND below the threshold → approve; within ±REVIEW_BAND of it → review; else decline.
 REVIEW_BAND = 0.02
 
 PSI_WARN, PSI_ACT = 0.10, 0.25

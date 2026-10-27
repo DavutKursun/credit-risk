@@ -1,0 +1,264 @@
+{
+  "model": "lgbm-bureau-no-state",
+  "split": "dev",
+  "threshold": 0.41,
+  "review_band": 0.02,
+  "four_fifths_ratio": {
+    "addr_state": 0.9975,
+    "income_band": 0.9879,
+    "emp_band": 0.991,
+    "home_ownership": 0.9936
+  },
+  "gaps": {
+    "addr_state": {
+      "approval_rate": 0.0025,
+      "default_rate": 0.0437,
+      "fpr": 0.0026,
+      "tpr": 0.008
+    },
+    "income_band": {
+      "approval_rate": 0.0121,
+      "default_rate": 0.0865,
+      "fpr": 0.008,
+      "tpr": 0.0271
+    },
+    "emp_band": {
+      "approval_rate": 0.009,
+      "default_rate": 0.0806,
+      "fpr": 0.005,
+      "tpr": 0.0206
+    },
+    "home_ownership": {
+      "approval_rate": 0.0064,
+      "default_rate": 0.0575,
+      "fpr": 0.0038,
+      "tpr": 0.0166
+    }
+  },
+  "groups": {
+    "addr_state": [
+      {
+        "group": "other",
+        "n": 50104,
+        "default_rate": 0.1453,
+        "approval_rate": 0.9942,
+        "default_rate_approved": 0.1436,
+        "fpr": 0.0039,
+        "tpr": 0.017
+      },
+      {
+        "group": "CA",
+        "n": 17900,
+        "default_rate": 0.1564,
+        "approval_rate": 0.9955,
+        "default_rate_approved": 0.1545,
+        "fpr": 0.0023,
+        "tpr": 0.0164
+      },
+      {
+        "group": "TX",
+        "n": 9890,
+        "default_rate": 0.1482,
+        "approval_rate": 0.9948,
+        "default_rate_approved": 0.1468,
+        "fpr": 0.0034,
+        "tpr": 0.015
+      },
+      {
+        "group": "NY",
+        "n": 9726,
+        "default_rate": 0.1741,
+        "approval_rate": 0.9962,
+        "default_rate_approved": 0.1729,
+        "fpr": 0.0024,
+        "tpr": 0.0106
+      },
+      {
+        "group": "FL",
+        "n": 8504,
+        "default_rate": 0.163,
+        "approval_rate": 0.9948,
+        "default_rate_approved": 0.1613,
+        "fpr": 0.0032,
+        "tpr": 0.0152
+      },
+      {
+        "group": "IL",
+        "n": 4955,
+        "default_rate": 0.1304,
+        "approval_rate": 0.9948,
+        "default_rate_approved": 0.1286,
+        "fpr": 0.0032,
+        "tpr": 0.0186
+      },
+      {
+        "group": "NJ",
+        "n": 4262,
+        "default_rate": 0.1525,
+        "approval_rate": 0.9951,
+        "default_rate_approved": 0.1504,
+        "fpr": 0.0025,
+        "tpr": 0.0185
+      },
+      {
+        "group": "PA",
+        "n": 4198,
+        "default_rate": 0.1513,
+        "approval_rate": 0.996,
+        "default_rate_approved": 0.15,
+        "fpr": 0.0025,
+        "tpr": 0.0126
+      },
+      {
+        "group": "GA",
+        "n": 3975,
+        "default_rate": 0.1351,
+        "approval_rate": 0.9937,
+        "default_rate_approved": 0.1339,
+        "fpr": 0.0049,
+        "tpr": 0.0149
+      },
+      {
+        "group": "OH",
+        "n": 3894,
+        "default_rate": 0.1654,
+        "approval_rate": 0.9949,
+        "default_rate_approved": 0.1642,
+        "fpr": 0.0037,
+        "tpr": 0.0124
+      },
+      {
+        "group": "NC",
+        "n": 3382,
+        "default_rate": 0.1579,
+        "approval_rate": 0.9953,
+        "default_rate_approved": 0.1566,
+        "fpr": 0.0032,
+        "tpr": 0.0131
+      }
+    ],
+    "income_band": [
+      {
+        "group": "income_q3",
+        "n": 24158,
+        "default_rate": 0.1498,
+        "approval_rate": 0.9962,
+        "default_rate_approved": 0.1493,
+        "fpr": 0.0032,
+        "tpr": 0.0075
+      },
+      {
+        "group": "income_q4",
+        "n": 24158,
+        "default_rate": 0.1314,
+        "approval_rate": 0.9973,
+        "default_rate_approved": 0.1303,
+        "fpr": 0.0014,
+        "tpr": 0.0113
+      },
+      {
+        "group": "income_q1",
+        "n": 24158,
+        "default_rate": 0.1977,
+        "approval_rate": 0.9871,
+        "default_rate_approved": 0.194,
+        "fpr": 0.0084,
+        "tpr": 0.0312
+      },
+      {
+        "group": "income_q5",
+        "n": 24158,
+        "default_rate": 0.1112,
+        "approval_rate": 0.9992,
+        "default_rate_approved": 0.1108,
+        "fpr": 0.0004,
+        "tpr": 0.0041
+      },
+      {
+        "group": "income_q2",
+        "n": 24158,
+        "default_rate": 0.1661,
+        "approval_rate": 0.9942,
+        "default_rate_approved": 0.1645,
+        "fpr": 0.0038,
+        "tpr": 0.0157
+      }
+    ],
+    "emp_band": [
+      {
+        "group": "10+",
+        "n": 37816,
+        "default_rate": 0.1361,
+        "approval_rate": 0.9968,
+        "default_rate_approved": 0.1351,
+        "fpr": 0.002,
+        "tpr": 0.0107
+      },
+      {
+        "group": "2-5",
+        "n": 35696,
+        "default_rate": 0.1504,
+        "approval_rate": 0.9947,
+        "default_rate_approved": 0.149,
+        "fpr": 0.0037,
+        "tpr": 0.0142
+      },
+      {
+        "group": "6-9",
+        "n": 21384,
+        "default_rate": 0.1525,
+        "approval_rate": 0.9943,
+        "default_rate_approved": 0.1505,
+        "fpr": 0.0034,
+        "tpr": 0.0181
+      },
+      {
+        "group": "0-1",
+        "n": 18373,
+        "default_rate": 0.1559,
+        "approval_rate": 0.9941,
+        "default_rate_approved": 0.1544,
+        "fpr": 0.0041,
+        "tpr": 0.0157
+      },
+      {
+        "group": "unknown",
+        "n": 7521,
+        "default_rate": 0.2167,
+        "approval_rate": 0.9878,
+        "default_rate_approved": 0.2125,
+        "fpr": 0.007,
+        "tpr": 0.0313
+      }
+    ],
+    "home_ownership": [
+      {
+        "group": "MORTGAGE",
+        "n": 54263,
+        "default_rate": 0.1219,
+        "approval_rate": 0.9979,
+        "default_rate_approved": 0.1213,
+        "fpr": 0.0016,
+        "tpr": 0.0064
+      },
+      {
+        "group": "RENT",
+        "n": 53347,
+        "default_rate": 0.1794,
+        "approval_rate": 0.9915,
+        "default_rate_approved": 0.1768,
+        "fpr": 0.0054,
+        "tpr": 0.023
+      },
+      {
+        "group": "OWN",
+        "n": 13180,
+        "default_rate": 0.1583,
+        "approval_rate": 0.9956,
+        "default_rate_approved": 0.1571,
+        "fpr": 0.0031,
+        "tpr": 0.0115
+      }
+    ]
+  }
+}

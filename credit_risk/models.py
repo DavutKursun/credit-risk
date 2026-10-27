@@ -39,6 +39,7 @@ class ModelBundle:
     approved_quantiles: dict = field(default_factory=dict)  # feature → {q: value} on approved train rows, for reason codes
     meta: dict = field(default_factory=dict)
     bureau: bool = False  # opt-in bureau attribute set (features.BUREAU_FEATURES); the M2 ablation variant
+    state: bool = True  # False = trained without addr_state (the M3 ablation); scoring frames may still carry the column
 
     @property
     def features(self) -> list[str]:
@@ -46,7 +47,7 @@ class ModelBundle:
 
     @property
     def variant(self) -> str:
-        return f"{self.name}{'' if self.use_lc_grade else '-no-lc-grade'}{'-bureau' if self.bureau else ''}"
+        return f"{self.name}{'' if self.use_lc_grade else '-no-lc-grade'}{'-bureau' if self.bureau else ''}{'' if self.state else '-no-state'}"
 
     def predict_raw(self, X: pd.DataFrame) -> np.ndarray:
         """Uncalibrated PD (or, for grade_only, a monotone score in [0, 1])."""
@@ -71,7 +72,7 @@ class ModelBundle:
     def save(self, path: Path) -> Path:
         path.parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(self, path)
-        (path.with_suffix(".json")).write_text(json.dumps({"variant": self.variant, "bureau": self.bureau, "numeric": self.numeric, "categorical": self.categorical, **self.meta}, indent=2, default=str), encoding="utf-8")
+        (path.with_suffix(".json")).write_text(json.dumps({"variant": self.variant, "bureau": self.bureau, "state": self.state, "numeric": self.numeric, "categorical": self.categorical, **self.meta}, indent=2, default=str), encoding="utf-8")
         return path
 
     @staticmethod
@@ -93,12 +94,13 @@ def _monotone_vector(numeric: list[str], categorical: list[str]) -> list[int]:
 
 
 def train_lgbm(X_train: pd.DataFrame, y_train, X_dev: pd.DataFrame, y_dev, use_lc_grade: bool = True, params: dict | None = None,
-               monotone: bool = True, early_stopping_rounds: int = 100, num_boost_round: int = LGBM_ROUNDS, bureau: bool = False) -> ModelBundle:
+               monotone: bool = True, early_stopping_rounds: int = 100, num_boost_round: int = LGBM_ROUNDS, bureau: bool = False,
+               state: bool = True) -> ModelBundle:
     """Native lightgbm.train (stable across versions): early stopping on dev AUC; pandas categoricals are stored in the model so
     scoring one Application uses the same codes."""
     import lightgbm as lgb
 
-    numeric, categorical = feature_list(use_lc_grade, bureau)
+    numeric, categorical = feature_list(use_lc_grade, bureau, state)
     feats = numeric + categorical
     p = {**LGBM_PARAMS, **(params or {})}
     if monotone:
@@ -109,11 +111,11 @@ def train_lgbm(X_train: pd.DataFrame, y_train, X_dev: pd.DataFrame, y_dev, use_l
                         callbacks=[lgb.early_stopping(early_stopping_rounds, verbose=False)])
     meta = {"best_iteration": int(booster.best_iteration or num_boost_round), "params": {k: v for k, v in p.items() if k != "monotone_constraints"},
             "monotone": monotone, "n_train": len(X_train), "n_dev": len(X_dev)}
-    return ModelBundle("lgbm", use_lc_grade, numeric, categorical, booster, meta=meta, bureau=bureau)
+    return ModelBundle("lgbm", use_lc_grade, numeric, categorical, booster, meta=meta, bureau=bureau, state=state)
 
 
 def train_scorecard(X_train: pd.DataFrame, y_train, use_lc_grade: bool = True, min_iv: float = 0.02, scale: dict | None = None,
-                    bureau: bool = False, max_sign_refits: int = 5) -> ModelBundle:
+                    bureau: bool = False, max_sign_refits: int = 5, state: bool = True) -> ModelBundle:
     """WoE binning + logistic regression, scaled to points. A scorecard must read the same way line by line, so every selected
     feature has to point the way its WoE points: a positive coefficient on WoE (points that fall as the bin gets safer, a
     collinearity artefact, e.g. int_rate next to sub_grade) is dropped and the card refitted until all coefficients are ≤ 0.
@@ -121,7 +123,7 @@ def train_scorecard(X_train: pd.DataFrame, y_train, use_lc_grade: bool = True, m
     from optbinning import BinningProcess, Scorecard
     from sklearn.linear_model import LogisticRegression
 
-    numeric, categorical = feature_list(use_lc_grade, bureau)
+    numeric, categorical = feature_list(use_lc_grade, bureau, state)
     scale = scale or SCORECARD_SCALE
     dropped: list[str] = []
     for _ in range(max_sign_refits + 1):
@@ -139,7 +141,7 @@ def train_scorecard(X_train: pd.DataFrame, y_train, use_lc_grade: bool = True, m
             break
         dropped += wrong_sign
     meta = {"selected_features": selected, "dropped_wrong_sign": dropped, "min_iv": min_iv, "scale": scale, "n_train": len(X_train)}
-    return ModelBundle("scorecard", use_lc_grade, num, cat, card, meta=meta, bureau=bureau)
+    return ModelBundle("scorecard", use_lc_grade, num, cat, card, meta=meta, bureau=bureau, state=state)
 
 
 def grade_only_model() -> ModelBundle:

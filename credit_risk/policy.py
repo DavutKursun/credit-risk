@@ -13,7 +13,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from .config import REVIEW_BAND, TARGET
+from .config import REVIEW_BAND, SEED, TARGET
 
 TERM_MONTHS = 36
 
@@ -50,9 +50,9 @@ def breakeven_pd(funded_amnt, installment, lgd: float, term: int = TERM_MONTHS) 
 
 
 def decide(pd_, threshold: float, band: float = REVIEW_BAND) -> np.ndarray:
-    """approve if PD < threshold; review if threshold ≤ PD < threshold + band; else decline."""
+    """approve if PD < threshold − band; review if the PD is within ±band of the threshold; decline if PD ≥ threshold + band."""
     pd_ = np.asarray(pd_, dtype=float)
-    out = np.where(pd_ < threshold, "approve", np.where(pd_ < threshold + band, "review", "decline"))
+    out = np.where(pd_ < threshold - band, "approve", np.where(pd_ < threshold + band, "review", "decline"))
     return out.astype(object)
 
 
@@ -95,6 +95,25 @@ def policy_table(y, pd_, decisions, realized: np.ndarray | None = None, label: s
         r = np.asarray(realized, dtype=float)
         out["realized_pnl_total"] = round(float(r[appr].sum()), 2)
         out["realized_pnl_per_approved"] = round(float(r[appr].mean()), 2) if appr.any() else None
+    return out
+
+
+def subgrade_cut(sub_grade_codes, rate: float, seed: int = SEED) -> np.ndarray:
+    """Approve the lowest-risk `rate` share by Lending Club sub-grade (A1 first); ties inside the boundary sub-grade are broken at
+    random with a fixed seed so the approval rate is exact. The comparison for a lender that already has the grades."""
+    codes = np.asarray(sub_grade_codes, dtype=float)
+    key = codes + np.random.default_rng(seed).random(len(codes)) * 0.5
+    out = np.full(len(codes), "decline", dtype=object)
+    out[np.argsort(key, kind="stable")[: round(rate * len(codes))]] = "approve"
+    return out
+
+
+def approve_at_rate(pd_, rate: float, tie_break=None) -> np.ndarray:
+    """Approve exactly the lowest-PD `rate` share (ties broken by `tie_break`, e.g. the raw score)."""
+    pd_ = np.asarray(pd_, dtype=float)
+    order = np.lexsort((np.asarray(tie_break, dtype=float), pd_)) if tie_break is not None else np.argsort(pd_, kind="stable")
+    out = np.full(len(pd_), "decline", dtype=object)
+    out[order[: round(rate * len(pd_))]] = "approve"
     return out
 
 

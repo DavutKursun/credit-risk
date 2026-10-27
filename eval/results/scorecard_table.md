@@ -631,3 +631,507 @@ Length: 2, dtype: str | 58.3% | 13.8% | -0.05 | 55.68 |
 Length: 6, dtype: str | 8.5% | 17.2% | -0.30 | 48.67 |
 | purpose | Special | 0.0% | 0.0% | 0.00 | 56.93 |
 | purpose | Missing | 0.0% | 0.0% | 0.00 | 56.93 |
+
+## scorecard-bureau-no-state
+
+22 of 34 features selected (IV ≥ 0.02); 600 points at odds 1:19, 20 points to double the odds; trained on 306,462 loans. More points = safer.
+
+| Variable | Bin | Count (%) | Event rate | WoE | Points |
+|---|---|---|---|---|---|
+| int_rate | (-inf, 7.65) | 10.1% | 4.0% | 1.31 | 28.72 |
+| int_rate | [7.65, 8.29) | 5.2% | 6.4% | 0.81 | 27.64 |
+| int_rate | [8.29, 9.74) | 10.0% | 7.8% | 0.60 | 27.18 |
+| int_rate | [9.74, 11.61) | 12.4% | 9.7% | 0.35 | 26.65 |
+| int_rate | [11.61, 12.37) | 8.4% | 11.0% | 0.21 | 26.34 |
+| int_rate | [12.37, 13.23) | 10.7% | 13.1% | 0.01 | 25.91 |
+| int_rate | [13.23, 14.48) | 12.6% | 15.2% | -0.16 | 25.54 |
+| int_rate | [14.48, 16.27) | 12.0% | 18.0% | -0.36 | 25.10 |
+| int_rate | [16.27, 17.56) | 5.6% | 20.2% | -0.51 | 24.78 |
+| int_rate | [17.56, 18.89) | 6.1% | 21.5% | -0.58 | 24.62 |
+| int_rate | [18.89, inf) | 6.9% | 24.5% | -0.75 | 24.25 |
+| int_rate | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| int_rate | Missing | 0.0% | 0.0% | 0.00 | 25.89 |
+| annual_inc | (-inf, 27351.00) | 5.8% | 20.5% | -0.52 | 20.75 |
+| annual_inc | [27351.00, 32577.25) | 5.3% | 18.5% | -0.39 | 22.01 |
+| annual_inc | [32577.25, 37086.50) | 5.8% | 17.9% | -0.35 | 22.40 |
+| annual_inc | [37086.50, 42017.50) | 7.8% | 16.2% | -0.24 | 23.55 |
+| annual_inc | [42017.50, 45899.00) | 5.1% | 15.1% | -0.15 | 24.36 |
+| annual_inc | [45899.00, 50003.50) | 7.6% | 14.4% | -0.10 | 24.90 |
+| annual_inc | [50003.50, 55360.50) | 6.8% | 13.7% | -0.04 | 25.52 |
+| annual_inc | [55360.50, 62010.80) | 8.5% | 13.3% | -0.00 | 25.85 |
+| annual_inc | [62010.80, 70129.50) | 9.6% | 12.2% | 0.09 | 26.80 |
+| annual_inc | [70129.50, 75000.50) | 5.0% | 11.7% | 0.15 | 27.32 |
+| annual_inc | [75000.50, 85506.50) | 8.0% | 10.6% | 0.25 | 28.34 |
+| annual_inc | [85506.50, 100106.35) | 9.1% | 9.8% | 0.34 | 29.23 |
+| annual_inc | [100106.35, 120048.20) | 6.6% | 8.9% | 0.44 | 30.25 |
+| annual_inc | [120048.20, inf) | 9.1% | 8.5% | 0.49 | 30.72 |
+| annual_inc | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| annual_inc | Missing | 0.0% | 0.0% | 0.00 | 25.89 |
+| dti | (-inf, 5.15) | 5.5% | 9.8% | 0.33 | 29.28 |
+| dti | [5.15, 8.99) | 10.9% | 10.4% | 0.27 | 28.65 |
+| dti | [8.99, 10.57) | 6.0% | 10.6% | 0.25 | 28.42 |
+| dti | [10.57, 13.56) | 13.1% | 11.2% | 0.19 | 27.82 |
+| dti | [13.56, 15.57) | 9.3% | 11.9% | 0.12 | 27.14 |
+| dti | [15.57, 16.66) | 5.0% | 12.7% | 0.05 | 26.39 |
+| dti | [16.66, 19.06) | 10.7% | 13.2% | 0.01 | 25.94 |
+| dti | [19.06, 21.39) | 9.5% | 14.1% | -0.07 | 25.14 |
+| dti | [21.39, 22.99) | 5.8% | 14.9% | -0.13 | 24.54 |
+| dti | [22.99, 25.05) | 6.6% | 15.4% | -0.18 | 24.07 |
+| dti | [25.05, 29.20) | 10.0% | 16.9% | -0.28 | 23.00 |
+| dti | [29.20, inf) | 7.6% | 18.5% | -0.40 | 21.88 |
+| dti | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| dti | Missing | 0.0% | 0.0% | 0.00 | 25.89 |
+| fico | (-inf, 664.50) | 8.8% | 18.5% | -0.40 | 23.52 |
+| fico | [664.50, 669.50) | 8.9% | 17.5% | -0.33 | 23.95 |
+| fico | [669.50, 674.50) | 9.0% | 17.0% | -0.30 | 24.13 |
+| fico | [674.50, 679.50) | 8.1% | 15.7% | -0.20 | 24.71 |
+| fico | [679.50, 684.50) | 8.0% | 15.5% | -0.18 | 24.82 |
+| fico | [684.50, 689.50) | 7.2% | 14.5% | -0.11 | 25.26 |
+| fico | [689.50, 694.50) | 6.9% | 13.2% | 0.00 | 25.90 |
+| fico | [694.50, 699.50) | 6.2% | 12.8% | 0.04 | 26.09 |
+| fico | [699.50, 704.50) | 5.6% | 11.7% | 0.14 | 26.71 |
+| fico | [704.50, 714.50) | 9.2% | 10.7% | 0.24 | 27.33 |
+| fico | [714.50, 729.50) | 9.2% | 9.0% | 0.43 | 28.43 |
+| fico | [729.50, 754.50) | 7.3% | 7.1% | 0.70 | 30.00 |
+| fico | [754.50, inf) | 5.6% | 4.9% | 1.08 | 32.29 |
+| fico | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| fico | Missing | 0.0% | 0.0% | 0.00 | 25.89 |
+| inq_last_6mths | (-inf, 0.50) | 52.6% | 11.6% | 0.15 | 26.94 |
+| inq_last_6mths | [0.50, 1.50) | 28.1% | 14.0% | -0.06 | 25.46 |
+| inq_last_6mths | [1.50, 2.50) | 12.2% | 16.2% | -0.24 | 24.22 |
+| inq_last_6mths | [2.50, inf) | 7.1% | 17.4% | -0.32 | 23.62 |
+| inq_last_6mths | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| inq_last_6mths | Missing | 0.0% | 0.0% | 0.00 | 25.89 |
+| revol_util | (-inf, 21.05) | 8.1% | 9.6% | 0.36 | 26.69 |
+| revol_util | [21.05, 27.75) | 5.0% | 11.1% | 0.20 | 26.34 |
+| revol_util | [27.75, 33.05) | 5.2% | 11.4% | 0.17 | 26.27 |
+| revol_util | [33.05, 38.15) | 5.8% | 11.9% | 0.12 | 26.16 |
+| revol_util | [38.15, 42.85) | 5.9% | 12.4% | 0.08 | 26.06 |
+| revol_util | [42.85, 46.75) | 5.3% | 12.9% | 0.03 | 25.95 |
+| revol_util | [46.75, 57.65) | 16.2% | 13.3% | -0.01 | 25.87 |
+| revol_util | [57.65, 63.15) | 8.4% | 13.6% | -0.03 | 25.83 |
+| revol_util | [63.15, 73.25) | 14.6% | 14.1% | -0.08 | 25.71 |
+| revol_util | [73.25, 86.35) | 15.5% | 14.6% | -0.11 | 25.64 |
+| revol_util | [86.35, inf) | 10.0% | 15.9% | -0.22 | 25.40 |
+| revol_util | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| revol_util | Missing | 0.1% | 14.9% | -0.14 | 25.89 |
+| mort_acc | (-inf, 0.50) | 42.5% | 15.8% | -0.21 | 25.18 |
+| mort_acc | [0.50, 1.50) | 15.7% | 12.9% | 0.03 | 25.98 |
+| mort_acc | [1.50, 2.50) | 12.6% | 11.6% | 0.15 | 26.39 |
+| mort_acc | [2.50, 3.50) | 9.5% | 10.8% | 0.23 | 26.68 |
+| mort_acc | [3.50, 4.50) | 7.1% | 10.3% | 0.28 | 26.84 |
+| mort_acc | [4.50, inf) | 10.7% | 9.6% | 0.36 | 27.11 |
+| mort_acc | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| mort_acc | Missing | 2.0% | 13.2% | 0.00 | 25.89 |
+| credit_age_years | (-inf, 6.92) | 7.6% | 17.2% | -0.31 | 25.25 |
+| credit_age_years | [6.92, 8.33) | 5.2% | 15.2% | -0.16 | 25.57 |
+| credit_age_years | [8.33, 10.67) | 11.0% | 14.7% | -0.12 | 25.63 |
+| credit_age_years | [10.67, 11.71) | 6.8% | 14.2% | -0.08 | 25.72 |
+| credit_age_years | [11.71, 12.75) | 7.8% | 13.6% | -0.03 | 25.83 |
+| credit_age_years | [12.75, 15.59) | 18.8% | 13.2% | 0.00 | 25.89 |
+| credit_age_years | [15.59, 18.83) | 15.0% | 12.5% | 0.07 | 26.03 |
+| credit_age_years | [18.83, 24.33) | 14.7% | 11.3% | 0.18 | 26.24 |
+| credit_age_years | [24.33, inf) | 13.0% | 11.3% | 0.18 | 26.26 |
+| credit_age_years | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| credit_age_years | Missing | 0.0% | 0.0% | 0.00 | 25.89 |
+| loan_to_income | (-inf, 0.07) | 8.7% | 10.1% | 0.31 | 27.92 |
+| loan_to_income | [0.07, 0.10) | 9.3% | 11.1% | 0.20 | 27.19 |
+| loan_to_income | [0.10, 0.13) | 11.0% | 11.4% | 0.18 | 27.05 |
+| loan_to_income | [0.13, 0.15) | 8.8% | 11.5% | 0.16 | 26.92 |
+| loan_to_income | [0.15, 0.17) | 5.3% | 12.3% | 0.09 | 26.47 |
+| loan_to_income | [0.17, 0.20) | 11.1% | 12.3% | 0.09 | 26.45 |
+| loan_to_income | [0.20, 0.23) | 12.1% | 12.9% | 0.03 | 26.08 |
+| loan_to_income | [0.23, 0.27) | 9.5% | 14.0% | -0.06 | 25.47 |
+| loan_to_income | [0.27, 0.29) | 5.2% | 15.5% | -0.18 | 24.69 |
+| loan_to_income | [0.29, 0.33) | 5.9% | 16.4% | -0.25 | 24.21 |
+| loan_to_income | [0.33, inf) | 13.1% | 18.2% | -0.38 | 23.40 |
+| loan_to_income | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| loan_to_income | Missing | 0.0% | 0.0% | 0.00 | 25.89 |
+| installment_to_income | (-inf, 0.02) | 6.9% | 9.4% | 0.39 | 31.12 |
+| installment_to_income | [0.02, 0.04) | 9.7% | 10.5% | 0.27 | 29.47 |
+| installment_to_income | [0.04, 0.05) | 9.0% | 10.8% | 0.23 | 29.01 |
+| installment_to_income | [0.05, 0.06) | 13.4% | 11.2% | 0.19 | 28.42 |
+| installment_to_income | [0.06, 0.08) | 14.1% | 12.1% | 0.10 | 27.25 |
+| installment_to_income | [0.08, 0.10) | 14.7% | 13.0% | 0.03 | 26.23 |
+| installment_to_income | [0.10, 0.11) | 6.9% | 14.0% | -0.06 | 25.04 |
+| installment_to_income | [0.11, 0.12) | 5.1% | 14.7% | -0.12 | 24.28 |
+| installment_to_income | [0.12, 0.13) | 6.2% | 16.9% | -0.28 | 22.05 |
+| installment_to_income | [0.13, 0.15) | 5.9% | 18.0% | -0.36 | 20.98 |
+| installment_to_income | [0.15, inf) | 8.1% | 20.6% | -0.53 | 18.71 |
+| installment_to_income | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| installment_to_income | Missing | 0.0% | 0.0% | 0.00 | 25.89 |
+| acc_open_past_24mths | (-inf, 1.50) | 15.4% | 9.5% | 0.37 | 33.44 |
+| acc_open_past_24mths | [1.50, 2.50) | 14.5% | 10.8% | 0.23 | 30.57 |
+| acc_open_past_24mths | [2.50, 3.50) | 15.9% | 12.2% | 0.09 | 27.76 |
+| acc_open_past_24mths | [3.50, 4.50) | 14.5% | 13.4% | -0.01 | 25.59 |
+| acc_open_past_24mths | [4.50, 5.50) | 11.8% | 14.3% | -0.09 | 24.12 |
+| acc_open_past_24mths | [5.50, 6.50) | 8.9% | 15.4% | -0.18 | 22.26 |
+| acc_open_past_24mths | [6.50, 7.50) | 6.1% | 15.9% | -0.21 | 21.60 |
+| acc_open_past_24mths | [7.50, inf) | 10.9% | 18.7% | -0.41 | 17.61 |
+| acc_open_past_24mths | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| acc_open_past_24mths | Missing | 2.0% | 13.2% | 0.00 | 25.89 |
+| bc_open_to_buy | (-inf, 116.50) | 5.3% | 19.5% | -0.46 | 24.24 |
+| bc_open_to_buy | [116.50, 330.50) | 5.7% | 16.7% | -0.27 | 24.91 |
+| bc_open_to_buy | [330.50, 793.50) | 8.9% | 16.2% | -0.23 | 25.06 |
+| bc_open_to_buy | [793.50, 2027.50) | 16.1% | 15.2% | -0.16 | 25.30 |
+| bc_open_to_buy | [2027.50, 2766.50) | 6.9% | 14.6% | -0.11 | 25.48 |
+| bc_open_to_buy | [2766.50, 3501.50) | 5.6% | 13.8% | -0.04 | 25.73 |
+| bc_open_to_buy | [3501.50, 4642.50) | 7.0% | 13.3% | -0.01 | 25.86 |
+| bc_open_to_buy | [4642.50, 5734.50) | 5.2% | 12.9% | 0.03 | 26.00 |
+| bc_open_to_buy | [5734.50, 7105.50) | 5.1% | 12.0% | 0.11 | 26.28 |
+| bc_open_to_buy | [7105.50, 9201.50) | 5.9% | 11.8% | 0.13 | 26.36 |
+| bc_open_to_buy | [9201.50, 11979.50) | 5.4% | 10.6% | 0.25 | 26.78 |
+| bc_open_to_buy | [11979.50, 18363.50) | 7.5% | 9.8% | 0.34 | 27.08 |
+| bc_open_to_buy | [18363.50, 30492.50) | 6.6% | 8.7% | 0.47 | 27.56 |
+| bc_open_to_buy | [30492.50, inf) | 5.8% | 6.3% | 0.83 | 28.83 |
+| bc_open_to_buy | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| bc_open_to_buy | Missing | 2.9% | 14.1% | -0.07 | 25.89 |
+| total_bc_limit | (-inf, 2625.00) | 6.9% | 18.2% | -0.37 | 24.43 |
+| total_bc_limit | [2625.00, 4196.50) | 5.8% | 16.9% | -0.28 | 24.78 |
+| total_bc_limit | [4196.50, 5800.50) | 7.5% | 16.2% | -0.23 | 24.98 |
+| total_bc_limit | [5800.50, 7084.00) | 5.6% | 15.6% | -0.19 | 25.14 |
+| total_bc_limit | [7084.00, 8491.00) | 5.9% | 15.3% | -0.17 | 25.23 |
+| total_bc_limit | [8491.00, 10464.50) | 8.0% | 14.8% | -0.13 | 25.37 |
+| total_bc_limit | [10464.50, 12723.00) | 8.0% | 14.1% | -0.07 | 25.60 |
+| total_bc_limit | [12723.00, 15812.50) | 8.8% | 13.1% | 0.01 | 25.93 |
+| total_bc_limit | [15812.50, 18077.50) | 5.2% | 12.4% | 0.08 | 26.19 |
+| total_bc_limit | [18077.50, 20652.50) | 5.0% | 12.2% | 0.09 | 26.24 |
+| total_bc_limit | [20652.50, 27898.50) | 10.4% | 11.4% | 0.17 | 26.55 |
+| total_bc_limit | [27898.50, 39104.50) | 9.3% | 10.3% | 0.29 | 27.01 |
+| total_bc_limit | [39104.50, 56401.50) | 6.5% | 8.5% | 0.50 | 27.81 |
+| total_bc_limit | [56401.50, inf) | 5.0% | 6.6% | 0.77 | 28.89 |
+| total_bc_limit | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| total_bc_limit | Missing | 2.0% | 13.2% | 0.00 | 25.89 |
+| tot_cur_bal | (-inf, 19219.50) | 17.4% | 16.0% | -0.22 | 24.75 |
+| tot_cur_bal | [19219.50, 26370.50) | 7.5% | 15.9% | -0.21 | 24.76 |
+| tot_cur_bal | [26370.50, 31832.00) | 5.0% | 15.1% | -0.16 | 25.07 |
+| tot_cur_bal | [31832.00, 54240.50) | 13.1% | 14.9% | -0.14 | 25.17 |
+| tot_cur_bal | [54240.50, 79812.50) | 7.0% | 14.3% | -0.09 | 25.40 |
+| tot_cur_bal | [79812.50, 133993.00) | 9.5% | 13.2% | 0.00 | 25.90 |
+| tot_cur_bal | [133993.00, 174788.50) | 7.2% | 11.8% | 0.13 | 26.57 |
+| tot_cur_bal | [174788.50, 241676.00) | 9.7% | 10.8% | 0.23 | 27.08 |
+| tot_cur_bal | [241676.00, 291273.00) | 5.0% | 9.2% | 0.41 | 28.04 |
+| tot_cur_bal | [291273.00, 377101.00) | 5.4% | 8.8% | 0.46 | 28.28 |
+| tot_cur_bal | [377101.00, inf) | 5.8% | 7.3% | 0.66 | 29.32 |
+| tot_cur_bal | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| tot_cur_bal | Missing | 7.4% | 14.1% | -0.07 | 25.89 |
+| num_tl_op_past_12m | (-inf, 0.50) | 17.3% | 9.8% | 0.34 | 27.42 |
+| num_tl_op_past_12m | [0.50, 1.50) | 25.0% | 11.6% | 0.15 | 26.58 |
+| num_tl_op_past_12m | [1.50, 2.50) | 22.0% | 13.5% | -0.02 | 25.80 |
+| num_tl_op_past_12m | [2.50, 3.50) | 15.0% | 15.2% | -0.16 | 25.17 |
+| num_tl_op_past_12m | [3.50, 4.50) | 8.0% | 17.3% | -0.31 | 24.47 |
+| num_tl_op_past_12m | [4.50, inf) | 5.3% | 18.6% | -0.41 | 24.04 |
+| num_tl_op_past_12m | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| num_tl_op_past_12m | Missing | 7.4% | 14.1% | -0.07 | 25.89 |
+| mo_sin_rcnt_tl | (-inf, 1.50) | 9.1% | 16.9% | -0.29 | 24.69 |
+| mo_sin_rcnt_tl | [1.50, 2.50) | 9.6% | 15.7% | -0.20 | 25.06 |
+| mo_sin_rcnt_tl | [2.50, 3.50) | 9.4% | 14.8% | -0.13 | 25.34 |
+| mo_sin_rcnt_tl | [3.50, 4.50) | 8.3% | 14.1% | -0.07 | 25.59 |
+| mo_sin_rcnt_tl | [4.50, 5.50) | 7.3% | 13.5% | -0.02 | 25.79 |
+| mo_sin_rcnt_tl | [5.50, 6.50) | 6.5% | 13.0% | 0.02 | 25.96 |
+| mo_sin_rcnt_tl | [6.50, 7.50) | 5.9% | 12.6% | 0.06 | 26.12 |
+| mo_sin_rcnt_tl | [7.50, 8.50) | 5.2% | 12.5% | 0.07 | 26.17 |
+| mo_sin_rcnt_tl | [8.50, 11.50) | 11.3% | 12.0% | 0.12 | 26.37 |
+| mo_sin_rcnt_tl | [11.50, 14.50) | 7.0% | 11.4% | 0.17 | 26.59 |
+| mo_sin_rcnt_tl | [14.50, 20.50) | 6.5% | 9.9% | 0.33 | 27.26 |
+| mo_sin_rcnt_tl | [20.50, inf) | 6.6% | 8.9% | 0.45 | 27.75 |
+| mo_sin_rcnt_tl | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| mo_sin_rcnt_tl | Missing | 7.4% | 14.1% | -0.07 | 25.89 |
+| mths_since_recent_inq | (-inf, 1.50) | 17.1% | 16.5% | -0.26 | 24.17 |
+| mths_since_recent_inq | [1.50, 2.50) | 7.7% | 14.9% | -0.14 | 24.97 |
+| mths_since_recent_inq | [2.50, 3.50) | 6.9% | 14.4% | -0.10 | 25.22 |
+| mths_since_recent_inq | [3.50, 4.50) | 6.3% | 14.3% | -0.09 | 25.30 |
+| mths_since_recent_inq | [4.50, 6.50) | 10.8% | 13.5% | -0.02 | 25.75 |
+| mths_since_recent_inq | [6.50, 8.50) | 9.4% | 12.8% | 0.04 | 26.16 |
+| mths_since_recent_inq | [8.50, 10.50) | 7.4% | 12.4% | 0.07 | 26.37 |
+| mths_since_recent_inq | [10.50, 14.50) | 10.6% | 11.9% | 0.12 | 26.70 |
+| mths_since_recent_inq | [14.50, 18.50) | 6.3% | 11.5% | 0.16 | 26.93 |
+| mths_since_recent_inq | [18.50, inf) | 5.2% | 10.6% | 0.26 | 27.59 |
+| mths_since_recent_inq | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| mths_since_recent_inq | Missing | 12.3% | 10.3% | 0.28 | 25.89 |
+| percent_bc_gt_75 | (-inf, 15.70) | 19.9% | 9.9% | 0.32 | 27.67 |
+| percent_bc_gt_75 | [15.70, 29.70) | 10.2% | 11.4% | 0.17 | 26.81 |
+| percent_bc_gt_75 | [29.70, 41.45) | 10.7% | 12.5% | 0.07 | 26.27 |
+| percent_bc_gt_75 | [41.45, 52.50) | 13.3% | 13.3% | -0.00 | 25.87 |
+| percent_bc_gt_75 | [52.50, 69.60) | 12.3% | 14.4% | -0.09 | 25.37 |
+| percent_bc_gt_75 | [69.60, 76.35) | 5.6% | 14.9% | -0.14 | 25.11 |
+| percent_bc_gt_75 | [76.35, inf) | 25.1% | 15.9% | -0.21 | 24.71 |
+| percent_bc_gt_75 | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| percent_bc_gt_75 | Missing | 3.0% | 14.1% | -0.07 | 25.89 |
+| grade | <ArrowStringArray>
+['A']
+Length: 1, dtype: str | 20.6% | 5.5% | 0.97 | 26.39 |
+| grade | <ArrowStringArray>
+['B']
+Length: 1, dtype: str | 36.1% | 10.7% | 0.25 | 26.01 |
+| grade | <ArrowStringArray>
+['C']
+Length: 1, dtype: str | 25.7% | 16.6% | -0.27 | 25.74 |
+| grade | <ArrowStringArray>
+['D', 'E', 'F', 'G']
+Length: 4, dtype: str | 17.7% | 22.7% | -0.65 | 25.54 |
+| grade | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| grade | Missing | 0.0% | 0.0% | 0.00 | 25.89 |
+| sub_grade | <ArrowStringArray>
+['A1', 'A2', 'A3']
+Length: 3, dtype: str | 9.7% | 3.9% | 1.32 | 45.50 |
+| sub_grade | <ArrowStringArray>
+['A4']
+Length: 1, dtype: str | 5.2% | 6.2% | 0.84 | 38.34 |
+| sub_grade | <ArrowStringArray>
+['A5']
+Length: 1, dtype: str | 5.7% | 7.5% | 0.64 | 35.36 |
+| sub_grade | <ArrowStringArray>
+['B1']
+Length: 1, dtype: str | 6.3% | 8.4% | 0.51 | 33.43 |
+| sub_grade | <ArrowStringArray>
+['B2']
+Length: 1, dtype: str | 7.3% | 9.3% | 0.40 | 31.87 |
+| sub_grade | <ArrowStringArray>
+['B3']
+Length: 1, dtype: str | 8.3% | 10.7% | 0.25 | 29.54 |
+| sub_grade | <ArrowStringArray>
+['B4']
+Length: 1, dtype: str | 7.8% | 11.5% | 0.16 | 28.25 |
+| sub_grade | <ArrowStringArray>
+['B5']
+Length: 1, dtype: str | 6.4% | 13.4% | -0.01 | 25.67 |
+| sub_grade | <ArrowStringArray>
+['C1']
+Length: 1, dtype: str | 6.5% | 14.4% | -0.10 | 24.40 |
+| sub_grade | <ArrowStringArray>
+['C2']
+Length: 1, dtype: str | 5.8% | 15.7% | -0.20 | 22.98 |
+| sub_grade | <ArrowStringArray>
+['C3']
+Length: 1, dtype: str | 5.1% | 17.4% | -0.32 | 21.12 |
+| sub_grade | <ArrowStringArray>
+['C4', 'C5']
+Length: 2, dtype: str | 8.3% | 18.6% | -0.40 | 19.90 |
+| sub_grade | <ArrowStringArray>
+['D1', 'D3']
+Length: 2, dtype: str | 6.2% | 20.6% | -0.53 | 17.98 |
+| sub_grade | <ArrowStringArray>
+['D2', 'G5', 'D4']
+Length: 3, dtype: str | 5.3% | 21.9% | -0.61 | 16.83 |
+| sub_grade | <ArrowStringArray>
+['D5', 'E1', 'F1', 'E3', 'E2', 'E4', 'G2', 'F2', 'E5', 'F3', 'F4', 'G3', 'G1',
+ 'F5', 'G4']
+Length: 15, dtype: str | 6.2% | 25.3% | -0.80 | 14.07 |
+| sub_grade | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| sub_grade | Missing | 0.0% | 0.0% | 0.00 | 25.89 |
+| home_ownership | <ArrowStringArray>
+['ANY', 'MORTGAGE']
+Length: 2, dtype: str | 47.5% | 10.9% | 0.22 | 27.98 |
+| home_ownership | <ArrowStringArray>
+['OWN']
+Length: 1, dtype: str | 9.4% | 14.0% | -0.07 | 25.27 |
+| home_ownership | <ArrowStringArray>
+['RENT', 'NONE', 'OTHER']
+Length: 3, dtype: str | 43.1% | 15.6% | -0.19 | 24.04 |
+| home_ownership | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| home_ownership | Missing | 0.0% | 0.0% | 0.00 | 25.89 |
+| purpose | <ArrowStringArray>
+['car', 'credit_card']
+Length: 2, dtype: str | 25.6% | 11.2% | 0.19 | 28.07 |
+| purpose | <ArrowStringArray>
+['home_improvement', 'major_purchase', 'wedding']
+Length: 3, dtype: str | 7.6% | 11.7% | 0.15 | 27.56 |
+| purpose | <ArrowStringArray>
+['debt_consolidation', 'vacation']
+Length: 2, dtype: str | 58.3% | 13.8% | -0.05 | 25.36 |
+| purpose | <ArrowStringArray>
+['house', 'other', 'medical', 'renewable_energy', 'moving', 'small_business']
+Length: 6, dtype: str | 8.5% | 17.2% | -0.30 | 22.40 |
+| purpose | Special | 0.0% | 0.0% | 0.00 | 25.89 |
+| purpose | Missing | 0.0% | 0.0% | 0.00 | 25.89 |
+
+## scorecard-no-state
+
+12 of 24 features selected (IV ≥ 0.02); 600 points at odds 1:19, 20 points to double the odds; trained on 306,462 loans. More points = safer.
+
+| Variable | Bin | Count (%) | Event rate | WoE | Points |
+|---|---|---|---|---|---|
+| annual_inc | (-inf, 27351.00) | 5.8% | 20.5% | -0.52 | 42.12 |
+| annual_inc | [27351.00, 32577.25) | 5.3% | 18.5% | -0.39 | 43.43 |
+| annual_inc | [32577.25, 37086.50) | 5.8% | 17.9% | -0.35 | 43.83 |
+| annual_inc | [37086.50, 42017.50) | 7.8% | 16.2% | -0.24 | 45.03 |
+| annual_inc | [42017.50, 45899.00) | 5.1% | 15.1% | -0.15 | 45.87 |
+| annual_inc | [45899.00, 50003.50) | 7.6% | 14.4% | -0.10 | 46.42 |
+| annual_inc | [50003.50, 55360.50) | 6.8% | 13.7% | -0.04 | 47.07 |
+| annual_inc | [55360.50, 62010.80) | 8.5% | 13.3% | -0.00 | 47.41 |
+| annual_inc | [62010.80, 70129.50) | 9.6% | 12.2% | 0.09 | 48.39 |
+| annual_inc | [70129.50, 75000.50) | 5.0% | 11.7% | 0.15 | 48.94 |
+| annual_inc | [75000.50, 85506.50) | 8.0% | 10.6% | 0.25 | 50.00 |
+| annual_inc | [85506.50, 100106.35) | 9.1% | 9.8% | 0.34 | 50.91 |
+| annual_inc | [100106.35, 120048.20) | 6.6% | 8.9% | 0.44 | 51.98 |
+| annual_inc | [120048.20, inf) | 9.1% | 8.5% | 0.49 | 52.46 |
+| annual_inc | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+| annual_inc | Missing | 0.0% | 0.0% | 0.00 | 47.45 |
+| dti | (-inf, 5.15) | 5.5% | 9.8% | 0.33 | 52.31 |
+| dti | [5.15, 8.99) | 10.9% | 10.4% | 0.27 | 51.42 |
+| dti | [8.99, 10.57) | 6.0% | 10.6% | 0.25 | 51.08 |
+| dti | [10.57, 13.56) | 13.1% | 11.2% | 0.19 | 50.22 |
+| dti | [13.56, 15.57) | 9.3% | 11.9% | 0.12 | 49.24 |
+| dti | [15.57, 16.66) | 5.0% | 12.7% | 0.05 | 48.18 |
+| dti | [16.66, 19.06) | 10.7% | 13.2% | 0.01 | 47.53 |
+| dti | [19.06, 21.39) | 9.5% | 14.1% | -0.07 | 46.38 |
+| dti | [21.39, 22.99) | 5.8% | 14.9% | -0.13 | 45.52 |
+| dti | [22.99, 25.05) | 6.6% | 15.4% | -0.18 | 44.85 |
+| dti | [25.05, 29.20) | 10.0% | 16.9% | -0.28 | 43.31 |
+| dti | [29.20, inf) | 7.6% | 18.5% | -0.40 | 41.70 |
+| dti | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+| dti | Missing | 0.0% | 0.0% | 0.00 | 47.45 |
+| fico | (-inf, 664.50) | 8.8% | 18.5% | -0.40 | 43.89 |
+| fico | [664.50, 669.50) | 8.9% | 17.5% | -0.33 | 44.53 |
+| fico | [669.50, 674.50) | 9.0% | 17.0% | -0.30 | 44.80 |
+| fico | [674.50, 679.50) | 8.1% | 15.7% | -0.20 | 45.67 |
+| fico | [679.50, 684.50) | 8.0% | 15.5% | -0.18 | 45.84 |
+| fico | [684.50, 689.50) | 7.2% | 14.5% | -0.11 | 46.51 |
+| fico | [689.50, 694.50) | 6.9% | 13.2% | 0.00 | 47.47 |
+| fico | [694.50, 699.50) | 6.2% | 12.8% | 0.04 | 47.76 |
+| fico | [699.50, 704.50) | 5.6% | 11.7% | 0.14 | 48.68 |
+| fico | [704.50, 714.50) | 9.2% | 10.7% | 0.24 | 49.61 |
+| fico | [714.50, 729.50) | 9.2% | 9.0% | 0.43 | 51.27 |
+| fico | [729.50, 754.50) | 7.3% | 7.1% | 0.70 | 53.64 |
+| fico | [754.50, inf) | 5.6% | 4.9% | 1.08 | 57.07 |
+| fico | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+| fico | Missing | 0.0% | 0.0% | 0.00 | 47.45 |
+| inq_last_6mths | (-inf, 0.50) | 52.6% | 11.6% | 0.15 | 50.08 |
+| inq_last_6mths | [0.50, 1.50) | 28.1% | 14.0% | -0.06 | 46.40 |
+| inq_last_6mths | [1.50, 2.50) | 12.2% | 16.2% | -0.24 | 43.29 |
+| inq_last_6mths | [2.50, inf) | 7.1% | 17.4% | -0.32 | 41.78 |
+| inq_last_6mths | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+| inq_last_6mths | Missing | 0.0% | 0.0% | 0.00 | 47.45 |
+| mort_acc | (-inf, 0.50) | 42.5% | 15.8% | -0.21 | 46.48 |
+| mort_acc | [0.50, 1.50) | 15.7% | 12.9% | 0.03 | 47.58 |
+| mort_acc | [1.50, 2.50) | 12.6% | 11.6% | 0.15 | 48.14 |
+| mort_acc | [2.50, 3.50) | 9.5% | 10.8% | 0.23 | 48.54 |
+| mort_acc | [3.50, 4.50) | 7.1% | 10.3% | 0.28 | 48.76 |
+| mort_acc | [4.50, inf) | 10.7% | 9.6% | 0.36 | 49.15 |
+| mort_acc | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+| mort_acc | Missing | 2.0% | 13.2% | 0.00 | 47.45 |
+| credit_age_years | (-inf, 6.92) | 7.6% | 17.2% | -0.31 | 46.01 |
+| credit_age_years | [6.92, 8.33) | 5.2% | 15.2% | -0.16 | 46.72 |
+| credit_age_years | [8.33, 10.67) | 11.0% | 14.7% | -0.12 | 46.87 |
+| credit_age_years | [10.67, 11.71) | 6.8% | 14.2% | -0.08 | 47.07 |
+| credit_age_years | [11.71, 12.75) | 7.8% | 13.6% | -0.03 | 47.31 |
+| credit_age_years | [12.75, 15.59) | 18.8% | 13.2% | 0.00 | 47.46 |
+| credit_age_years | [15.59, 18.83) | 15.0% | 12.5% | 0.07 | 47.77 |
+| credit_age_years | [18.83, 24.33) | 14.7% | 11.3% | 0.18 | 48.26 |
+| credit_age_years | [24.33, inf) | 13.0% | 11.3% | 0.18 | 48.29 |
+| credit_age_years | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+| credit_age_years | Missing | 0.0% | 0.0% | 0.00 | 47.45 |
+| loan_to_income | (-inf, 0.07) | 8.7% | 10.1% | 0.31 | 49.26 |
+| loan_to_income | [0.07, 0.10) | 9.3% | 11.1% | 0.20 | 48.61 |
+| loan_to_income | [0.10, 0.13) | 11.0% | 11.4% | 0.18 | 48.48 |
+| loan_to_income | [0.13, 0.15) | 8.8% | 11.5% | 0.16 | 48.37 |
+| loan_to_income | [0.15, 0.17) | 5.3% | 12.3% | 0.09 | 47.97 |
+| loan_to_income | [0.17, 0.20) | 11.1% | 12.3% | 0.09 | 47.95 |
+| loan_to_income | [0.20, 0.23) | 12.1% | 12.9% | 0.03 | 47.62 |
+| loan_to_income | [0.23, 0.27) | 9.5% | 14.0% | -0.06 | 47.08 |
+| loan_to_income | [0.27, 0.29) | 5.2% | 15.5% | -0.18 | 46.38 |
+| loan_to_income | [0.29, 0.33) | 5.9% | 16.4% | -0.25 | 45.95 |
+| loan_to_income | [0.33, inf) | 13.1% | 18.2% | -0.38 | 45.23 |
+| loan_to_income | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+| loan_to_income | Missing | 0.0% | 0.0% | 0.00 | 47.45 |
+| installment_to_income | (-inf, 0.02) | 6.9% | 9.4% | 0.39 | 51.73 |
+| installment_to_income | [0.02, 0.04) | 9.7% | 10.5% | 0.27 | 50.39 |
+| installment_to_income | [0.04, 0.05) | 9.0% | 10.8% | 0.23 | 50.00 |
+| installment_to_income | [0.05, 0.06) | 13.4% | 11.2% | 0.19 | 49.52 |
+| installment_to_income | [0.06, 0.08) | 14.1% | 12.1% | 0.10 | 48.56 |
+| installment_to_income | [0.08, 0.10) | 14.7% | 13.0% | 0.03 | 47.72 |
+| installment_to_income | [0.10, 0.11) | 6.9% | 14.0% | -0.06 | 46.75 |
+| installment_to_income | [0.11, 0.12) | 5.1% | 14.7% | -0.12 | 46.13 |
+| installment_to_income | [0.12, 0.13) | 6.2% | 16.9% | -0.28 | 44.30 |
+| installment_to_income | [0.13, 0.15) | 5.9% | 18.0% | -0.36 | 43.43 |
+| installment_to_income | [0.15, inf) | 8.1% | 20.6% | -0.53 | 41.57 |
+| installment_to_income | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+| installment_to_income | Missing | 0.0% | 0.0% | 0.00 | 47.45 |
+| grade | <ArrowStringArray>
+['A']
+Length: 1, dtype: str | 20.6% | 5.5% | 0.97 | 47.95 |
+| grade | <ArrowStringArray>
+['B']
+Length: 1, dtype: str | 36.1% | 10.7% | 0.25 | 47.57 |
+| grade | <ArrowStringArray>
+['C']
+Length: 1, dtype: str | 25.7% | 16.6% | -0.27 | 47.31 |
+| grade | <ArrowStringArray>
+['D', 'E', 'F', 'G']
+Length: 4, dtype: str | 17.7% | 22.7% | -0.65 | 47.11 |
+| grade | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+| grade | Missing | 0.0% | 0.0% | 0.00 | 47.45 |
+| sub_grade | <ArrowStringArray>
+['A1', 'A2', 'A3']
+Length: 3, dtype: str | 9.7% | 3.9% | 1.32 | 73.78 |
+| sub_grade | <ArrowStringArray>
+['A4']
+Length: 1, dtype: str | 5.2% | 6.2% | 0.84 | 64.16 |
+| sub_grade | <ArrowStringArray>
+['A5']
+Length: 1, dtype: str | 5.7% | 7.5% | 0.64 | 60.16 |
+| sub_grade | <ArrowStringArray>
+['B1']
+Length: 1, dtype: str | 6.3% | 8.4% | 0.51 | 57.58 |
+| sub_grade | <ArrowStringArray>
+['B2']
+Length: 1, dtype: str | 7.3% | 9.3% | 0.40 | 55.48 |
+| sub_grade | <ArrowStringArray>
+['B3']
+Length: 1, dtype: str | 8.3% | 10.7% | 0.25 | 52.36 |
+| sub_grade | <ArrowStringArray>
+['B4']
+Length: 1, dtype: str | 7.8% | 11.5% | 0.16 | 50.61 |
+| sub_grade | <ArrowStringArray>
+['B5']
+Length: 1, dtype: str | 6.4% | 13.4% | -0.01 | 47.16 |
+| sub_grade | <ArrowStringArray>
+['C1']
+Length: 1, dtype: str | 6.5% | 14.4% | -0.10 | 45.45 |
+| sub_grade | <ArrowStringArray>
+['C2']
+Length: 1, dtype: str | 5.8% | 15.7% | -0.20 | 43.55 |
+| sub_grade | <ArrowStringArray>
+['C3']
+Length: 1, dtype: str | 5.1% | 17.4% | -0.32 | 41.05 |
+| sub_grade | <ArrowStringArray>
+['C4', 'C5']
+Length: 2, dtype: str | 8.3% | 18.6% | -0.40 | 39.41 |
+| sub_grade | <ArrowStringArray>
+['D1', 'D3']
+Length: 2, dtype: str | 6.2% | 20.6% | -0.53 | 36.83 |
+| sub_grade | <ArrowStringArray>
+['D2', 'G5', 'D4']
+Length: 3, dtype: str | 5.3% | 21.9% | -0.61 | 35.29 |
+| sub_grade | <ArrowStringArray>
+['D5', 'E1', 'F1', 'E3', 'E2', 'E4', 'G2', 'F2', 'E5', 'F3', 'F4', 'G3', 'G1',
+ 'F5', 'G4']
+Length: 15, dtype: str | 6.2% | 25.3% | -0.80 | 31.58 |
+| sub_grade | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+| sub_grade | Missing | 0.0% | 0.0% | 0.00 | 47.45 |
+| home_ownership | <ArrowStringArray>
+['ANY', 'MORTGAGE']
+Length: 2, dtype: str | 47.5% | 10.9% | 0.22 | 49.62 |
+| home_ownership | <ArrowStringArray>
+['OWN']
+Length: 1, dtype: str | 9.4% | 14.0% | -0.07 | 46.80 |
+| home_ownership | <ArrowStringArray>
+['RENT', 'NONE', 'OTHER']
+Length: 3, dtype: str | 43.1% | 15.6% | -0.19 | 45.53 |
+| home_ownership | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+| home_ownership | Missing | 0.0% | 0.0% | 0.00 | 47.45 |
+| purpose | <ArrowStringArray>
+['car', 'credit_card']
+Length: 2, dtype: str | 25.6% | 11.2% | 0.19 | 49.28 |
+| purpose | <ArrowStringArray>
+['home_improvement', 'major_purchase', 'wedding']
+Length: 3, dtype: str | 7.6% | 11.7% | 0.15 | 48.86 |
+| purpose | <ArrowStringArray>
+['debt_consolidation', 'vacation']
+Length: 2, dtype: str | 58.3% | 13.8% | -0.05 | 47.00 |
+| purpose | <ArrowStringArray>
+['house', 'other', 'medical', 'renewable_energy', 'moving', 'small_business']
+Length: 6, dtype: str | 8.5% | 17.2% | -0.30 | 44.51 |
+| purpose | Special | 0.0% | 0.0% | 0.00 | 47.45 |
+| purpose | Missing | 0.0% | 0.0% | 0.00 | 47.45 |

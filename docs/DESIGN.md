@@ -256,16 +256,30 @@ the policies consume while AUC, which is invariant to monotone transforms, gains
 600 points at odds 1:19 with 20 points to double the odds. Both took seconds on the laptop (peak memory under 1 GB); no scorecard
 needed the `max_n_prebins` fallback.
 
-**Dev ranking** (`eval/results/dev-summary.json`, calibrated PD on all 120,790 dev rows; ranking on the raw output is within 0.0005):
+**Dev ranking** (`eval/results/dev-summary.json`, calibrated PD on all 120,790 dev rows; ranking on the raw output is within 0.0005). The six M2 variants, the four M3 `-no-state` ablations and the grade-only reference:
+
+**The `addr_state` ablation (M3) and the deployed pair.** Rule fixed before the run: if training without `addr_state` costs less than
+0.003 dev AUC, the deployed model excludes it, because a 50-level geographic proxy that adds almost nothing is a fairness and a drift
+liability; otherwise it stays and the loss is stated. Outcome on dev: LightGBM 0.6918 → 0.6908 (−0.0010),
+bureau LightGBM 0.6978 → 0.6966 (−0.0012); the scorecards never selected the state
+(IV below 0.02), so their numbers are identical. All four pairs fall under the floor: **every deployed model excludes `addr_state`**.
+Together with the M2 bureau rule (the nine bureau columns stay if they add at least 0.005 dev AUC: +0.0060 and
++0.0069, they do) the deployed pair is **`lgbm-bureau-no-state`** (dev AUC 0.6966) and **`scorecard-bureau-no-state`**
+(0.6890). Ten bundles are kept in `models/` so every ablation can be re-scored on test in M4. Gain shares of the deployed
+LightGBM: sub_grade 34.4%, grade 6.8%, int_rate 6.3%, acc_open_past_24mths 5.4%, annual_inc 4.8%, installment_to_income 4.0%, tot_cur_bal 3.6%, dti 3.0%, revol_bal 2.6%, emp_years 2.6%; the geographic share moved mostly into `sub_grade` and `acc_open_past_24mths`.
 
 | Variant | AUC | Gini | KS | PR-AUC | Fit s | Best iteration / selected features |
 |---|---|---|---|---|---|---|
-| lgbm | 0.6922 | 0.3843 | 0.2810 | 0.2655 | 6.1 | 324 |
-| scorecard | 0.6825 | 0.3650 | 0.2677 | 0.2528 | 8.3 | 12 of 27 |
-| lgbm-no-lc-grade | 0.6716 | 0.3433 | 0.2494 | 0.2487 | 10.5 | 704 |
-| scorecard-no-lc-grade | 0.6502 | 0.3004 | 0.2179 | 0.2286 | 3.6 | 10 of 22 |
-| lgbm-bureau | 0.6981 | 0.3962 | 0.2893 | 0.2739 | 9.1 | 504 |
-| scorecard-bureau | 0.6893 | 0.3785 | 0.2756 | 0.2620 | 10.7 | 22 of 36 |
+| lgbm | 0.6918 | 0.3836 | 0.2808 | 0.2669 | 6.0 | 324 |
+| lgbm-no-state | 0.6908 | 0.3815 | 0.2788 | 0.2662 | 8.4 | 430 |
+| lgbm-bureau | 0.6978 | 0.3955 | 0.2876 | 0.2748 | 10.2 | 504 |
+| lgbm-bureau-no-state **(deployed)** | 0.6966 | 0.3933 | 0.2857 | 0.2734 | 9.2 | 511 |
+| scorecard | 0.6821 | 0.3642 | 0.2674 | 0.2531 | 8.4 | 12 |
+| scorecard-no-state | 0.6821 | 0.3642 | 0.2674 | 0.2531 | 7.7 | 12 |
+| scorecard-bureau | 0.6890 | 0.3780 | 0.2754 | 0.2640 | 10.9 | 22 |
+| scorecard-bureau-no-state **(deployed)** | 0.6890 | 0.3780 | 0.2754 | 0.2640 | 11.8 | 22 |
+| lgbm-no-lc-grade | 0.6712 | 0.3423 | 0.2492 | 0.2498 | 10.5 | 704 |
+| scorecard-no-lc-grade | 0.6497 | 0.2995 | 0.2177 | 0.2286 | 3.8 | 10 |
 | grade_only | 0.6750 | 0.3501 | 0.2568 | 0.2499 |  |  |
 
 - **LightGBM beats the scorecard in every pair**: by 0.010 AUC with the LC grade, 0.021 without it, 0.009 with the bureau set. The gap
@@ -345,55 +359,233 @@ features, swept over the 2nd to 98th dev percentile on a fixed row).
 | lgbm-bureau | 0.024 | 0.281 | 0.999 |
 | scorecard-bureau | 0.005 (627 pts) | 0.285 (546 pts) | 0.999 (513 pts) |
 
-The clear-decline sample gets 0.999 from four bundles: see the isotonic tail note in §5. On the scorecard it lands at 520 points
-and PD 0.45; the no-grade scorecard, which never sees the F2 sub-grade, at 0.35.
+The clear-decline sample now scores 0.39–0.42 on every bundle (see the calibration tail in §5).
 
-## 5. Calibration (M2)
+## 5. Calibration (M2, revised in M3)
 
 Every model under-predicts 2015 before calibration: mean raw PD 0.132–0.137 on the later half of dev against an observed 0.1547, the
-vintage shift described in §1 (about two points inside a sub-grade). Isotonic regression fitted on the earlier half of dev removes
-most of it: ECE falls from 0.018–0.023 to 0.008–0.010 and Brier and log loss improve for every model. The calibrated mean PD
-(0.146–0.147) still sits 0.8 points under the observed rate because the later half of 2015H1 defaults slightly more than the earlier
-half the calibrator saw; the test window (2015H2) has the same within-grade vintage level as dev, so the residual should not grow.
-Platt scaling fitted on the same rows is a close second and is kept as the fallback.
+vintage shift described in §1 (about two points inside a sub-grade). The calibrator is isotonic regression fitted on the earlier half
+of dev and measured on the later half (60,395 rows each). **Since M3 it is fitted on equal-count bins of the calibration rows** (at
+least 500 rows per bin, each bin entering with its mean raw PD, its observed default rate and its row count as weight) instead of on
+the raw points: with raw points the two or three top-scored calibration rows, which all defaulted, put the last step of the function at
+1.0, and an extreme application displayed a PD of 0.999 although the top 1% of raw scores defaults at 34–40%. With bins no step can
+exceed the observed rate of a bin, the clear-decline sample now reads 0.39–0.42, and the calibration metrics are unchanged to the
+third decimal: ECE falls from 0.018–0.023 to 0.007–0.009 for all ten bundles. Platt scaling fitted on the same rows lands within
+0.001 ECE and stays the fallback. One property to know: isotonic pooling makes the calibrated PD flat over stretches of the raw score
+(the scorecard maps a range of its highest raw scores to 0.283), so declined applications share PD values while their points still
+rank them; policies and reason codes are unaffected.
 
-| Variant | mean PD before → after | Brier before → after | log loss before → after | ECE before → after (isotonic) | ECE with Platt instead | largest bin gap after |
-|---|---|---|---|---|---|---|
-| lgbm | 0.1320 → 0.1469 | 0.12330 → 0.12278 | 0.4017 → 0.3998 | 0.0227 → 0.0078 | 0.0084 | 0.0212 |
-| scorecard | 0.1328 → 0.1467 | 0.12426 → 0.12373 | 0.4047 → 0.4031 | 0.0224 → 0.0085 | 0.0091 | 0.0200 |
-| lgbm-no-lc-grade | 0.1369 → 0.1468 | 0.12487 → 0.12450 | 0.4076 → 0.4062 | 0.0178 → 0.0083 | 0.0090 | 0.0243 |
-| scorecard-no-lc-grade | 0.1333 → 0.1458 | 0.12651 → 0.12612 | 0.4138 → 0.4124 | 0.0214 → 0.0098 | 0.0094 | 0.0218 |
-| lgbm-bureau | 0.1347 → 0.1472 | 0.12249 → 0.12211 | 0.3990 → 0.3975 | 0.0199 → 0.0078 | 0.0085 | 0.0162 |
-| scorecard-bureau | 0.1351 → 0.1473 | 0.12336 → 0.12307 | 0.4018 → 0.4009 | 0.0196 → 0.0082 | 0.0085 | 0.0213 |
+| Variant | mean PD before → after | ECE before → after | largest bin gap after | clear_decline sample PD |
+|---|---|---|---|---|
+| lgbm | 0.1320 → 0.1468 | 0.0227 → 0.0079 | 0.0169 | 0.392 |
+| lgbm-no-state | 0.1325 → 0.1468 | 0.0222 → 0.0085 | 0.0211 | 0.398 |
+| lgbm-bureau | 0.1347 → 0.1471 | 0.0199 → 0.0080 | 0.0194 | 0.415 |
+| lgbm-bureau-no-state | 0.1355 → 0.1473 | 0.0191 → 0.0074 | 0.0147 | 0.402 |
+| scorecard | 0.1328 → 0.1467 | 0.0224 → 0.0082 | 0.0185 | 0.348 (520 pts) |
+| scorecard-no-state | 0.1328 → 0.1467 | 0.0224 → 0.0082 | 0.0185 | 0.348 (520 pts) |
+| scorecard-bureau | 0.1351 → 0.1472 | 0.0196 → 0.0082 | 0.0194 | 0.392 (513 pts) |
+| scorecard-bureau-no-state | 0.1351 → 0.1472 | 0.0196 → 0.0082 | 0.0194 | 0.392 (513 pts) |
+| lgbm-no-lc-grade | 0.1369 → 0.1467 | 0.0178 → 0.0081 | 0.0204 | 0.362 |
+| scorecard-no-lc-grade | 0.1333 → 0.1457 | 0.0214 → 0.0090 | 0.0206 | 0.290 (516 pts) |
 
-**Reliability plots** on the later half of dev, 10 equal-count bins by predicted PD, before (circles) and after (squares)
-calibration, 45° line = perfect calibration (`scripts/plot_reliability.py`):
+Reliability plots on the later half of dev, 10 equal-count bins by predicted PD, before (circles) and after (squares) calibration,
+45° line = perfect calibration (`scripts/plot_reliability.py`; the deployed pair first):
 
+![lgbm-bureau-no-state](../eval/results/reliability_dev_lgbm-bureau-no-state.png)
+![scorecard-bureau-no-state](../eval/results/reliability_dev_scorecard-bureau-no-state.png)
 ![lgbm](../eval/results/reliability_dev_lgbm.png)
 ![scorecard](../eval/results/reliability_dev_scorecard.png)
-![lgbm-no-lc-grade](../eval/results/reliability_dev_lgbm-no-lc-grade.png)
-![scorecard-no-lc-grade](../eval/results/reliability_dev_scorecard-no-lc-grade.png)
-![lgbm-bureau](../eval/results/reliability_dev_lgbm-bureau.png)
-![scorecard-bureau](../eval/results/reliability_dev_scorecard-bureau.png)
-
-**Isotonic tail.** For `lgbm`, `lgbm-bureau`, `lgbm-no-lc-grade` and `scorecard-bureau` the two or three calibration rows with the
-highest raw PD all defaulted, so the isotonic step function ends at 1.0 (clipped to 0.999) above a raw PD of 0.63–0.70. Only
-0.002–0.004% of dev rows reach that step, and every policy threshold of M3 lies far below it, but an extreme application such as
-the clear-decline sample displays a PD of 0.999 although the observed default rate among the top 1% of raw PDs is 0.34–0.40. Open
-for M3/M5: cap the calibrated PD at the observed rate of the top 1% bin, require a minimum number of rows per isotonic block, or use
-Platt scaling above the 99th percentile of the raw score.
 
 ## 6. Decisions (M3)
 
-Profit curves, chosen threshold, review band, realized P&L of each policy; five worked examples with reasons.
+**Economics and the expected-value threshold.** With the train economics of §3 (LGD 0.314, scheduled interest as the gain), the
+expected profit of approving a loan is positive until its PD reaches 28–59% depending on the rate, so the threshold that maximises
+expected profit on the dev profit curve (search floor: 50% approval; review band ±2 points) is high: **0.41 for
+`lgbm-bureau-no-state` and 0.40 for `scorecard-bureau-no-state`**, which approves 99.5% of dev applications, sends 0.5% to review and declines
+nobody. That is the honest answer of the economics: on this book almost every loan is worth making, and the model's value is not in
+refusing applicants but in ranking them. The profit curves (`eval/results/profit_curve_dev_<variant>.png`) are flat near the top
+because the marginal loans at PD 0.3–0.4 still earn a little in expectation.
+
+**Fixed approval rates are the operating comparison.** A lender who approves a fixed share asks what the model buys at that share.
+At 80, 85 and 90% approval the deployed LightGBM approves 11.6, 12.3 and 13.1% defaulters against 12.1, 12.8 and 13.4% for the Lending
+Club sub-grade cut at the same share, i.e. 5.2, 4.0 and 3.0 fewer defaults per 1,000 approvals, and 35, 28 and 20 fewer than approving
+everyone; realized P&L per approved loan rises from $991 (approve all) and $1,015 (sub-grade cut at 85%) to $1,063, 8.3 cents per dollar
+lent against 7.9. The scorecard captures about two thirds of that gap. **Thresholds carried into M4 unchanged:** expected-value
+0.41 / 0.40, and the 85% operating point 0.253 / 0.248 (both stored in `eval/results/policy_dev.json`).
+
+| Policy | PD threshold | Approve | Review | Decline | Default rate among approved | Realized P&L per approved loan | per $ lent | Defaults avoided per 1,000 approvals vs sub-grade cut | vs approve-all |
+|---|---|---|---|---|---|---|---|---|---|
+| approve_all |  | 100.0% | 0.0% | 0.0% | 15.1% | $991 | 7.8% |  |  |
+| approve_grades_A-C |  | 82.8% | 0.0% | 17.2% | 12.5% | $1,018 | 7.9% |  |  |
+| sub_grade_cut@80% |  | 80.0% | 0.0% | 20.0% | 12.1% | $1,020 | 7.9% |  |  |
+| sub_grade_cut@85% |  | 85.0% | 0.0% | 15.0% | 12.8% | $1,015 | 7.9% |  |  |
+| sub_grade_cut@90% |  | 90.0% | 0.0% | 10.0% | 13.4% | $1,010 | 7.9% |  |  |
+| lgbm-bureau-no-state@ev | 0.410 | 99.5% | 0.5% | 0.0% | 15.0% | $996 | 7.8% | 0.2 | 1.5 |
+| lgbm-bureau-no-state@80% | 0.228 | 80.0% | 0.0% | 20.0% | 11.6% | $1,074 | 8.3% | 5.2 | 35.0 |
+| lgbm-bureau-no-state@85% | 0.253 | 85.0% | 0.0% | 15.0% | 12.3% | $1,063 | 8.3% | 4.0 | 27.7 |
+| lgbm-bureau-no-state@90% | 0.278 | 90.0% | 0.0% | 10.0% | 13.1% | $1,045 | 8.2% | 3.0 | 19.8 |
+| scorecard-bureau-no-state@ev | 0.400 | 99.5% | 0.5% | 0.0% | 15.0% | $995 | 7.8% | -0.0 | 1.2 |
+| scorecard-bureau-no-state@80% | 0.229 | 80.0% | 0.0% | 20.0% | 11.8% | $1,068 | 8.2% | 3.9 | 33.7 |
+| scorecard-bureau-no-state@85% | 0.248 | 85.0% | 0.0% | 15.0% | 12.5% | $1,057 | 8.2% | 2.7 | 26.4 |
+| scorecard-bureau-no-state@90% | 0.281 | 90.0% | 0.0% | 10.0% | 13.3% | $1,039 | 8.1% | 1.7 | 18.5 |
+
+![lgbm-bureau-no-state](../eval/results/profit_curve_dev_lgbm-bureau-no-state.png)
+![scorecard-bureau-no-state](../eval/results/profit_curve_dev_scorecard-bureau-no-state.png)
+
+**Reason codes** (`scripts/reasons_report.py`, `eval/results/reasons_dev@85.md`, decisions at the 85% operating point with the ±2
+point review band). Over 2,000 random dev rows the two models' top-3 reasons overlap in at least one feature for 99.7% of rows and
+name the same #1 reason for 64.8%. The feature that leads the declines:
+
+- lgbm-bureau-no-state: sub_grade 59.8%, acc_open_past_24mths 23.4%, emp_years 7.9%, purpose 2.4%, dti 1.7%, annual_inc 1.7% (over 13,981 declined rows)
+- scorecard-bureau-no-state: sub_grade 71.5%, acc_open_past_24mths 19.8%, installment_to_income 7.4%, annual_inc 1.1%, dti 0.2%, purpose 0.0% (over 13,351 declined rows)
+
+Every reason text uses the plain-language label and the approved-population percentile; the check for raw column names or NaN in
+any text passes. Five declined and two approved dev loans (ids only), with the adverse-action notice the API returns for a decline:
+
+**Dev loan 50526960, sub-grade D4, rate 17.57%, outcome: charged off.** lgbm-bureau-no-state: PD 0.278, decline. scorecard-bureau-no-state: PD 0.283, decline.
+
+- *lgbm-bureau-no-state*: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers (+0.42); Lending Club sub-grade: D4 (associated with more defaults) (+0.26); Debt-to-income ratio 30.6% is higher than 95% of approved borrowers (+0.17); Accounts opened in the last 12 months 8 is higher than 95% of approved borrowers (+0.16); Total bankcard credit limit $3,000 is lower than 95% of approved borrowers (+0.10)
+  - Notice: Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Lending Club sub-grade: D4 (associated with more defaults); Debt-to-income ratio 30.6% is higher than 95% of approved borrowers; Accounts opened in the last 12 months 8 is higher than 95% of approved borrowers.
+- *scorecard-bureau-no-state*: Lending Club sub-grade: D4 (associated with more defaults) (+0.31); Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers (+0.29); Debt-to-income ratio 30.6% is higher than 95% of approved borrowers (+0.14); Accounts opened in the last 12 months 8 is higher than 95% of approved borrowers (+0.06); Share of bankcards above 75% of their limit 0.0% supports approval (better than 90% of approved borrowers) (−0.06)
+  - Notice: Principal reasons for this decision: Lending Club sub-grade: D4 (associated with more defaults); Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Debt-to-income ratio 30.6% is higher than 95% of approved borrowers; Accounts opened in the last 12 months 8 is higher than 95% of approved borrowers.
+
+**Dev loan 48604527, sub-grade D3, rate 16.99%, outcome: fully paid.** lgbm-bureau-no-state: PD 0.287, decline. scorecard-bureau-no-state: PD 0.283, decline.
+
+- *lgbm-bureau-no-state*: Lending Club sub-grade: D3 (associated with more defaults) (+0.25); Annual income $24,669 is lower than 95% of approved borrowers (+0.16); Installment relative to income 0.14 is higher than 90% of approved borrowers (+0.15); Home ownership: RENT (associated with more defaults) (+0.11); Interest rate 17.0% is higher than 95% of approved borrowers (+0.08)
+  - Notice: Principal reasons for this decision: Lending Club sub-grade: D3 (associated with more defaults); Annual income $24,669 is lower than 95% of approved borrowers; Installment relative to income 0.14 is higher than 90% of approved borrowers; Home ownership: RENT (associated with more defaults).
+- *scorecard-bureau-no-state*: Lending Club sub-grade: D3 (associated with more defaults) (+0.27); Annual income $24,669 is lower than 95% of approved borrowers (+0.18); Installment relative to income 0.14 is higher than 90% of approved borrowers (+0.17); Home ownership: RENT (associated with more defaults) (+0.06); Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers (+0.06)
+  - Notice: Principal reasons for this decision: Lending Club sub-grade: D3 (associated with more defaults); Annual income $24,669 is lower than 95% of approved borrowers; Installment relative to income 0.14 is higher than 90% of approved borrowers; Home ownership: RENT (associated with more defaults).
+
+**Dev loan 41348903, sub-grade C5, rate 14.65%, outcome: charged off.** lgbm-bureau-no-state: PD 0.309, decline. scorecard-bureau-no-state: PD 0.279, decline.
+
+- *lgbm-bureau-no-state*: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers (+0.47); Debt-to-income ratio 34.5% is higher than 95% of approved borrowers (+0.22); Lending Club sub-grade: C5 (associated with more defaults) (+0.17); Annual income $30,000 is lower than 95% of approved borrowers (+0.17); Accounts opened in the last 12 months 7 is higher than 95% of approved borrowers (+0.13)
+  - Notice: Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Debt-to-income ratio 34.5% is higher than 95% of approved borrowers; Lending Club sub-grade: C5 (associated with more defaults); Annual income $30,000 is lower than 95% of approved borrowers.
+- *scorecard-bureau-no-state*: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers (+0.29); Lending Club sub-grade: C5 (associated with more defaults) (+0.21); Debt-to-income ratio 34.5% is higher than 95% of approved borrowers (+0.14); Annual income $30,000 is lower than 95% of approved borrowers (+0.13); Installment relative to income 0.05 supports approval (better than 75% of approved borrowers) (−0.09)
+  - Notice: Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Lending Club sub-grade: C5 (associated with more defaults); Debt-to-income ratio 34.5% is higher than 95% of approved borrowers; Annual income $30,000 is lower than 95% of approved borrowers.
+
+**Dev loan 48676667, sub-grade E1, rate 18.25%, outcome: fully paid.** lgbm-bureau-no-state: PD 0.335, decline. scorecard-bureau-no-state: PD 0.306, decline.
+
+- *lgbm-bureau-no-state*: Lending Club sub-grade: E1 (associated with more defaults) (+0.25); Employment length: missing (associated with more defaults) (+0.21); Annual income $24,000 is lower than 95% of approved borrowers (+0.15); Total credit lines 5 is lower than 95% of approved borrowers (+0.14); Months since the most recent credit inquiry 1.0 months is lower than 90% of approved borrowers (+0.11)
+  - Notice: Principal reasons for this decision: Lending Club sub-grade: E1 (associated with more defaults); Employment length: missing (associated with more defaults); Annual income $24,000 is lower than 95% of approved borrowers; Total credit lines 5 is lower than 95% of approved borrowers.
+- *scorecard-bureau-no-state*: Lending Club sub-grade: E1 (associated with more defaults) (+0.41); Annual income $24,000 is lower than 95% of approved borrowers (+0.18); Loan purpose: other (associated with more defaults) (+0.12); Accounts opened in the last 24 months 3 supports approval (better than 50% of approved borrowers) (−0.07); Home ownership: RENT (associated with more defaults) (+0.06)
+  - Notice: Principal reasons for this decision: Lending Club sub-grade: E1 (associated with more defaults); Annual income $24,000 is lower than 95% of approved borrowers; Loan purpose: other (associated with more defaults); Home ownership: RENT (associated with more defaults).
+
+**Dev loan 46426382, sub-grade D2, rate 16.55%, outcome: fully paid.** lgbm-bureau-no-state: PD 0.387, decline. scorecard-bureau-no-state: PD 0.283, decline.
+
+- *lgbm-bureau-no-state*: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers (+0.51); Lending Club sub-grade: D2 (associated with more defaults) (+0.46); Delinquencies in the last 2 years 4 is higher than 95% of approved borrowers (+0.18); FICO score 662 is lower than 95% of approved borrowers (+0.16); Accounts opened in the last 12 months 8 is higher than 95% of approved borrowers (+0.15)
+  - Notice: Principal reasons for this decision: Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; Lending Club sub-grade: D2 (associated with more defaults); Delinquencies in the last 2 years 4 is higher than 95% of approved borrowers; FICO score 662 is lower than 95% of approved borrowers.
+- *scorecard-bureau-no-state*: Lending Club sub-grade: D2 (associated with more defaults) (+0.31); Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers (+0.29); Annual income $89,000 supports approval (better than 50% of approved borrowers) (−0.12); Installment relative to income 0.04 supports approval (better than 75% of approved borrowers) (−0.11); FICO score 662 is lower than 95% of approved borrowers (+0.08)
+  - Notice: Principal reasons for this decision: Lending Club sub-grade: D2 (associated with more defaults); Accounts opened in the last 24 months 12 is higher than 95% of approved borrowers; FICO score 662 is lower than 95% of approved borrowers.
 
 ## 7. Fairness audit (M3)
 
-Proxy groups, approval and error rates, four-fifths ratios, and what the audit can and cannot show.
+The data carries no protected attribute. The audit runs on proxies: state (top 10 by volume, the rest pooled), income quintile,
+employment-length band and home ownership, on dev, for both deployed models, at the expected-value threshold and at the 85% operating
+point, with the ±2 point review band (`scripts/fairness_report.py`, `eval/results/fairness_dev_<variant>[@85]_<group>.csv`). The
+four-fifths ratio is the smallest group approval rate over the largest.
+
+| Model, threshold | State (top 10) | Income quintile | Employment band | Home ownership |
+|---|---|---|---|---|
+| lgbm-bureau-no-state, expected value (t = 0.410) | 0.998 | 0.988 | 0.991 | 0.994 |
+| lgbm-bureau-no-state, 85% operating point (t = 0.253) | 0.956 | 0.688 | 0.723 | 0.846 |
+| scorecard-bureau-no-state, expected value (t = 0.400) | 0.997 | 0.981 | 0.990 | 0.992 |
+| scorecard-bureau-no-state, 85% operating point (t = 0.248) | 0.938 | 0.586 | 0.813 | 0.810 |
+
+At the expected-value threshold nearly everyone is approved and every ratio is above 0.98, which says nothing. At the 85% operating
+point the picture is the one a lender has to defend. For `lgbm-bureau-no-state` the gaps (max − min across groups):
+
+| Group | Approval-rate gap | Default-rate gap | FPR gap | TPR gap |
+|---|---|---|---|---|
+| state | 3.8% | 4.4% | 2.8% | 9.7% |
+| income quintile | 29.8% | 8.6% | 26.8% | 37.4% |
+| employment band | 24.5% | 8.1% | 21.4% | 29.3% |
+| home ownership | 14.0% | 5.8% | 12.1% | 17.9% |
+
+**Caveats, which are the point of this section.** These are proxies, so the audit can show disparate approval rates, not their cause.
+Differences in approval rate follow differences in default rate unless the FPR and TPR columns show otherwise, which is why the
+group's own default rate stands beside its approval rate in every table below. Three readings: (1) by state the model is flat, the
+approval gap (3.8 points) is smaller than the default-rate gap (4.4), and `addr_state` is no longer a feature; (2) income and home
+ownership carry a real disparity: the lowest income quintile defaults at 19.8% against 11.1% for the highest, but it is approved
+65.6% against 95.4%, and the applicants in it who would have repaid are declined 30.3% of the time against 3.5%, so the model
+amplifies an 8.7-point difference in risk into a 30-point difference in approval. Income is an explicit, monotone-constrained input
+(`annual_inc`, `loan_to_income`, `installment_to_income`), so this is the model doing what it was told; whether a lender may act on it
+is a policy and legal question this audit cannot answer; (3) the "unknown" employment band (no employment length on file, 6.2% of dev)
+defaults at 21.7% and is approved 64.1% of the time: the missing value is itself a strong signal and the notice lists it as such.
+The scorecard shows the same pattern with larger income gaps (four-fifths 0.59). None of this changes on test unless the population
+does; M4 repeats the audit there once.
+
+| Group | n | Default rate | Approval rate | Default rate among approved | FPR (declined, would have repaid) | TPR (declined, would have defaulted) |
+|---|---|---|---|---|---|---|
+| income_q3 | 24,158 | 15.0% | 86.4% | 12.4% | 11.0% | 28.4% |
+| income_q4 | 24,158 | 13.1% | 91.5% | 11.2% | 6.5% | 21.6% |
+| income_q1 | 24,158 | 19.8% | 65.6% | 14.7% | 30.3% | 51.1% |
+| income_q5 | 24,158 | 11.1% | 95.4% | 10.1% | 3.5% | 13.8% |
+| income_q2 | 24,158 | 16.6% | 80.3% | 13.4% | 16.6% | 35.2% |
+
+| Group | n | Default rate | Approval rate | Default rate among approved | FPR (declined, would have repaid) | TPR (declined, would have defaulted) |
+|---|---|---|---|---|---|---|
+| MORTGAGE | 54,263 | 12.2% | 91.0% | 10.5% | 7.2% | 21.9% |
+| RENT | 53,347 | 17.9% | 77.0% | 14.0% | 19.4% | 39.9% |
+| OWN | 13,180 | 15.8% | 82.4% | 13.0% | 14.8% | 32.6% |
+
+| Group | n | Default rate | Approval rate | Default rate among approved | FPR (declined, would have repaid) | TPR (declined, would have defaulted) |
+|---|---|---|---|---|---|---|
+| 10+ | 37,816 | 13.6% | 88.6% | 11.4% | 9.1% | 26.0% |
+| 2-5 | 35,696 | 15.0% | 83.6% | 12.3% | 13.7% | 31.8% |
+| 6-9 | 21,384 | 15.2% | 84.4% | 12.4% | 12.8% | 31.5% |
+| 0-1 | 18,373 | 15.6% | 82.1% | 12.6% | 15.0% | 33.9% |
+| unknown | 7,521 | 21.7% | 64.1% | 15.1% | 30.6% | 55.3% |
+
+| Group | n | Default rate | Approval rate | Default rate among approved | FPR (declined, would have repaid) | TPR (declined, would have defaulted) |
+|---|---|---|---|---|---|---|
+| other | 50,104 | 14.5% | 83.6% | 11.5% | 13.5% | 33.6% |
+| CA | 17,900 | 15.6% | 84.2% | 12.5% | 12.7% | 32.8% |
+| TX | 9,890 | 14.8% | 85.1% | 12.3% | 12.3% | 29.5% |
+| NY | 9,726 | 17.4% | 84.1% | 14.1% | 12.5% | 32.1% |
+| FL | 8,504 | 16.3% | 81.8% | 13.1% | 15.2% | 34.1% |
+| IL | 4,955 | 13.0% | 84.8% | 10.8% | 13.0% | 29.4% |
+| NJ | 4,262 | 15.2% | 85.5% | 13.1% | 12.3% | 26.6% |
+| PA | 4,198 | 15.1% | 83.8% | 12.5% | 13.7% | 30.6% |
+| GA | 3,975 | 13.5% | 83.1% | 10.3% | 13.9% | 36.3% |
+| OH | 3,894 | 16.5% | 83.9% | 13.2% | 12.7% | 33.1% |
+| NC | 3,382 | 15.8% | 83.5% | 13.0% | 13.7% | 31.5% |
 
 ## 8. Drift (M3)
 
-PSI heat map by quarter; which features move first; the retraining rule.
+PSI of every feature (including the opt-in bureau set) and of the deployed scores, train (2012–2014) against each quarter of 2015
+(`scripts/drift_report.py`; the target is never read, so the test quarters 2015Q3–Q4 are allowed here). Rule of thumb 0.10 watch,
+0.25 act. The value PSI is computed over non-missing bins and the missingness PSI separately as a two-bin PSI; a feature's status is
+the larger of the two, and the table says which one drives it (`eval/results/psi_by_quarter.csv`, `psi_values_by_quarter.csv`,
+`psi_missing_by_quarter.csv`).
+
+| Feature | 2015Q1 | 2015Q2 | 2015Q3 | 2015Q4 | Driven by | Value PSI (max) | Missingness PSI (max) |
+|---|---|---|---|---|---|---|---|
+| initial_list_status | 0.009 | 0.140 | 0.250 | 0.606 | values | 0.606 | 0.000 |
+| tot_cur_bal | 0.491 | 0.491 | 0.491 | 0.491 | missingness | 0.007 | 0.491 |
+| num_tl_op_past_12m | 0.491 | 0.491 | 0.491 | 0.491 | missingness | 0.026 | 0.491 |
+| mo_sin_rcnt_tl | 0.491 | 0.491 | 0.491 | 0.491 | missingness | 0.011 | 0.491 |
+| int_rate | 0.183 | 0.214 | 0.233 | 0.318 | values | 0.318 | 0.000 |
+| verification_status | 0.053 | 0.058 | 0.074 | 0.121 | values | 0.121 | 0.000 |
+| mort_acc | 0.104 | 0.104 | 0.104 | 0.104 | missingness | 0.010 | 0.104 |
+| acc_open_past_24mths | 0.104 | 0.104 | 0.104 | 0.104 | missingness | 0.029 | 0.104 |
+| total_bc_limit | 0.104 | 0.104 | 0.104 | 0.104 | missingness | 0.013 | 0.104 |
+| score:lgbm-bureau-no-state | 0.013 | 0.021 | 0.016 | 0.018 | values | | |
+| score:scorecard-bureau-no-state | 0.008 | 0.012 | 0.009 | 0.013 | values | | |
+
+27 of 36 features stay below 0.10 in every quarter: loan_amnt, installment, annual_inc, dti, fico, delinq_2yrs, inq_last_6mths, open_acc, pub_rec, revol_bal, revol_util, total_acc, pub_rec_bankruptcies, credit_age_years, emp_years, loan_to_income, installment_to_income, bc_open_to_buy, bc_util, mths_since_recent_inq, percent_bc_gt_75, grade, sub_grade, home_ownership, purpose, addr_state, application_type.
+
+**What moves first, and why.** `int_rate` is already at 0.18 in 2015Q1 and reaches 0.32 by Q4: Lending Club repriced through 2015
+(lower rates for the same sub-grade and a safer grade mix, §1), so the models see a cheaper book than they were trained on, and the
+calibrator fitted on 2015H1 is what absorbs the level shift. `initial_list_status` moves most (0.61 in Q4): the share of whole-loan
+listings ("w") rose sharply during 2015, a change in Lending Club's distribution channel, not in applicants; the feature carries little
+gain, and if the drift continues it is the first candidate to drop. `verification_status` crosses 0.10 in Q4 for the same policy
+reason. The bureau columns and `mort_acc` show 0.49 and 0.10 purely from missingness: they are missing for the early-2012 listings
+(7.4% and 2.0% of train) and complete in 2015, the known effect of §1, while their values are stable (0.007–0.03). The deployed
+scores themselves move by 0.01–0.02 per quarter: the population the models rank has not changed in a way that reaches the score.
+Retraining rule: act when a feature's **value** PSI exceeds 0.25 for a quarter or the score PSI exceeds 0.10; the missingness PSI
+of the 2012 block is documented, not actionable.
+
+![PSI heat map](../eval/results/psi_by_quarter.png)
 
 ## 9. Test results (M4) — run once on _(date)_
 

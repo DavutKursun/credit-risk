@@ -1,0 +1,4 @@
+group,n,default_rate,approval_rate,default_rate_approved,fpr,tpr
+MORTGAGE,54263,0.1219,0.9993,0.1217,0.0005,0.0015
+RENT,53347,0.1794,0.9911,0.1774,0.0065,0.02
+OWN,13180,0.1583,0.9932,0.1563,0.0045,0.0192

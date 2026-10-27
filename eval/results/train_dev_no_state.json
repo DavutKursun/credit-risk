@@ -1,0 +1,97 @@
+{
+  "lgbm-no-state": {
+    "dev_ranking": {
+      "n": 120790,
+      "default_rate": 0.1512,
+      "mean_pd": 0.1329,
+      "auc": 0.6907,
+      "gini": 0.3813,
+      "ks": 0.2782,
+      "pr_auc": 0.2691,
+      "brier": 0.12125,
+      "log_loss": 0.39658,
+      "ece": 0.01836
+    },
+    "dev_late_before": {
+      "n": 60395,
+      "default_rate": 0.1547,
+      "mean_pd": 0.1325,
+      "auc": 0.6926,
+      "gini": 0.3853,
+      "ks": 0.2819,
+      "pr_auc": 0.2766,
+      "brier": 0.12336,
+      "log_loss": 0.40188,
+      "ece": 0.02218
+    },
+    "dev_late_after": {
+      "n": 60395,
+      "default_rate": 0.1547,
+      "mean_pd": 0.1468,
+      "auc": 0.6926,
+      "gini": 0.3851,
+      "ks": 0.2836,
+      "pr_auc": 0.2734,
+      "brier": 0.12286,
+      "log_loss": 0.39989,
+      "ece": 0.00846
+    },
+    "fit_seconds": 8.4,
+    "model_path": "/Users/davutkursun/Downloads/credit-risk/models/lgbm-no-state.joblib",
+    "best_iteration": 430
+  },
+  "scorecard-no-state": {
+    "dev_ranking": {
+      "n": 120790,
+      "default_rate": 0.1512,
+      "mean_pd": 0.1332,
+      "auc": 0.6821,
+      "gini": 0.3642,
+      "ks": 0.2674,
+      "pr_auc": 0.2559,
+      "brier": 0.1221,
+      "log_loss": 0.39934,
+      "ece": 0.01849
+    },
+    "dev_late_before": {
+      "n": 60395,
+      "default_rate": 0.1547,
+      "mean_pd": 0.1328,
+      "auc": 0.6844,
+      "gini": 0.3688,
+      "ks": 0.2719,
+      "pr_auc": 0.2627,
+      "brier": 0.12426,
+      "log_loss": 0.40474,
+      "ece": 0.02239
+    },
+    "dev_late_after": {
+      "n": 60395,
+      "default_rate": 0.1547,
+      "mean_pd": 0.1467,
+      "auc": 0.684,
+      "gini": 0.368,
+      "ks": 0.2713,
+      "pr_auc": 0.2593,
+      "brier": 0.12372,
+      "log_loss": 0.40286,
+      "ece": 0.00817
+    },
+    "fit_seconds": 7.7,
+    "model_path": "/Users/davutkursun/Downloads/credit-risk/models/scorecard-no-state.joblib",
+    "selected_features": [
+      "annual_inc",
+      "dti",
+      "fico",
+      "inq_last_6mths",
+      "mort_acc",
+      "credit_age_years",
+      "loan_to_income",
+      "installment_to_income",
+      "grade",
+      "sub_grade",
+      "home_ownership",
+      "purpose"
+    ]
+  }
+}

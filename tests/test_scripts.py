@@ -1,5 +1,5 @@
 """End to end on a synthetic export: build_cohort → audit → train → evaluate (dev; test refused) → reliability plots, model tables,
-sanity checks → policy → fairness → drift.
+sanity checks → policy (dev, and test with the dev thresholds) → reasons → fairness → drift.
 The same chain Claude Code runs on the real data, so the first real run is not the first run."""
 
 from __future__ import annotations
@@ -21,6 +21,7 @@ import fairness_report
 import model_tables
 import plot_reliability
 import policy_eval
+import reasons_report
 import sanity_checks
 import train
 
@@ -77,10 +78,22 @@ def test_reliability_plots_model_tables_and_sanity_scripts(workspace):
 
 def test_policy_fairness_drift_scripts(workspace):
     common = ["--models-dir", str(workspace["models"]), "--cohort-dir", str(workspace["cohort"]), "--out", str(workspace["out"])]
-    assert policy_eval.main(["--split", "test", *common]) == 3  # no --final / --threshold
+    assert policy_eval.main(["--split", "test", *common]) == 3  # no --final / --thresholds-from
     assert policy_eval.main(["--split", "dev", "--min-approval-rate", "0.3", *common]) == 0
     pol = json.loads((workspace["out"] / "policy_dev.json").read_text())
     assert "lgbm" in pol["thresholds"] and any(p["policy"] == "approve_all" for p in pol["policies"])
-    assert fairness_report.main(["--model", "lgbm", "--split", "dev", *common]) == 0
+    names = {p["policy"] for p in pol["policies"]}
+    assert {"lgbm@ev", "lgbm@80%", "lgbm@90%", "sub_grade_cut@85%", "approve_grades_A-C"} <= names
+    fixed = next(p for p in pol["policies"] if p["policy"] == "lgbm@85%")
+    assert abs(fixed["approve"] - 0.85) < 0.01 and "defaults_avoided_per_1000_vs_subgrade_cut" in fixed  # exact fixed approval rate
+    assert (workspace["out"] / "profit_curve_dev_lgbm.png").exists() and (workspace["out"] / "policy_dev.csv").exists()
+    assert policy_eval.main(["--split", "test", "--final", "--thresholds-from", str(workspace["out"] / "policy_dev.json"), *common]) == 0  # the M4 path
+    assert reasons_report.main(["--variants", "lgbm,scorecard", "--n", "200", *common]) == 0
+    rs = json.loads((workspace["out"] / "reasons_dev.json").read_text())
+    assert rs["checks"]["reason_texts_clean"] and rs["checks"]["all_reasons_have_5_entries"] and len(rs["examples"]) == 7
+    assert reasons_report.main(["--variants", "lgbm,scorecard", "--split", "test", *common]) == 3  # test refused without --final
+    assert fairness_report.main(["--model", "lgbm", "--split", "dev", "--min-n", "20", *common]) == 0
+    fr = json.loads((workspace["out"] / "fairness_dev_lgbm.json").read_text())
+    assert "default_rate" in fr["groups"]["home_ownership"][0] and "approval_rate" in fr["gaps"]["home_ownership"]
     assert drift_report.main(common) == 0
-    assert (workspace["out"] / "psi_by_quarter.csv").exists()
+    assert (workspace["out"] / "psi_by_quarter.csv").exists() and (workspace["out"] / "psi_missing_by_quarter.csv").exists()

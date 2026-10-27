@@ -6,35 +6,38 @@ Section 0 says where we are.
 
 ## 0. Status (updated 2026-10-27)
 
-**Milestones 1 and 2 are done (commits "Milestone 1 (1/2)", "Milestone 1 (2/2)", "Milestone 2"). Start at Milestone 3, step 0 below.**
+**Milestones 1–3 are done (commits "Milestone 1 (1/2)", "Milestone 1 (2/2)", "Milestone 2", "Milestone 3"). Start at Milestone 4, step 0 below.**
 
-Done in M1 (numbers in `docs/DESIGN.md` §1–3): cohort 589,488 36-month loans 2012-01..2015-12 (default rate 14.03%), train 306,462 /
-dev 120,790 / test 162,236 by issue month (`data/cohort/summary.json`, parquet gitignored); leakage audit on train 0 suspicious;
-37 bureau columns with cohort data flagged True (`leakage.ORIGINATION_BUREAU`), 27 without data None; `IDENTIFIERS` (id, member_id)
-never feature sources; `features.BUREAU_FEATURES` (9) opt-in via `make_features(..., bureau=True)` / `train.py --bureau`; `drift.py`
-reports value PSI and missingness PSI separately; economics on train (LGD 0.314, break-even PD 28% → 59% by grade).
+Done in M1–M2 (`docs/DESIGN.md` §1–5): cohort 589,488 36-month loans 2012-01..2015-12, train 306,462 / dev 120,790 / test 162,236;
+leakage audit clean; 37 bureau columns flagged True, nine of them the opt-in `BUREAU_FEATURES`; six dev-calibrated bundles.
 
-Done in M2 (`docs/DESIGN.md` §4–5; all on dev, test never read):
-- Six bundles in `models/` (committed, 0.08–2.4 MB each): lgbm / scorecard × with LC grade, without (`-no-lc-grade`), with the
-  bureau set (`-bureau`); each calibrated with isotonic regression on the earlier half of dev, measured on the later half.
-- Dev AUC: lgbm 0.692, scorecard 0.682, grade-only 0.675; without LC grade 0.672 / 0.650;
-  bureau 0.698 / 0.689 (+0.006 / +0.007: the nine columns add signal on dev). ECE after calibration 0.008–0.010.
-- `train_scorecard` enforces sign consistency (drops features with a positive coefficient on WoE and refits; `meta['dropped_wrong_sign']`):
-  int_rate and revol_util left the LC-grade card, bc_util the bureau card, no AUC lost.
-- Scripts: `evaluate.py --split dev`, `plot_reliability.py` (before/after PNGs, committed), `model_tables.py` (scorecard points table,
-  LightGBM gain), `sanity_checks.py` (sample order, monotonicity probes, bureau ablation). 34 tests.
-- Open points carried into M3: the isotonic top step gives 0.999 to extreme applications (DESIGN.md §5; cap or Platt above the 99th
-  percentile); `addr_state` takes 12–16% of LightGBM gain and is a fairness proxy; which variant the API serves is decided after M3.
+Done in M3 (`docs/DESIGN.md` §4–8; dev only, test never read):
+- `IsotonicCalibrator` fits on equal-count bins (≥ 500 rows, weighted) so no step rests on a few tail defaults; the clear-decline sample
+  reads 0.40 instead of 0.999; ECE after calibration 0.007–0.009 for all ten bundles (fewer than 5,000 rows → raw-point fit).
+- Rules fixed and applied: bureau set kept (+0.006 / +0.007 dev AUC); `addr_state` dropped (costs ≤ 0.0012; `train.py --no-state`).
+  **Deployed pair: `lgbm-bureau-no-state` (dev AUC 0.6966) and `scorecard-bureau-no-state` (0.6890).** Ten bundles in `models/`.
+- `policy_eval.py`: expected-value threshold (min approval 0.5, review band ±0.02 → `decide()` is symmetric now) and fixed approval
+  rates 80/85/90% against approve-all, grades A–C and the exact sub-grade cut; profit-curve PNGs; `--variants`; test needs
+  `--final --thresholds-from eval/results/policy_dev.json`. Thresholds for M4: EV 0.41 / 0.40 (approves 99.5%),
+  85% operating point 0.253 / 0.248. At 85% LightGBM approves 12.3% defaulters vs 12.8% for the sub-grade cut, $1,063 vs $1,015 per loan.
+- `reasons_report.py` (`--policy-rate 0.85`): top-3 agreement 99.7%, same #1 reason 64.8%; sub-grade leads 60% of declines, accounts
+  opened in 24 months 23%; text check clean. `fairness_report.py` (`--tag`, `--min-n`, group default rate and gaps): at 85% the income
+  quintile four-fifths ratio is 0.69 (LightGBM) / 0.59 (scorecard), home ownership 0.85 / 0.81; by state 0.96 / 0.94.
+- `drift_report.py` (`--variants`): int_rate 0.18 → 0.32, initial_list_status 0.61 in Q4, bureau columns 0.49 from missingness only,
+  deployed scores 0.01–0.02. 35 tests; `eval/results/*.png` are committed.
 
-**Milestone 3, step 0 (do first):** `pytest -q` (expect 34 passed). Then, on dev only: `python scripts/policy_eval.py --split dev`
-(profit curves for every bundle, threshold by expected profit, review band ±0.02; compare approve-all, grades A–C, the sub-grade cut at
-the same approval rate, scorecard and LightGBM policies at the same approval rate, realized P&L of each), reason codes and adverse-action
-text for five declined dev applications with the agreement rate between the two models' top-3 reasons, `fairness_report.py` for the
-chosen variant (proxies: state, income quintile, employment band, home ownership; four-fifths ratio; the `addr_state` question), and
-`drift_report.py` (PSI by quarter, value and missingness). Report the tables, update DESIGN.md §6–8, commit, push, stop.
+**Milestone 4, step 0 (do first):** `pytest -q` (expect 35 passed). Then the single test run, in this order, each script once, and
+write the date into §2 of this file: `python scripts/evaluate.py --split test --final` (all ten bundles + grade only);
+`python scripts/policy_eval.py --split test --final --thresholds-from eval/results/policy_dev.json --variants lgbm-bureau-no-state,scorecard-bureau-no-state`
+(the dev thresholds unchanged, plus the fixed rates); `python scripts/fairness_report.py --model <each deployed> --split test` at the EV
+threshold and `--threshold <85% dev threshold> --tag @85`; `python scripts/reasons_report.py --split test --final --policy-rate 0.85 --variants ...`;
+`python scripts/plot_reliability.py` is dev-only, write the test reliability tables from evaluate's output. Then DESIGN.md §9 with the
+date, `docs/model_card.md`, README results table and decision table (scorecard vs LightGBM: when each wins), commit "Milestone 4: ...",
+push. Stop. Never run the test scripts twice.
 
-macOS notes: Python 3.11 venv at `.venv`. The Mac has 8 GB RAM: reading the raw CSV peaks at 3.4–3.8 GB RSS for the cohort build
-and the audit, so run raw-file steps one at a time; never load all 151 columns at once. Training all six bundles takes about 80 s.
+macOS notes: Python 3.11 venv at `.venv`. The Mac has 8 GB RAM: reading the raw CSV peaks at 3.4–3.8 GB RSS; run raw-file steps one at a
+time. Training all ten bundles takes about 2.5 minutes. The background shell is zsh: it does not word-split unquoted variables, so pass
+script arguments explicitly (or use arrays).
 
 ## 1. Goal
 

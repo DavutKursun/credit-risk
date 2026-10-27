@@ -31,12 +31,20 @@ def group_report(y, decisions, group: pd.Series, min_n: int = 200) -> pd.DataFra
         appr = d[m] == "approve"
         yy = y[m]
         declined = ~appr
-        rows.append({"group": level, "n": int(m.sum()), "approval_rate": round(float(appr.mean()), 4),
+        rows.append({"group": level, "n": int(m.sum()), "default_rate": round(float(yy.mean()), 4), "approval_rate": round(float(appr.mean()), 4),
                      "default_rate_approved": round(float(yy[appr].mean()), 4) if appr.any() else None,
                      "fpr": round(float((declined & (yy == 0)).sum() / max((yy == 0).sum(), 1)), 4),
                      "tpr": round(float((declined & (yy == 1)).sum() / max((yy == 1).sum(), 1)), 4)})
-    cols = ["group", "n", "approval_rate", "default_rate_approved", "fpr", "tpr"]
+    cols = ["group", "n", "default_rate", "approval_rate", "default_rate_approved", "fpr", "tpr"]
     return pd.DataFrame(rows, columns=cols).sort_values("n", ascending=False).reset_index(drop=True)
+
+
+def gaps(report: pd.DataFrame) -> dict:
+    """Max − min across groups of the approval rate, the default rate, FPR and TPR: differences in approval follow differences in
+    default rate unless the FPR/TPR gaps say otherwise."""
+    if report.empty:
+        return {}
+    return {k: round(float(report[k].max() - report[k].min()), 4) for k in ("approval_rate", "default_rate", "fpr", "tpr")}
 
 
 def four_fifths_ratio(report: pd.DataFrame) -> float | None:

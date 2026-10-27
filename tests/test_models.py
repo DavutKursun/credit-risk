@@ -81,6 +81,20 @@ def test_scorecard_learns_and_scores_points(trained):
     assert (b.estimator.estimator_.coef_.ravel() <= 0).all() and "dropped_wrong_sign" in b.meta  # every feature points the way its WoE points
 
 
+def test_isotonic_tail_cannot_exceed_the_top_bin_rate():
+    rng = np.random.default_rng(3)
+    p = np.sort(rng.beta(2, 8, 20_000))
+    y = (rng.random(20_000) < p).astype(float)
+    p_tail, y_tail = np.append(p, [0.95, 0.96, 0.97]), np.append(y, [1.0, 1.0, 1.0])  # three top-scored rows that all defaulted
+    cal = fit_calibrator(p_tail, y_tail, "isotonic")
+    x, t, w = cal._binned(p_tail, y_tail)
+    assert cal.bins_ == 40 and (w >= 500).all()  # 20,003 rows → 40 equal-count bins of ≥ 500 rows
+    assert float(cal.transform([0.999])[0]) <= float(t.max()) + 1e-9  # no step above the top bin's observed rate
+    assert float(cal.transform([0.999])[0]) < 0.9
+    small = fit_calibrator(p[:200], y[:200], "isotonic")  # too small to bin → raw-point isotonic, still monotone
+    assert small.bins_ is None and np.all(np.diff(small.transform(np.linspace(0, 1, 50))) >= -1e-12)
+
+
 def test_calibration_improves_or_keeps_ece(trained):
     b, X_dv, y_dv = trained["lgbm"], trained["X_dv"], trained["y_dv"]
     raw, cal = b.predict_raw(X_dv), b.predict_pd(X_dv)
@@ -114,8 +128,8 @@ def test_economics_and_decisions(trained):
     assert ev[0] > 0 > ev[1]
     be = breakeven_pd([10_000], [320.0], econ["lgd"])
     assert 0 < be[0] < 0.5
-    d = decide([0.05, 0.11, 0.30], threshold=0.10, band=0.02)
-    assert list(d) == ["approve", "review", "decline"]
+    d = decide([0.05, 0.09, 0.11, 0.30], threshold=0.10, band=0.02)
+    assert list(d) == ["approve", "review", "review", "decline"]  # review = within ±band of the threshold
     dv = trained["dev"]
     pd_ = trained["lgbm"].predict_pd(trained["X_dv"])
     curve = profit_curve(trained["y_dv"], pd_, dv["funded_amnt"], dv["installment"], econ["lgd"], realized_pnl(dv))
@@ -158,6 +172,9 @@ def test_bureau_variant_trains_with_monotone_constraints(cohort):
     b = train_lgbm(X_tr, tr[TARGET].to_numpy(), X_dv, dv[TARGET].to_numpy(), bureau=True, params={"learning_rate": 0.1, "min_data_in_leaf": 20},
                    early_stopping_rounds=30, num_boost_round=200)
     assert b.variant == "lgbm-bureau" and b.bureau and set(BUREAU_FEATURES) <= set(b.features)
+    ns = train_lgbm(X_tr, tr[TARGET].to_numpy(), X_dv, dv[TARGET].to_numpy(), state=False, params={"learning_rate": 0.1, "min_data_in_leaf": 20},
+                    early_stopping_rounds=30, num_boost_round=100)
+    assert ns.variant == "lgbm-no-state" and "addr_state" not in ns.features and np.isfinite(ns.predict_raw(X_dv.head(5))).all()  # scores a frame that still has the column
     row = X_dv.iloc[[0]].copy()
     pds = []
     for u in (10.0, 40.0, 70.0, 95.0):

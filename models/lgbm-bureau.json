@@ -1,6 +1,7 @@
 {
   "variant": "lgbm-bureau",
   "bureau": true,
+  "state": true,
   "numeric": [
     "loan_amnt",
     "int_rate",
@@ -61,7 +62,7 @@
   "n_dev": 120790,
   "calibration": "isotonic",
   "calib_share": 0.5,
-  "fit_seconds": 9.1,
+  "fit_seconds": 10.2,
   "dev_ranking": {
     "n": 120790,
     "default_rate": 0.1512,
@@ -89,14 +90,14 @@
   "dev_late_after_calibration": {
     "n": 60395,
     "default_rate": 0.1547,
-    "mean_pd": 0.1472,
-    "auc": 0.6992,
-    "gini": 0.3984,
-    "ks": 0.2886,
-    "pr_auc": 0.2816,
-    "brier": 0.12211,
-    "log_loss": 0.39752,
-    "ece": 0.00781
+    "mean_pd": 0.1471,
+    "auc": 0.6993,
+    "gini": 0.3987,
+    "ks": 0.2891,
+    "pr_auc": 0.283,
+    "brier": 0.12214,
+    "log_loss": 0.39743,
+    "ece": 0.00801
   },
-  "approved_quantiles_pd_cut": 0.1954
+  "approved_quantiles_pd_cut": 0.1951
 }

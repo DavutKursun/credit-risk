@@ -1,0 +1,107 @@
+{
+  "lgbm-bureau-no-state": {
+    "dev_ranking": {
+      "n": 120790,
+      "default_rate": 0.1512,
+      "mean_pd": 0.1356,
+      "auc": 0.6966,
+      "gini": 0.3932,
+      "ks": 0.2855,
+      "pr_auc": 0.2769,
+      "brier": 0.12057,
+      "log_loss": 0.39418,
+      "ece": 0.0156
+    },
+    "dev_late_before": {
+      "n": 60395,
+      "default_rate": 0.1547,
+      "mean_pd": 0.1355,
+      "auc": 0.6986,
+      "gini": 0.3971,
+      "ks": 0.2884,
+      "pr_auc": 0.2856,
+      "brier": 0.12257,
+      "log_loss": 0.39915,
+      "ece": 0.01914
+    },
+    "dev_late_after": {
+      "n": 60395,
+      "default_rate": 0.1547,
+      "mean_pd": 0.1473,
+      "auc": 0.6984,
+      "gini": 0.3968,
+      "ks": 0.2885,
+      "pr_auc": 0.2816,
+      "brier": 0.12225,
+      "log_loss": 0.39772,
+      "ece": 0.00742
+    },
+    "fit_seconds": 9.2,
+    "model_path": "/Users/davutkursun/Downloads/credit-risk/models/lgbm-bureau-no-state.joblib",
+    "best_iteration": 511
+  },
+  "scorecard-bureau-no-state": {
+    "dev_ranking": {
+      "n": 120790,
+      "default_rate": 0.1512,
+      "mean_pd": 0.1352,
+      "auc": 0.6888,
+      "gini": 0.3776,
+      "ks": 0.2754,
+      "pr_auc": 0.2664,
+      "brier": 0.12133,
+      "log_loss": 0.3968,
+      "ece": 0.01634
+    },
+    "dev_late_before": {
+      "n": 60395,
+      "default_rate": 0.1547,
+      "mean_pd": 0.1351,
+      "auc": 0.6916,
+      "gini": 0.3831,
+      "ks": 0.2814,
+      "pr_auc": 0.2746,
+      "brier": 0.12336,
+      "log_loss": 0.40179,
+      "ece": 0.01964
+    },
+    "dev_late_after": {
+      "n": 60395,
+      "default_rate": 0.1547,
+      "mean_pd": 0.1472,
+      "auc": 0.6915,
+      "gini": 0.383,
+      "ks": 0.2804,
+      "pr_auc": 0.2719,
+      "brier": 0.12304,
+      "log_loss": 0.40062,
+      "ece": 0.00816
+    },
+    "fit_seconds": 11.8,
+    "model_path": "/Users/davutkursun/Downloads/credit-risk/models/scorecard-bureau-no-state.joblib",
+    "selected_features": [
+      "int_rate",
+      "annual_inc",
+      "dti",
+      "fico",
+      "inq_last_6mths",
+      "revol_util",
+      "mort_acc",
+      "credit_age_years",
+      "loan_to_income",
+      "installment_to_income",
+      "acc_open_past_24mths",
+      "bc_open_to_buy",
+      "total_bc_limit",
+      "tot_cur_bal",
+      "num_tl_op_past_12m",
+      "mo_sin_rcnt_tl",
+      "mths_since_recent_inq",
+      "percent_bc_gt_75",
+      "grade",
+      "sub_grade",
+      "home_ownership",
+      "purpose"
+    ]
+  }
+}

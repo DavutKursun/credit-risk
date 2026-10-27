@@ -1,99 +1,341 @@
 {
   "samples": {
-    "lgbm-bureau": {
+    "lgbm-bureau-no-state": {
       "clear_approve": {
-        "pd": 0.0243,
+        "pd": 0.0258,
         "points": null
       },
       "borderline": {
-        "pd": 0.2814,
+        "pd": 0.253,
         "points": null
       },
       "clear_decline": {
-        "pd": 0.999,
+        "pd": 0.4016,
+        "points": null
+      }
+    },
+    "lgbm-bureau": {
+      "clear_approve": {
+        "pd": 0.0238,
+        "points": null
+      },
+      "borderline": {
+        "pd": 0.285,
+        "points": null
+      },
+      "clear_decline": {
+        "pd": 0.4155,
         "points": null
       }
     },
     "lgbm-no-lc-grade": {
       "clear_approve": {
-        "pd": 0.0182,
+        "pd": 0.0179,
         "points": null
       },
       "borderline": {
-        "pd": 0.2748,
+        "pd": 0.2788,
         "points": null
       },
       "clear_decline": {
-        "pd": 0.999,
+        "pd": 0.3618,
+        "points": null
+      }
+    },
+    "lgbm-no-state": {
+      "clear_approve": {
+        "pd": 0.0417,
+        "points": null
+      },
+      "borderline": {
+        "pd": 0.2786,
+        "points": null
+      },
+      "clear_decline": {
+        "pd": 0.3976,
         "points": null
       }
     },
     "lgbm": {
       "clear_approve": {
-        "pd": 0.0408,
+        "pd": 0.0411,
         "points": null
       },
       "borderline": {
-        "pd": 0.3007,
+        "pd": 0.3037,
         "points": null
       },
       "clear_decline": {
-        "pd": 0.999,
+        "pd": 0.3917,
         "points": null
+      }
+    },
+    "scorecard-bureau-no-state": {
+      "clear_approve": {
+        "pd": 0.006,
+        "points": 627
+      },
+      "borderline": {
+        "pd": 0.2833,
+        "points": 546
+      },
+      "clear_decline": {
+        "pd": 0.3917,
+        "points": 513
       }
     },
     "scorecard-bureau": {
       "clear_approve": {
-        "pd": 0.0055,
+        "pd": 0.006,
         "points": 627
       },
       "borderline": {
-        "pd": 0.2855,
+        "pd": 0.2833,
         "points": 546
       },
       "clear_decline": {
-        "pd": 0.999,
+        "pd": 0.3917,
         "points": 513
       }
     },
     "scorecard-no-lc-grade": {
       "clear_approve": {
-        "pd": 0.001,
+        "pd": 0.0139,
         "points": 624
       },
       "borderline": {
-        "pd": 0.2766,
+        "pd": 0.2783,
         "points": 545
       },
       "clear_decline": {
-        "pd": 0.3523,
+        "pd": 0.2903,
         "points": 516
+      }
+    },
+    "scorecard-no-state": {
+      "clear_approve": {
+        "pd": 0.0099,
+        "points": 625
+      },
+      "borderline": {
+        "pd": 0.2755,
+        "points": 545
+      },
+      "clear_decline": {
+        "pd": 0.3479,
+        "points": 520
       }
     },
     "scorecard": {
       "clear_approve": {
-        "pd": 0.001,
+        "pd": 0.0099,
         "points": 625
       },
       "borderline": {
-        "pd": 0.2767,
+        "pd": 0.2755,
         "points": 545
       },
       "clear_decline": {
-        "pd": 0.45,
+        "pd": 0.3479,
         "points": 520
       }
     }
   },
   "sample_order_ok": {
+    "lgbm-bureau-no-state": true,
     "lgbm-bureau": true,
     "lgbm-no-lc-grade": true,
+    "lgbm-no-state": true,
     "lgbm": true,
+    "scorecard-bureau-no-state": true,
     "scorecard-bureau": true,
     "scorecard-no-lc-grade": true,
+    "scorecard-no-state": true,
     "scorecard": true
   },
   "monotonicity": {
+    "lgbm-bureau-no-state": {
+      "int_rate": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 5.93,
+        "grid_max": 19.52,
+        "pd_at_min": 0.2021,
+        "pd_at_max": 0.232,
+        "pd_range": 0.0299
+      },
+      "fico": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 662.0,
+        "grid_max": 782.0,
+        "pd_at_min": 0.2389,
+        "pd_at_max": 0.1943,
+        "pd_range": 0.0446
+      },
+      "dti": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 3.29,
+        "grid_max": 36.84,
+        "pd_at_min": 0.1931,
+        "pd_at_max": 0.2489,
+        "pd_range": 0.0557
+      },
+      "revol_util": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 6.4,
+        "grid_max": 96.9,
+        "pd_at_min": 0.2179,
+        "pd_at_max": 0.2499,
+        "pd_range": 0.0321
+      },
+      "annual_inc": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 20000.0,
+        "grid_max": 204000.0,
+        "pd_at_min": 0.2459,
+        "pd_at_max": 0.2008,
+        "pd_range": 0.0451
+      },
+      "inq_last_6mths": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 3.0,
+        "pd_at_min": 0.2236,
+        "pd_at_max": 0.2275,
+        "pd_range": 0.0039
+      },
+      "delinq_2yrs": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 3.0,
+        "pd_at_min": 0.2273,
+        "pd_at_max": 0.2582,
+        "pd_range": 0.0309
+      },
+      "credit_age_years": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 4.413415468856948,
+        "grid_max": 36.917180013689254,
+        "pd_at_min": 0.2288,
+        "pd_at_max": 0.2178,
+        "pd_range": 0.011
+      },
+      "loan_to_income": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.03529411764705882,
+        "grid_max": 0.44642857142857145,
+        "pd_at_min": 0.1951,
+        "pd_at_max": 0.2348,
+        "pd_range": 0.0398
+      },
+      "installment_to_income": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.014029937142857142,
+        "grid_max": 0.1828608600471837,
+        "pd_at_min": 0.1781,
+        "pd_at_max": 0.2357,
+        "pd_range": 0.0576
+      },
+      "pub_rec": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 2.0,
+        "pd_at_min": 0.2273,
+        "pd_at_max": 0.2273,
+        "pd_range": 0.0
+      },
+      "pub_rec_bankruptcies": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 1.0,
+        "pd_at_min": 0.2273,
+        "pd_at_max": 0.2297,
+        "pd_range": 0.0024
+      },
+      "acc_open_past_24mths": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 13.0,
+        "pd_at_min": 0.1762,
+        "pd_at_max": 0.3003,
+        "pd_range": 0.1241
+      },
+      "bc_open_to_buy": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 5.0,
+        "grid_max": 54815.51999999999,
+        "pd_at_min": 0.242,
+        "pd_at_max": 0.2252,
+        "pd_range": 0.0168
+      },
+      "total_bc_limit": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 800.0,
+        "grid_max": 83900.0,
+        "pd_at_min": 0.2918,
+        "pd_at_max": 0.2249,
+        "pd_range": 0.0669
+      },
+      "bc_util": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 3.0,
+        "grid_max": 99.9,
+        "pd_at_min": 0.2273,
+        "pd_at_max": 0.2344,
+        "pd_range": 0.0071
+      },
+      "num_tl_op_past_12m": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 7.0,
+        "pd_at_min": 0.2255,
+        "pd_at_max": 0.2348,
+        "pd_range": 0.0093
+      },
+      "mo_sin_rcnt_tl": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 1.0,
+        "grid_max": 35.0,
+        "pd_at_min": 0.2315,
+        "pd_at_max": 0.2052,
+        "pd_range": 0.0263
+      },
+      "mths_since_recent_inq": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 22.0,
+        "pd_at_min": 0.2348,
+        "pd_at_max": 0.2195,
+        "pd_range": 0.0153
+      },
+      "percent_bc_gt_75": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 100.0,
+        "pd_at_min": 0.2105,
+        "pd_at_max": 0.2282,
+        "pd_range": 0.0177
+      }
+    },
     "lgbm-bureau": {
       "int_rate": {
         "constraint": 1,
@@ -368,6 +610,116 @@
         "pd_range": 0.0032
       }
     },
+    "lgbm-no-state": {
+      "int_rate": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 5.93,
+        "grid_max": 19.52,
+        "pd_at_min": 0.2052,
+        "pd_at_max": 0.2496,
+        "pd_range": 0.0444
+      },
+      "fico": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 662.0,
+        "grid_max": 782.0,
+        "pd_at_min": 0.2624,
+        "pd_at_max": 0.1921,
+        "pd_range": 0.0703
+      },
+      "dti": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 3.29,
+        "grid_max": 36.84,
+        "pd_at_min": 0.201,
+        "pd_at_max": 0.2689,
+        "pd_range": 0.068
+      },
+      "revol_util": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 6.4,
+        "grid_max": 96.9,
+        "pd_at_min": 0.2456,
+        "pd_at_max": 0.2733,
+        "pd_range": 0.0277
+      },
+      "annual_inc": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 20000.0,
+        "grid_max": 204000.0,
+        "pd_at_min": 0.2689,
+        "pd_at_max": 0.2149,
+        "pd_range": 0.054
+      },
+      "inq_last_6mths": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 3.0,
+        "pd_at_min": 0.2316,
+        "pd_at_max": 0.2505,
+        "pd_range": 0.0189
+      },
+      "delinq_2yrs": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 3.0,
+        "pd_at_min": 0.248,
+        "pd_at_max": 0.2652,
+        "pd_range": 0.0172
+      },
+      "credit_age_years": {
+        "constraint": -1,
+        "ok": true,
+        "grid_min": 4.413415468856948,
+        "grid_max": 36.917180013689254,
+        "pd_at_min": 0.251,
+        "pd_at_max": 0.2403,
+        "pd_range": 0.0107
+      },
+      "loan_to_income": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.03529411764705882,
+        "grid_max": 0.44642857142857145,
+        "pd_at_min": 0.2296,
+        "pd_at_max": 0.2643,
+        "pd_range": 0.0348
+      },
+      "installment_to_income": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.014029937142857142,
+        "grid_max": 0.1828608600471837,
+        "pd_at_min": 0.1967,
+        "pd_at_max": 0.257,
+        "pd_range": 0.0603
+      },
+      "pub_rec": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 2.0,
+        "pd_at_min": 0.248,
+        "pd_at_max": 0.2495,
+        "pd_range": 0.0015
+      },
+      "pub_rec_bankruptcies": {
+        "constraint": 1,
+        "ok": true,
+        "grid_min": 0.0,
+        "grid_max": 1.0,
+        "pd_at_min": 0.248,
+        "pd_at_max": 0.248,
+        "pd_range": 0.0
+      }
+    },
     "lgbm": {
       "int_rate": {
         "constraint": 1,
@@ -482,19 +834,49 @@
   "bureau_gain": {
     "lgbm-bureau": {
       "base": "lgbm",
-      "auc_base": 0.6922,
-      "auc_bureau": 0.6981,
-      "delta_auc": 0.0059,
-      "ks_delta": 0.0083,
+      "auc_base": 0.6918,
+      "auc_bureau": 0.6978,
+      "delta_auc": 0.006,
+      "ks_delta": 0.0068,
       "verdict": "the nine columns add signal on dev"
     },
     "scorecard-bureau": {
       "base": "scorecard",
-      "auc_base": 0.6825,
-      "auc_bureau": 0.6893,
-      "delta_auc": 0.0068,
-      "ks_delta": 0.0079,
+      "auc_base": 0.6821,
+      "auc_bureau": 0.689,
+      "delta_auc": 0.0069,
+      "ks_delta": 0.008,
       "verdict": "the nine columns add signal on dev"
+    }
+  },
+  "state_ablation": {
+    "lgbm-bureau": {
+      "auc_with_state": 0.6978,
+      "auc_without_state": 0.6966,
+      "auc_drop": 0.0012,
+      "deploy_without_state": true,
+      "rule": "drop < 0.003 \u2192 deploy without addr_state (a 50-level geographic proxy)"
+    },
+    "lgbm": {
+      "auc_with_state": 0.6918,
+      "auc_without_state": 0.6908,
+      "auc_drop": 0.001,
+      "deploy_without_state": true,
+      "rule": "drop < 0.003 \u2192 deploy without addr_state (a 50-level geographic proxy)"
+    },
+    "scorecard-bureau": {
+      "auc_with_state": 0.689,
+      "auc_without_state": 0.689,
+      "auc_drop": 0.0,
+      "deploy_without_state": true,
+      "rule": "drop < 0.003 \u2192 deploy without addr_state (a 50-level geographic proxy)"
+    },
+    "scorecard": {
+      "auc_with_state": 0.6821,
+      "auc_without_state": 0.6821,
+      "auc_drop": 0.0,
+      "deploy_without_state": true,
+      "rule": "drop < 0.003 \u2192 deploy without addr_state (a 50-level geographic proxy)"
     }
   }
 }

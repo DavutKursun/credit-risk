@@ -1,0 +1,936 @@
+{
+  "split": "dev",
+  "variants": [
+    "lgbm-bureau-no-state",
+    "scorecard-bureau-no-state"
+  ],
+  "thresholds": {
+    "lgbm-bureau-no-state": 0.41,
+    "scorecard-bureau-no-state": 0.4
+  },
+  "samples": {
+    "clear_approve": {
+      "lgbm-bureau-no-state": {
+        "pd": 0.0258,
+        "decision": "approve",
+        "reasons": [
+          {
+            "feature": "sub_grade",
+            "value": "A3",
+            "direction": "lowers",
+            "text": "Lending Club sub-grade: A3 (associated with fewer defaults)",
+            "contribution": -0.3006
+          },
+          {
+            "feature": "fico",
+            "value": "762",
+            "direction": "lowers",
+            "text": "FICO score 762 supports approval (better than 90% of approved borrowers)",
+            "contribution": -0.2077
+          },
+          {
+            "feature": "annual_inc",
+            "value": "$95,000",
+            "direction": "lowers",
+            "text": "Annual income $95,000 supports approval (better than 75% of approved borrowers)",
+            "contribution": -0.1628
+          },
+          {
+            "feature": "percent_bc_gt_75",
+            "value": "0.0%",
+            "direction": "lowers",
+            "text": "Share of bankcards above 75% of their limit 0.0% supports approval (better than 90% of approved borrowers)",
+            "contribution": -0.1515
+          },
+          {
+            "feature": "acc_open_past_24mths",
+            "value": "2",
+            "direction": "lowers",
+            "text": "Accounts opened in the last 24 months 2 supports approval (better than 75% of approved borrowers)",
+            "contribution": -0.1418
+          }
+        ],
+        "adverse_action": null
+      },
+      "scorecard-bureau-no-state": {
+        "pd": 0.006,
+        "decision": "approve",
+        "reasons": [
+          {
+            "feature": "sub_grade",
+            "value": "A3",
+            "direction": "lowers",
+            "text": "Lending Club sub-grade: A3 (associated with fewer defaults)",
+            "contribution": -0.6798
+          },
+          {
+            "feature": "fico",
+            "value": "762",
+            "direction": "lowers",
+            "text": "FICO score 762 supports approval (better than 90% of approved borrowers)",
+            "contribution": -0.2218
+          },
+          {
+            "feature": "acc_open_past_24mths",
+            "value": "2",
+            "direction": "lowers",
+            "text": "Accounts opened in the last 24 months 2 supports approval (better than 75% of approved borrowers)",
+            "contribution": -0.1622
+          },
+          {
+            "feature": "installment_to_income",
+            "value": "0.03",
+            "direction": "lowers",
+            "text": "Installment relative to income 0.03 supports approval (better than 90% of approved borrowers)",
+            "contribution": -0.1244
+          },
+          {
+            "feature": "annual_inc",
+            "value": "$95,000",
+            "direction": "lowers",
+            "text": "Annual income $95,000 supports approval (better than 75% of approved borrowers)",
+            "contribution": -0.1158
+          }
+        ],
+        "adverse_action": null
+      }
+    },
+    "borderline": {
+      "lgbm-bureau-no-state": {
+        "pd": 0.253,
+        "decision": "approve",
+        "reasons": [
+          {
+            "feature": "sub_grade",
+            "value": "C5",
+            "direction": "raises",
+            "text": "Lending Club sub-grade: C5 (associated with more defaults)",
+            "contribution": 0.2996
+          },
+          {
+            "feature": "installment_to_income",
+            "value": "0.12",
+            "direction": "raises",
+            "text": "Installment relative to income 0.12 is higher than 75% of approved borrowers",
+            "contribution": 0.1062
+          },
+          {
+            "feature": "home_ownership",
+            "value": "RENT",
+            "direction": "raises",
+            "text": "Home ownership: RENT (associated with more defaults)",
+            "contribution": 0.084
+          },
+          {
+            "feature": "dti",
+            "value": "21.8%",
+            "direction": "raises",
+            "text": "Debt-to-income ratio 21.8% is higher than 75% of approved borrowers",
+            "contribution": 0.0718
+          },
+          {
+            "feature": "acc_open_past_24mths",
+            "value": "5",
+            "direction": "raises",
+            "text": "Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers",
+            "contribution": 0.0691
+          }
+        ],
+        "adverse_action": null
+      },
+      "scorecard-bureau-no-state": {
+        "pd": 0.2833,
+        "decision": "approve",
+        "reasons": [
+          {
+            "feature": "sub_grade",
+            "value": "C5",
+            "direction": "raises",
+            "text": "Lending Club sub-grade: C5 (associated with more defaults)",
+            "contribution": 0.2073
+          },
+          {
+            "feature": "installment_to_income",
+            "value": "0.12",
+            "direction": "raises",
+            "text": "Installment relative to income 0.12 is higher than 75% of approved borrowers",
+            "contribution": 0.133
+          },
+          {
+            "feature": "home_ownership",
+            "value": "RENT",
+            "direction": "raises",
+            "text": "Home ownership: RENT (associated with more defaults)",
+            "contribution": 0.064
+          },
+          {
+            "feature": "acc_open_past_24mths",
+            "value": "5",
+            "direction": "raises",
+            "text": "Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers",
+            "contribution": 0.0611
+          },
+          {
+            "feature": "inq_last_6mths",
+            "value": "2",
+            "direction": "raises",
+            "text": "Credit inquiries in the last 6 months 2 is higher than 90% of approved borrowers",
+            "contribution": 0.0577
+          }
+        ],
+        "adverse_action": null
+      }
+    },
+    "clear_decline": {
+      "lgbm-bureau-no-state": {
+        "pd": 0.4016,
+        "decision": "review",
+        "reasons": [
+          {
+            "feature": "purpose",
+            "value": "small_business",
+            "direction": "raises",
+            "text": "Loan purpose: small_business (associated with more defaults)",
+            "contribution": 0.5024
+          },
+          {
+            "feature": "sub_grade",
+            "value": "F2",
+            "direction": "raises",
+            "text": "Lending Club sub-grade: F2 (associated with more defaults)",
+            "contribution": 0.3517
+          },
+          {
+            "feature": "acc_open_past_24mths",
+            "value": "9",
+            "direction": "raises",
+            "text": "Accounts opened in the last 24 months 9 is higher than 95% of approved borrowers",
+            "contribution": 0.3177
+          },
+          {
+            "feature": "installment_to_income",
+            "value": "0.30",
+            "direction": "raises",
+            "text": "Installment relative to income 0.30 is higher than 95% of approved borrowers",
+            "contribution": 0.246
+          },
+          {
+            "feature": "dti",
+            "value": "33.9%",
+            "direction": "raises",
+            "text": "Debt-to-income ratio 33.9% is higher than 95% of approved borrowers",
+            "contribution": 0.1944
+          }
+        ],
+        "adverse_action": null
+      },
+      "scorecard-bureau-no-state": {
+        "pd": 0.3917,
+        "decision": "review",
+        "reasons": [
+          {
+            "feature": "sub_grade",
+            "value": "F2",
+            "direction": "raises",
+            "text": "Lending Club sub-grade: F2 (associated with more defaults)",
+            "contribution": 0.4095
+          },
+          {
+            "feature": "acc_open_past_24mths",
+            "value": "9",
+            "direction": "raises",
+            "text": "Accounts opened in the last 24 months 9 is higher than 95% of approved borrowers",
+            "contribution": 0.2869
+          },
+          {
+            "feature": "installment_to_income",
+            "value": "0.30",
+            "direction": "raises",
+            "text": "Installment relative to income 0.30 is higher than 95% of approved borrowers",
+            "contribution": 0.2488
+          },
+          {
+            "feature": "dti",
+            "value": "33.9%",
+            "direction": "raises",
+            "text": "Debt-to-income ratio 33.9% is higher than 95% of approved borrowers",
+            "contribution": 0.1389
+          },
+          {
+            "feature": "purpose",
+            "value": "small_business",
+            "direction": "raises",
+            "text": "Loan purpose: small_business (associated with more defaults)",
+            "contribution": 0.1209
+          }
+        ],
+        "adverse_action": null
+      }
+    }
+  },
+  "examples": [
+    {
+      "id": "38141807",
+      "grade": "E",
+      "sub_grade": "E5",
+      "int_rate": 21.99,
+      "outcome": "charged off",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.4016,
+          "decision": "review",
+          "reasons": [
+            {
+              "feature": "sub_grade",
+              "value": "E5",
+              "direction": "raises",
+              "text": "Lending Club sub-grade: E5 (associated with more defaults)",
+              "contribution": 0.412
+            },
+            {
+              "feature": "emp_years",
+              "value": "missing",
+              "direction": "raises",
+              "text": "Employment length: missing (associated with more defaults)",
+              "contribution": 0.2885
+            },
+            {
+              "feature": "installment_to_income",
+              "value": "0.15",
+              "direction": "raises",
+              "text": "Installment relative to income 0.15 is higher than 95% of approved borrowers",
+              "contribution": 0.2456
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$27,383",
+              "direction": "raises",
+              "text": "Annual income $27,383 is lower than 95% of approved borrowers",
+              "contribution": 0.1922
+            },
+            {
+              "feature": "dti",
+              "value": "34.0%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 34.0% is higher than 95% of approved borrowers",
+              "contribution": 0.1663
+            }
+          ],
+          "adverse_action": null
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.3449,
+          "decision": "approve",
+          "reasons": [
+            {
+              "feature": "sub_grade",
+              "value": "E5",
+              "direction": "raises",
+              "text": "Lending Club sub-grade: E5 (associated with more defaults)",
+              "contribution": 0.4095
+            },
+            {
+              "feature": "installment_to_income",
+              "value": "0.15",
+              "direction": "raises",
+              "text": "Installment relative to income 0.15 is higher than 95% of approved borrowers",
+              "contribution": 0.2488
+            },
+            {
+              "feature": "dti",
+              "value": "34.0%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 34.0% is higher than 95% of approved borrowers",
+              "contribution": 0.1389
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$27,383",
+              "direction": "raises",
+              "text": "Annual income $27,383 is lower than 95% of approved borrowers",
+              "contribution": 0.1343
+            },
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "6",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 6 is higher than 75% of approved borrowers",
+              "contribution": 0.1256
+            }
+          ],
+          "adverse_action": null
+        }
+      }
+    },
+    {
+      "id": "46756257",
+      "grade": "D",
+      "sub_grade": "D5",
+      "int_rate": 17.86,
+      "outcome": "fully paid",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.4016,
+          "decision": "review",
+          "reasons": [
+            {
+              "feature": "sub_grade",
+              "value": "D5",
+              "direction": "raises",
+              "text": "Lending Club sub-grade: D5 (associated with more defaults)",
+              "contribution": 0.4141
+            },
+            {
+              "feature": "installment_to_income",
+              "value": "0.15",
+              "direction": "raises",
+              "text": "Installment relative to income 0.15 is higher than 95% of approved borrowers",
+              "contribution": 0.217
+            },
+            {
+              "feature": "total_bc_limit",
+              "value": "$1,800",
+              "direction": "raises",
+              "text": "Total bankcard credit limit $1,800 is lower than 95% of approved borrowers",
+              "contribution": 0.2064
+            },
+            {
+              "feature": "delinq_2yrs",
+              "value": "2",
+              "direction": "raises",
+              "text": "Delinquencies in the last 2 years 2 is higher than 95% of approved borrowers",
+              "contribution": 0.1924
+            },
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "6",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 6 is higher than 75% of approved borrowers",
+              "contribution": 0.1668
+            }
+          ],
+          "adverse_action": null
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.3917,
+          "decision": "review",
+          "reasons": [
+            {
+              "feature": "sub_grade",
+              "value": "D5",
+              "direction": "raises",
+              "text": "Lending Club sub-grade: D5 (associated with more defaults)",
+              "contribution": 0.4095
+            },
+            {
+              "feature": "installment_to_income",
+              "value": "0.15",
+              "direction": "raises",
+              "text": "Installment relative to income 0.15 is higher than 95% of approved borrowers",
+              "contribution": 0.2488
+            },
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "6",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 6 is higher than 75% of approved borrowers",
+              "contribution": 0.1256
+            },
+            {
+              "feature": "dti",
+              "value": "27.7%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 27.7% is higher than 90% of approved borrowers",
+              "contribution": 0.0999
+            },
+            {
+              "feature": "loan_to_income",
+              "value": "0.35",
+              "direction": "raises",
+              "text": "Loan amount relative to income 0.35 is higher than 90% of approved borrowers",
+              "contribution": 0.0862
+            }
+          ],
+          "adverse_action": null
+        }
+      }
+    },
+    {
+      "id": "43225410",
+      "grade": "E",
+      "sub_grade": "E2",
+      "int_rate": 18.84,
+      "outcome": "charged off",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.4016,
+          "decision": "review",
+          "reasons": [
+            {
+              "feature": "purpose",
+              "value": "small_business",
+              "direction": "raises",
+              "text": "Loan purpose: small_business (associated with more defaults)",
+              "contribution": 0.6035
+            },
+            {
+              "feature": "sub_grade",
+              "value": "E2",
+              "direction": "raises",
+              "text": "Lending Club sub-grade: E2 (associated with more defaults)",
+              "contribution": 0.4664
+            },
+            {
+              "feature": "installment_to_income",
+              "value": "0.14",
+              "direction": "raises",
+              "text": "Installment relative to income 0.14 is higher than 90% of approved borrowers",
+              "contribution": 0.1762
+            },
+            {
+              "feature": "dti",
+              "value": "30.5%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 30.5% is higher than 95% of approved borrowers",
+              "contribution": 0.1516
+            },
+            {
+              "feature": "grade",
+              "value": "E",
+              "direction": "raises",
+              "text": "Lending Club grade: E (associated with more defaults)",
+              "contribution": 0.1253
+            }
+          ],
+          "adverse_action": null
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.3062,
+          "decision": "approve",
+          "reasons": [
+            {
+              "feature": "sub_grade",
+              "value": "E2",
+              "direction": "raises",
+              "text": "Lending Club sub-grade: E2 (associated with more defaults)",
+              "contribution": 0.4095
+            },
+            {
+              "feature": "installment_to_income",
+              "value": "0.14",
+              "direction": "raises",
+              "text": "Installment relative to income 0.14 is higher than 90% of approved borrowers",
+              "contribution": 0.17
+            },
+            {
+              "feature": "dti",
+              "value": "30.5%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 30.5% is higher than 95% of approved borrowers",
+              "contribution": 0.1389
+            },
+            {
+              "feature": "purpose",
+              "value": "small_business",
+              "direction": "raises",
+              "text": "Loan purpose: small_business (associated with more defaults)",
+              "contribution": 0.1209
+            },
+            {
+              "feature": "home_ownership",
+              "value": "MORTGAGE",
+              "direction": "lowers",
+              "text": "Home ownership: MORTGAGE (associated with fewer defaults)",
+              "contribution": -0.0725
+            }
+          ],
+          "adverse_action": null
+        }
+      }
+    },
+    {
+      "id": "43225410",
+      "grade": "E",
+      "sub_grade": "E2",
+      "int_rate": 18.84,
+      "outcome": "charged off",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.4016,
+          "decision": "review",
+          "reasons": [
+            {
+              "feature": "purpose",
+              "value": "small_business",
+              "direction": "raises",
+              "text": "Loan purpose: small_business (associated with more defaults)",
+              "contribution": 0.6035
+            },
+            {
+              "feature": "sub_grade",
+              "value": "E2",
+              "direction": "raises",
+              "text": "Lending Club sub-grade: E2 (associated with more defaults)",
+              "contribution": 0.4664
+            },
+            {
+              "feature": "installment_to_income",
+              "value": "0.14",
+              "direction": "raises",
+              "text": "Installment relative to income 0.14 is higher than 90% of approved borrowers",
+              "contribution": 0.1762
+            },
+            {
+              "feature": "dti",
+              "value": "30.5%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 30.5% is higher than 95% of approved borrowers",
+              "contribution": 0.1516
+            },
+            {
+              "feature": "grade",
+              "value": "E",
+              "direction": "raises",
+              "text": "Lending Club grade: E (associated with more defaults)",
+              "contribution": 0.1253
+            }
+          ],
+          "adverse_action": null
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.3062,
+          "decision": "approve",
+          "reasons": [
+            {
+              "feature": "sub_grade",
+              "value": "E2",
+              "direction": "raises",
+              "text": "Lending Club sub-grade: E2 (associated with more defaults)",
+              "contribution": 0.4095
+            },
+            {
+              "feature": "installment_to_income",
+              "value": "0.14",
+              "direction": "raises",
+              "text": "Installment relative to income 0.14 is higher than 90% of approved borrowers",
+              "contribution": 0.17
+            },
+            {
+              "feature": "dti",
+              "value": "30.5%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 30.5% is higher than 95% of approved borrowers",
+              "contribution": 0.1389
+            },
+            {
+              "feature": "purpose",
+              "value": "small_business",
+              "direction": "raises",
+              "text": "Loan purpose: small_business (associated with more defaults)",
+              "contribution": 0.1209
+            },
+            {
+              "feature": "home_ownership",
+              "value": "MORTGAGE",
+              "direction": "lowers",
+              "text": "Home ownership: MORTGAGE (associated with fewer defaults)",
+              "contribution": -0.0725
+            }
+          ],
+          "adverse_action": null
+        }
+      }
+    },
+    {
+      "id": "51075913",
+      "grade": "G",
+      "sub_grade": "G1",
+      "int_rate": 26.77,
+      "outcome": "charged off",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.4016,
+          "decision": "review",
+          "reasons": [
+            {
+              "feature": "sub_grade",
+              "value": "G1",
+              "direction": "raises",
+              "text": "Lending Club sub-grade: G1 (associated with more defaults)",
+              "contribution": 0.6167
+            },
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "14",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 14 is higher than 95% of approved borrowers",
+              "contribution": 0.4833
+            },
+            {
+              "feature": "int_rate",
+              "value": "26.8%",
+              "direction": "raises",
+              "text": "Interest rate 26.8% is higher than 95% of approved borrowers",
+              "contribution": 0.1854
+            },
+            {
+              "feature": "num_tl_op_past_12m",
+              "value": "11",
+              "direction": "raises",
+              "text": "Accounts opened in the last 12 months 11 is higher than 95% of approved borrowers",
+              "contribution": 0.1809
+            },
+            {
+              "feature": "installment_to_income",
+              "value": "0.12",
+              "direction": "raises",
+              "text": "Installment relative to income 0.12 is higher than 75% of approved borrowers",
+              "contribution": 0.1587
+            }
+          ],
+          "adverse_action": null
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.3488,
+          "decision": "approve",
+          "reasons": [
+            {
+              "feature": "sub_grade",
+              "value": "G1",
+              "direction": "raises",
+              "text": "Lending Club sub-grade: G1 (associated with more defaults)",
+              "contribution": 0.4095
+            },
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "14",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 14 is higher than 95% of approved borrowers",
+              "contribution": 0.2869
+            },
+            {
+              "feature": "installment_to_income",
+              "value": "0.12",
+              "direction": "raises",
+              "text": "Installment relative to income 0.12 is higher than 90% of approved borrowers",
+              "contribution": 0.133
+            },
+            {
+              "feature": "home_ownership",
+              "value": "RENT",
+              "direction": "raises",
+              "text": "Home ownership: RENT (associated with more defaults)",
+              "contribution": 0.064
+            },
+            {
+              "feature": "num_tl_op_past_12m",
+              "value": "11",
+              "direction": "raises",
+              "text": "Accounts opened in the last 12 months 11 is higher than 95% of approved borrowers",
+              "contribution": 0.0639
+            }
+          ],
+          "adverse_action": null
+        }
+      }
+    },
+    {
+      "id": "50839265",
+      "grade": "A",
+      "sub_grade": "A1",
+      "int_rate": 5.32,
+      "outcome": "fully paid",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.0099,
+          "decision": "approve",
+          "reasons": [
+            {
+              "feature": "sub_grade",
+              "value": "A1",
+              "direction": "lowers",
+              "text": "Lending Club sub-grade: A1 (associated with fewer defaults)",
+              "contribution": -0.4565
+            },
+            {
+              "feature": "int_rate",
+              "value": "5.3%",
+              "direction": "lowers",
+              "text": "Interest rate 5.3% supports approval (better than 95% of approved borrowers)",
+              "contribution": -0.424
+            },
+            {
+              "feature": "fico",
+              "value": "777",
+              "direction": "lowers",
+              "text": "FICO score 777 supports approval (better than 95% of approved borrowers)",
+              "contribution": -0.331
+            },
+            {
+              "feature": "tot_cur_bal",
+              "value": "$441,808",
+              "direction": "lowers",
+              "text": "Total current balance of all accounts $441,808 supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.2455
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$140,000",
+              "direction": "lowers",
+              "text": "Annual income $140,000 supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.2114
+            }
+          ],
+          "adverse_action": null
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.006,
+          "decision": "approve",
+          "reasons": [
+            {
+              "feature": "sub_grade",
+              "value": "A1",
+              "direction": "lowers",
+              "text": "Lending Club sub-grade: A1 (associated with fewer defaults)",
+              "contribution": -0.6798
+            },
+            {
+              "feature": "fico",
+              "value": "777",
+              "direction": "lowers",
+              "text": "FICO score 777 supports approval (better than 95% of approved borrowers)",
+              "contribution": -0.2218
+            },
+            {
+              "feature": "installment_to_income",
+              "value": "0.02",
+              "direction": "lowers",
+              "text": "Installment relative to income 0.02 supports approval (better than 95% of approved borrowers)",
+              "contribution": -0.1814
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$140,000",
+              "direction": "lowers",
+              "text": "Annual income $140,000 supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.1674
+            },
+            {
+              "feature": "tot_cur_bal",
+              "value": "$441,808",
+              "direction": "lowers",
+              "text": "Total current balance of all accounts $441,808 supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.1192
+            }
+          ],
+          "adverse_action": null
+        }
+      }
+    },
+    {
+      "id": "48051748",
+      "grade": "E",
+      "sub_grade": "E1",
+      "int_rate": 18.25,
+      "outcome": "fully paid",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.2783,
+          "decision": "approve",
+          "reasons": [
+            {
+              "feature": "sub_grade",
+              "value": "E1",
+              "direction": "raises",
+              "text": "Lending Club sub-grade: E1 (associated with more defaults)",
+              "contribution": 0.3757
+            },
+            {
+              "feature": "dti",
+              "value": "36.4%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 36.4% is higher than 95% of approved borrowers",
+              "contribution": 0.2705
+            },
+            {
+              "feature": "installment_to_income",
+              "value": "0.22",
+              "direction": "raises",
+              "text": "Installment relative to income 0.22 is higher than 95% of approved borrowers",
+              "contribution": 0.2205
+            },
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "8",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 8 is higher than 95% of approved borrowers",
+              "contribution": 0.1949
+            },
+            {
+              "feature": "loan_to_income",
+              "value": "0.50",
+              "direction": "raises",
+              "text": "Loan amount relative to income 0.50 is higher than 95% of approved borrowers",
+              "contribution": 0.1325
+            }
+          ],
+          "adverse_action": null
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.2833,
+          "decision": "approve",
+          "reasons": [
+            {
+              "feature": "sub_grade",
+              "value": "E1",
+              "direction": "raises",
+              "text": "Lending Club sub-grade: E1 (associated with more defaults)",
+              "contribution": 0.4095
+            },
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "8",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 8 is higher than 95% of approved borrowers",
+              "contribution": 0.2869
+            },
+            {
+              "feature": "installment_to_income",
+              "value": "0.22",
+              "direction": "raises",
+              "text": "Installment relative to income 0.22 is higher than 95% of approved borrowers",
+              "contribution": 0.2488
+            },
+            {
+              "feature": "dti",
+              "value": "36.4%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 36.4% is higher than 95% of approved borrowers",
+              "contribution": 0.1389
+            },
+            {
+              "feature": "total_bc_limit",
+              "value": "$68,800",
+              "direction": "lowers",
+              "text": "Total bankcard credit limit $68,800 supports approval (better than 95% of approved borrowers)",
+              "contribution": -0.1041
+            }
+          ],
+          "adverse_action": null
+        }
+      }
+    }
+  ],
+  "problems": [],
+  "examples_note": "declines are the five highest-PD rows (fewer than five declines at the threshold)",
+  "agreement": {
+    "n": 2000,
+    "top3_any_overlap": 0.997,
+    "top1_same": 0.6485
+  },
+  "lead_reason_among_declines": {},
+  "checks": {
+    "reason_texts_clean": true,
+    "all_reasons_have_5_entries": true
+  }
+}

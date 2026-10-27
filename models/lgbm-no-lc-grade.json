@@ -1,6 +1,7 @@
 {
   "variant": "lgbm-no-lc-grade",
   "bureau": false,
+  "state": true,
   "numeric": [
     "loan_amnt",
     "annual_inc",
@@ -75,14 +76,14 @@
   "dev_late_after_calibration": {
     "n": 60395,
     "default_rate": 0.1547,
-    "mean_pd": 0.1468,
-    "auc": 0.6723,
-    "gini": 0.3446,
-    "ks": 0.2526,
-    "pr_auc": 0.2537,
-    "brier": 0.1245,
-    "log_loss": 0.40625,
-    "ece": 0.00832
+    "mean_pd": 0.1467,
+    "auc": 0.6722,
+    "gini": 0.3444,
+    "ks": 0.2523,
+    "pr_auc": 0.2557,
+    "brier": 0.12451,
+    "log_loss": 0.40618,
+    "ece": 0.00807
   },
-  "approved_quantiles_pd_cut": 0.1726
+  "approved_quantiles_pd_cut": 0.1736
 }

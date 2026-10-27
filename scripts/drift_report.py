@@ -28,7 +28,9 @@ def main(argv=None) -> int:
     ap.add_argument("--models-dir", type=Path, default=MODELS)
     ap.add_argument("--cohort-dir", type=Path, default=COHORT)
     ap.add_argument("--out", type=Path, default=RESULTS)
+    ap.add_argument("--variants", default=None, help="comma-separated bundle variants whose scores to include (default: all)")
     a = ap.parse_args(argv)
+    wanted = set(a.variants.split(",")) if a.variants else None
     train = load_split("train", a.cohort_dir)
     later = pd.concat([load_split("dev", a.cohort_dir), load_split("test", a.cohort_dir)], ignore_index=True)
     X_tr, X_lt = make_features(train, True, bureau=True), make_features(later, True, bureau=True)
@@ -37,6 +39,8 @@ def main(argv=None) -> int:
     tables = {m: psi_by_period(X_tr, X_lt, period, cols, metric=m) for m in ("psi_max", "psi", "psi_missing")}
     for p in sorted(a.models_dir.glob("*.joblib")):
         b = ModelBundle.load(p)
+        if wanted is not None and b.variant not in wanted:
+            continue
         s_tr = pd.Series(b.predict_pd(make_features(train, b.use_lc_grade, b.bureau)), name="score")
         s_lt = pd.Series(b.predict_pd(make_features(later, b.use_lc_grade, b.bureau)), name="score")
         for m, t in tables.items():

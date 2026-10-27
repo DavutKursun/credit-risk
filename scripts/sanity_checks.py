@@ -2,7 +2,8 @@
   1. the three SAMPLE_APPLICATIONS through every bundle: calibrated PD and scorecard points; the order
      clear_approve < borderline < clear_decline must hold;
   2. one monotonicity probe per constrained feature on each LightGBM bundle (sweep the feature over dev quantiles on a fixed row);
-  3. the bureau variants' dev AUC gain over their base variant (from eval/results/dev-summary.json); below 0.005 → "adds nothing on dev".
+  3. the bureau variants' dev AUC gain over their base variant (from eval/results/dev-summary.json); below 0.005 → "adds nothing on dev";
+  4. the addr_state ablation: a `-no-state` variant that loses less than 0.003 dev AUC means the deployed model excludes addr_state.
 
 Usage: python scripts/sanity_checks.py [--models-dir models] [--cohort-dir data/cohort] [--out eval/results]
 Writes eval/results/sanity_dev.json. Never reads the test split.
@@ -28,6 +29,7 @@ from credit_risk.schema import SAMPLE_APPLICATIONS, Application
 
 SAMPLE_ORDER = ("clear_approve", "borderline", "clear_decline")
 BUREAU_GAIN_FLOOR = 0.005
+STATE_DROP_FLOOR = 0.003  # M3 rule: if dropping addr_state costs less than this on dev AUC, deploy without it
 
 
 def main(argv=None) -> int:
@@ -98,6 +100,19 @@ def main(argv=None) -> int:
         print("\nbureau ablation (dev AUC):")
         for v, g in out["bureau_gain"].items():
             print(f"  {v:24s} vs {g['base']:22s} AUC {g['auc_base']:.4f} → {g['auc_bureau']:.4f} (Δ {g['delta_auc']:+.4f}, KS Δ {g['ks_delta']:+.4f}): {g['verdict']}")
+        out["state_ablation"] = {}
+        for v, m in metrics.items():
+            if v.endswith("-no-state") and v[: -len("-no-state")] in metrics:
+                base = v[: -len("-no-state")]
+                drop = round(metrics[base]["auc"] - m["auc"], 4)
+                out["state_ablation"][base] = {"auc_with_state": metrics[base]["auc"], "auc_without_state": m["auc"], "auc_drop": drop,
+                                               "deploy_without_state": bool(drop < STATE_DROP_FLOOR),
+                                               "rule": f"drop < {STATE_DROP_FLOOR} → deploy without addr_state (a 50-level geographic proxy)"}
+        if out["state_ablation"]:
+            print("\naddr_state ablation (dev AUC):")
+            for base, g in out["state_ablation"].items():
+                print(f"  {base:20s} with {g['auc_with_state']:.4f} → without {g['auc_without_state']:.4f} (drop {g['auc_drop']:+.4f}): "
+                      f"{'deploy WITHOUT addr_state' if g['deploy_without_state'] else 'keep addr_state'}")
     else:
         print("\n(no dev-summary.json: run scripts/evaluate.py --split dev for the bureau ablation)")
     a.out.mkdir(parents=True, exist_ok=True)

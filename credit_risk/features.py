@@ -74,10 +74,11 @@ FEATURE_UNITS = {"int_rate": "%", "dti": "%", "revol_util": "%", "annual_inc": "
                  "percent_bc_gt_75": "%", "mo_sin_rcnt_tl": "months", "mths_since_recent_inq": "months"}
 
 
-def feature_list(use_lc_grade: bool = True, bureau: bool = False) -> tuple[list[str], list[str]]:
-    """(numeric, categorical) feature names for a model variant; `bureau=True` appends the opt-in bureau set (the M2 ablation)."""
+def feature_list(use_lc_grade: bool = True, bureau: bool = False, state: bool = True) -> tuple[list[str], list[str]]:
+    """(numeric, categorical) feature names for a model variant; `bureau=True` appends the opt-in bureau set (the M2 ablation);
+    `state=False` drops addr_state (the M3 ablation: a 50-level geographic proxy)."""
     num = [f for f in NUMERIC_FEATURES if use_lc_grade or f not in LC_GRADE_FEATURES]
-    cat = [f for f in CATEGORICAL_FEATURES if use_lc_grade or f not in LC_GRADE_FEATURES]
+    cat = [f for f in CATEGORICAL_FEATURES if (use_lc_grade or f not in LC_GRADE_FEATURES) and (state or f != "addr_state")]
     if bureau:
         num = num + BUREAU_FEATURES
     return num, cat

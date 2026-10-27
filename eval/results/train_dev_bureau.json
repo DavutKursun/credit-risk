@@ -27,16 +27,16 @@
     "dev_late_after": {
       "n": 60395,
       "default_rate": 0.1547,
-      "mean_pd": 0.1472,
-      "auc": 0.6992,
-      "gini": 0.3984,
-      "ks": 0.2886,
-      "pr_auc": 0.2816,
-      "brier": 0.12211,
-      "log_loss": 0.39752,
-      "ece": 0.00781
+      "mean_pd": 0.1471,
+      "auc": 0.6993,
+      "gini": 0.3987,
+      "ks": 0.2891,
+      "pr_auc": 0.283,
+      "brier": 0.12214,
+      "log_loss": 0.39743,
+      "ece": 0.00801
     },
-    "fit_seconds": 9.1,
+    "fit_seconds": 10.2,
     "model_path": "/Users/davutkursun/Downloads/credit-risk/models/lgbm-bureau.joblib",
     "best_iteration": 504
   },
@@ -68,16 +68,16 @@
     "dev_late_after": {
       "n": 60395,
       "default_rate": 0.1547,
-      "mean_pd": 0.1473,
-      "auc": 0.6913,
-      "gini": 0.3825,
-      "ks": 0.2798,
-      "pr_auc": 0.2688,
-      "brier": 0.12307,
-      "log_loss": 0.40092,
-      "ece": 0.00817
+      "mean_pd": 0.1472,
+      "auc": 0.6915,
+      "gini": 0.383,
+      "ks": 0.2804,
+      "pr_auc": 0.2719,
+      "brier": 0.12304,
+      "log_loss": 0.40062,
+      "ece": 0.00816
     },
-    "fit_seconds": 10.7,
+    "fit_seconds": 10.9,
     "model_path": "/Users/davutkursun/Downloads/credit-risk/models/scorecard-bureau.joblib",
     "selected_features": [
       "int_rate",
