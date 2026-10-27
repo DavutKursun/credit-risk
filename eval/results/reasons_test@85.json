@@ -1,0 +1,979 @@
+{
+  "split": "test",
+  "variants": [
+    "lgbm-bureau-no-state",
+    "scorecard-bureau-no-state"
+  ],
+  "thresholds": {
+    "lgbm-bureau-no-state": 0.253,
+    "scorecard-bureau-no-state": 0.2478
+  },
+  "policy_rate": 0.85,
+  "samples": {
+    "clear_approve": {
+      "lgbm-bureau-no-state": {
+        "pd": 0.0258,
+        "decision": "approve",
+        "reasons": [
+          {
+            "feature": "fico",
+            "value": "762",
+            "direction": "lowers",
+            "text": "FICO score 762 supports approval (better than 90% of approved borrowers)",
+            "contribution": -0.2077
+          },
+          {
+            "feature": "annual_inc",
+            "value": "$95,000",
+            "direction": "lowers",
+            "text": "Annual income $95,000 supports approval (better than 75% of approved borrowers)",
+            "contribution": -0.1628
+          },
+          {
+            "feature": "percent_bc_gt_75",
+            "value": "0.0%",
+            "direction": "lowers",
+            "text": "Share of bankcards above 75% of their limit 0.0% supports approval (better than 90% of approved borrowers)",
+            "contribution": -0.1515
+          },
+          {
+            "feature": "acc_open_past_24mths",
+            "value": "2",
+            "direction": "lowers",
+            "text": "Accounts opened in the last 24 months 2 supports approval (better than 75% of approved borrowers)",
+            "contribution": -0.1418
+          },
+          {
+            "feature": "dti",
+            "value": "9.5%",
+            "direction": "lowers",
+            "text": "Debt-to-income ratio 9.5% supports approval (better than 90% of approved borrowers)",
+            "contribution": -0.1155
+          }
+        ],
+        "adverse_action": null
+      },
+      "scorecard-bureau-no-state": {
+        "pd": 0.006,
+        "decision": "approve",
+        "reasons": [
+          {
+            "feature": "fico",
+            "value": "762",
+            "direction": "lowers",
+            "text": "FICO score 762 supports approval (better than 90% of approved borrowers)",
+            "contribution": -0.2218
+          },
+          {
+            "feature": "acc_open_past_24mths",
+            "value": "2",
+            "direction": "lowers",
+            "text": "Accounts opened in the last 24 months 2 supports approval (better than 75% of approved borrowers)",
+            "contribution": -0.1622
+          },
+          {
+            "feature": "annual_inc",
+            "value": "$95,000",
+            "direction": "lowers",
+            "text": "Annual income $95,000 supports approval (better than 75% of approved borrowers)",
+            "contribution": -0.1158
+          },
+          {
+            "feature": "dti",
+            "value": "9.5%",
+            "direction": "lowers",
+            "text": "Debt-to-income ratio 9.5% supports approval (better than 90% of approved borrowers)",
+            "contribution": -0.0878
+          },
+          {
+            "feature": "purpose",
+            "value": "credit_card",
+            "direction": "lowers",
+            "text": "Loan purpose: credit_card (associated with fewer defaults)",
+            "contribution": -0.0756
+          }
+        ],
+        "adverse_action": null
+      }
+    },
+    "borderline": {
+      "lgbm-bureau-no-state": {
+        "pd": 0.253,
+        "decision": "review",
+        "reasons": [
+          {
+            "feature": "home_ownership",
+            "value": "RENT",
+            "direction": "raises",
+            "text": "Home ownership: RENT (associated with more defaults)",
+            "contribution": 0.084
+          },
+          {
+            "feature": "dti",
+            "value": "21.8%",
+            "direction": "raises",
+            "text": "Debt-to-income ratio 21.8% is higher than 75% of approved borrowers",
+            "contribution": 0.0718
+          },
+          {
+            "feature": "acc_open_past_24mths",
+            "value": "5",
+            "direction": "raises",
+            "text": "Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers",
+            "contribution": 0.0691
+          },
+          {
+            "feature": "loan_to_income",
+            "value": "0.29",
+            "direction": "raises",
+            "text": "Loan amount relative to income 0.29 is higher than 75% of approved borrowers",
+            "contribution": 0.0493
+          },
+          {
+            "feature": "fico",
+            "value": "682",
+            "direction": "raises",
+            "text": "FICO score 682 is lower than 75% of approved borrowers",
+            "contribution": 0.0477
+          }
+        ],
+        "adverse_action": null
+      },
+      "scorecard-bureau-no-state": {
+        "pd": 0.2833,
+        "decision": "decline",
+        "reasons": [
+          {
+            "feature": "home_ownership",
+            "value": "RENT",
+            "direction": "raises",
+            "text": "Home ownership: RENT (associated with more defaults)",
+            "contribution": 0.064
+          },
+          {
+            "feature": "acc_open_past_24mths",
+            "value": "5",
+            "direction": "raises",
+            "text": "Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers",
+            "contribution": 0.0611
+          },
+          {
+            "feature": "inq_last_6mths",
+            "value": "2",
+            "direction": "raises",
+            "text": "Credit inquiries in the last 6 months 2 is higher than 90% of approved borrowers",
+            "contribution": 0.0577
+          },
+          {
+            "feature": "dti",
+            "value": "21.8%",
+            "direction": "raises",
+            "text": "Debt-to-income ratio 21.8% is higher than 75% of approved borrowers",
+            "contribution": 0.0466
+          },
+          {
+            "feature": "loan_to_income",
+            "value": "0.29",
+            "direction": "raises",
+            "text": "Loan amount relative to income 0.29 is higher than 75% of approved borrowers",
+            "contribution": 0.0414
+          }
+        ],
+        "adverse_action": "Principal reasons for this decision: Home ownership: RENT (associated with more defaults); Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers; Credit inquiries in the last 6 months 2 is higher than 90% of approved borrowers; Debt-to-income ratio 21.8% is higher than 75% of approved borrowers."
+      }
+    },
+    "clear_decline": {
+      "lgbm-bureau-no-state": {
+        "pd": 0.4016,
+        "decision": "decline",
+        "reasons": [
+          {
+            "feature": "purpose",
+            "value": "small_business",
+            "direction": "raises",
+            "text": "Loan purpose: small_business (associated with more defaults)",
+            "contribution": 0.5024
+          },
+          {
+            "feature": "acc_open_past_24mths",
+            "value": "9",
+            "direction": "raises",
+            "text": "Accounts opened in the last 24 months 9 is higher than 95% of approved borrowers",
+            "contribution": 0.3177
+          },
+          {
+            "feature": "dti",
+            "value": "33.9%",
+            "direction": "raises",
+            "text": "Debt-to-income ratio 33.9% is higher than 95% of approved borrowers",
+            "contribution": 0.1944
+          },
+          {
+            "feature": "inq_last_6mths",
+            "value": "5",
+            "direction": "raises",
+            "text": "Credit inquiries in the last 6 months 5 is higher than 95% of approved borrowers",
+            "contribution": 0.1679
+          },
+          {
+            "feature": "loan_to_income",
+            "value": "0.63",
+            "direction": "raises",
+            "text": "Loan amount relative to income 0.63 is higher than 95% of approved borrowers",
+            "contribution": 0.1578
+          }
+        ],
+        "adverse_action": "Principal reasons for this decision: Loan purpose: small_business (associated with more defaults); Accounts opened in the last 24 months 9 is higher than 95% of approved borrowers; Debt-to-income ratio 33.9% is higher than 95% of approved borrowers; Credit inquiries in the last 6 months 5 is higher than 95% of approved borrowers."
+      },
+      "scorecard-bureau-no-state": {
+        "pd": 0.3917,
+        "decision": "decline",
+        "reasons": [
+          {
+            "feature": "acc_open_past_24mths",
+            "value": "9",
+            "direction": "raises",
+            "text": "Accounts opened in the last 24 months 9 is higher than 95% of approved borrowers",
+            "contribution": 0.2869
+          },
+          {
+            "feature": "dti",
+            "value": "33.9%",
+            "direction": "raises",
+            "text": "Debt-to-income ratio 33.9% is higher than 95% of approved borrowers",
+            "contribution": 0.1389
+          },
+          {
+            "feature": "purpose",
+            "value": "small_business",
+            "direction": "raises",
+            "text": "Loan purpose: small_business (associated with more defaults)",
+            "contribution": 0.1209
+          },
+          {
+            "feature": "loan_to_income",
+            "value": "0.63",
+            "direction": "raises",
+            "text": "Loan amount relative to income 0.63 is higher than 95% of approved borrowers",
+            "contribution": 0.0862
+          },
+          {
+            "feature": "fico",
+            "value": "662",
+            "direction": "raises",
+            "text": "FICO score 662 is lower than 95% of approved borrowers",
+            "contribution": 0.0819
+          }
+        ],
+        "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 9 is higher than 95% of approved borrowers; Debt-to-income ratio 33.9% is higher than 95% of approved borrowers; Loan purpose: small_business (associated with more defaults); Loan amount relative to income 0.63 is higher than 95% of approved borrowers."
+      }
+    }
+  },
+  "examples": [
+    {
+      "id": "66402443",
+      "grade": "C",
+      "sub_grade": "C5",
+      "int_rate": 14.48,
+      "outcome": "fully paid",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.2783,
+          "decision": "decline",
+          "reasons": [
+            {
+              "feature": "emp_years",
+              "value": "missing",
+              "direction": "raises",
+              "text": "Employment length: missing (associated with more defaults)",
+              "contribution": 0.3108
+            },
+            {
+              "feature": "dti",
+              "value": "29.9%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 29.9% is higher than 95% of approved borrowers",
+              "contribution": 0.1578
+            },
+            {
+              "feature": "inq_last_6mths",
+              "value": "4",
+              "direction": "raises",
+              "text": "Credit inquiries in the last 6 months 4 is higher than 95% of approved borrowers",
+              "contribution": 0.1419
+            },
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "7",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 7 is higher than 90% of approved borrowers",
+              "contribution": 0.1155
+            },
+            {
+              "feature": "mths_since_recent_inq",
+              "value": "0.0 months",
+              "direction": "raises",
+              "text": "Months since the most recent credit inquiry 0.0 months is lower than 95% of approved borrowers",
+              "contribution": 0.0988
+            }
+          ],
+          "adverse_action": "Principal reasons for this decision: Employment length: missing (associated with more defaults); Debt-to-income ratio 29.9% is higher than 95% of approved borrowers; Credit inquiries in the last 6 months 4 is higher than 95% of approved borrowers; Accounts opened in the last 24 months 7 is higher than 90% of approved borrowers."
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.2753,
+          "decision": "decline",
+          "reasons": [
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "7",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 7 is higher than 90% of approved borrowers",
+              "contribution": 0.1487
+            },
+            {
+              "feature": "dti",
+              "value": "29.9%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 29.9% is higher than 95% of approved borrowers",
+              "contribution": 0.1389
+            },
+            {
+              "feature": "inq_last_6mths",
+              "value": "4",
+              "direction": "raises",
+              "text": "Credit inquiries in the last 6 months 4 is higher than 95% of approved borrowers",
+              "contribution": 0.0786
+            },
+            {
+              "feature": "fico",
+              "value": "672",
+              "direction": "raises",
+              "text": "FICO score 672 is lower than 90% of approved borrowers",
+              "contribution": 0.0609
+            },
+            {
+              "feature": "mths_since_recent_inq",
+              "value": "0.0 months",
+              "direction": "raises",
+              "text": "Months since the most recent credit inquiry 0.0 months is lower than 95% of approved borrowers",
+              "contribution": 0.0596
+            }
+          ],
+          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 7 is higher than 90% of approved borrowers; Debt-to-income ratio 29.9% is higher than 95% of approved borrowers; Credit inquiries in the last 6 months 4 is higher than 95% of approved borrowers; FICO score 672 is lower than 90% of approved borrowers."
+        }
+      }
+    },
+    {
+      "id": "65302450",
+      "grade": "D",
+      "sub_grade": "D1",
+      "int_rate": 15.41,
+      "outcome": "fully paid",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.2866,
+          "decision": "decline",
+          "reasons": [
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "10",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 10 is higher than 95% of approved borrowers",
+              "contribution": 0.3121
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$15,000",
+              "direction": "raises",
+              "text": "Annual income $15,000 is lower than 95% of approved borrowers",
+              "contribution": 0.1721
+            },
+            {
+              "feature": "fico",
+              "value": "662",
+              "direction": "raises",
+              "text": "FICO score 662 is lower than 95% of approved borrowers",
+              "contribution": 0.1343
+            },
+            {
+              "feature": "loan_to_income",
+              "value": "0.40",
+              "direction": "raises",
+              "text": "Loan amount relative to income 0.40 is higher than 95% of approved borrowers",
+              "contribution": 0.1168
+            },
+            {
+              "feature": "loan_amnt",
+              "value": "$6,000",
+              "direction": "lowers",
+              "text": "Loan amount $6,000 supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.0772
+            }
+          ],
+          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 10 is higher than 95% of approved borrowers; Annual income $15,000 is lower than 95% of approved borrowers; FICO score 662 is lower than 95% of approved borrowers; Loan amount relative to income 0.40 is higher than 95% of approved borrowers."
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.334,
+          "decision": "decline",
+          "reasons": [
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "10",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 10 is higher than 95% of approved borrowers",
+              "contribution": 0.2869
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$15,000",
+              "direction": "raises",
+              "text": "Annual income $15,000 is lower than 95% of approved borrowers",
+              "contribution": 0.1778
+            },
+            {
+              "feature": "loan_to_income",
+              "value": "0.40",
+              "direction": "raises",
+              "text": "Loan amount relative to income 0.40 is higher than 95% of approved borrowers",
+              "contribution": 0.0862
+            },
+            {
+              "feature": "fico",
+              "value": "662",
+              "direction": "raises",
+              "text": "FICO score 662 is lower than 95% of approved borrowers",
+              "contribution": 0.0819
+            },
+            {
+              "feature": "purpose",
+              "value": "credit_card",
+              "direction": "lowers",
+              "text": "Loan purpose: credit_card (associated with fewer defaults)",
+              "contribution": -0.0756
+            }
+          ],
+          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 10 is higher than 95% of approved borrowers; Annual income $15,000 is lower than 95% of approved borrowers; Loan amount relative to income 0.40 is higher than 95% of approved borrowers; FICO score 662 is lower than 95% of approved borrowers."
+        }
+      }
+    },
+    {
+      "id": "59729293",
+      "grade": "F",
+      "sub_grade": "F1",
+      "int_rate": 21.99,
+      "outcome": "fully paid",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.3091,
+          "decision": "decline",
+          "reasons": [
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "2",
+              "direction": "lowers",
+              "text": "Accounts opened in the last 24 months 2 supports approval (better than 75% of approved borrowers)",
+              "contribution": -0.2073
+            },
+            {
+              "feature": "dti",
+              "value": "39.2%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 39.2% is higher than 95% of approved borrowers",
+              "contribution": 0.2067
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$22,000",
+              "direction": "raises",
+              "text": "Annual income $22,000 is lower than 95% of approved borrowers",
+              "contribution": 0.1999
+            },
+            {
+              "feature": "revol_bal",
+              "value": "$164",
+              "direction": "raises",
+              "text": "Revolving balance $164 is lower than 95% of approved borrowers",
+              "contribution": 0.1576
+            },
+            {
+              "feature": "total_bc_limit",
+              "value": "$300",
+              "direction": "raises",
+              "text": "Total bankcard credit limit $300 is lower than 95% of approved borrowers",
+              "contribution": 0.1456
+            }
+          ],
+          "adverse_action": "Principal reasons for this decision: Debt-to-income ratio 39.2% is higher than 95% of approved borrowers; Annual income $22,000 is lower than 95% of approved borrowers; Revolving balance $164 is lower than 95% of approved borrowers; Total bankcard credit limit $300 is lower than 95% of approved borrowers."
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.2937,
+          "decision": "decline",
+          "reasons": [
+            {
+              "feature": "annual_inc",
+              "value": "$22,000",
+              "direction": "raises",
+              "text": "Annual income $22,000 is lower than 95% of approved borrowers",
+              "contribution": 0.1778
+            },
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "2",
+              "direction": "lowers",
+              "text": "Accounts opened in the last 24 months 2 supports approval (better than 75% of approved borrowers)",
+              "contribution": -0.1622
+            },
+            {
+              "feature": "dti",
+              "value": "39.2%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 39.2% is higher than 95% of approved borrowers",
+              "contribution": 0.1389
+            },
+            {
+              "feature": "fico",
+              "value": "662",
+              "direction": "raises",
+              "text": "FICO score 662 is lower than 95% of approved borrowers",
+              "contribution": 0.0819
+            },
+            {
+              "feature": "home_ownership",
+              "value": "RENT",
+              "direction": "raises",
+              "text": "Home ownership: RENT (associated with more defaults)",
+              "contribution": 0.064
+            }
+          ],
+          "adverse_action": "Principal reasons for this decision: Annual income $22,000 is lower than 95% of approved borrowers; Debt-to-income ratio 39.2% is higher than 95% of approved borrowers; FICO score 662 is lower than 95% of approved borrowers; Home ownership: RENT (associated with more defaults)."
+        }
+      }
+    },
+    {
+      "id": "65605742",
+      "grade": "C",
+      "sub_grade": "C2",
+      "int_rate": 12.59,
+      "outcome": "fully paid",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.3347,
+          "decision": "decline",
+          "reasons": [
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "11",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 11 is higher than 95% of approved borrowers",
+              "contribution": 0.3206
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$28,000",
+              "direction": "raises",
+              "text": "Annual income $28,000 is lower than 95% of approved borrowers",
+              "contribution": 0.2073
+            },
+            {
+              "feature": "dti",
+              "value": "25.7%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 25.7% is higher than 75% of approved borrowers",
+              "contribution": 0.1551
+            },
+            {
+              "feature": "fico",
+              "value": "672",
+              "direction": "raises",
+              "text": "FICO score 672 is lower than 90% of approved borrowers",
+              "contribution": 0.0922
+            },
+            {
+              "feature": "num_tl_op_past_12m",
+              "value": "4",
+              "direction": "raises",
+              "text": "Accounts opened in the last 12 months 4 is higher than 95% of approved borrowers",
+              "contribution": 0.0861
+            }
+          ],
+          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 11 is higher than 95% of approved borrowers; Annual income $28,000 is lower than 95% of approved borrowers; Debt-to-income ratio 25.7% is higher than 75% of approved borrowers; FICO score 672 is lower than 90% of approved borrowers."
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.332,
+          "decision": "decline",
+          "reasons": [
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "11",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 11 is higher than 95% of approved borrowers",
+              "contribution": 0.2869
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$28,000",
+              "direction": "raises",
+              "text": "Annual income $28,000 is lower than 95% of approved borrowers",
+              "contribution": 0.1343
+            },
+            {
+              "feature": "purpose",
+              "value": "other",
+              "direction": "raises",
+              "text": "Loan purpose: other (associated with more defaults)",
+              "contribution": 0.1209
+            },
+            {
+              "feature": "dti",
+              "value": "25.7%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 25.7% is higher than 75% of approved borrowers",
+              "contribution": 0.0999
+            },
+            {
+              "feature": "home_ownership",
+              "value": "RENT",
+              "direction": "raises",
+              "text": "Home ownership: RENT (associated with more defaults)",
+              "contribution": 0.064
+            }
+          ],
+          "adverse_action": "Principal reasons for this decision: Accounts opened in the last 24 months 11 is higher than 95% of approved borrowers; Annual income $28,000 is lower than 95% of approved borrowers; Loan purpose: other (associated with more defaults); Debt-to-income ratio 25.7% is higher than 75% of approved borrowers."
+        }
+      }
+    },
+    {
+      "id": "66613420",
+      "grade": "E",
+      "sub_grade": "E1",
+      "int_rate": 18.2,
+      "outcome": "fully paid",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.3875,
+          "decision": "decline",
+          "reasons": [
+            {
+              "feature": "dti",
+              "value": "34.4%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 34.4% is higher than 95% of approved borrowers",
+              "contribution": 0.2465
+            },
+            {
+              "feature": "fico",
+              "value": "662",
+              "direction": "raises",
+              "text": "FICO score 662 is lower than 95% of approved borrowers",
+              "contribution": 0.1176
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$39,000",
+              "direction": "raises",
+              "text": "Annual income $39,000 is lower than 90% of approved borrowers",
+              "contribution": 0.1167
+            },
+            {
+              "feature": "mths_since_recent_inq",
+              "value": "0.0 months",
+              "direction": "raises",
+              "text": "Months since the most recent credit inquiry 0.0 months is lower than 95% of approved borrowers",
+              "contribution": 0.1017
+            },
+            {
+              "feature": "home_ownership",
+              "value": "RENT",
+              "direction": "raises",
+              "text": "Home ownership: RENT (associated with more defaults)",
+              "contribution": 0.0935
+            }
+          ],
+          "adverse_action": "Principal reasons for this decision: Debt-to-income ratio 34.4% is higher than 95% of approved borrowers; FICO score 662 is lower than 95% of approved borrowers; Annual income $39,000 is lower than 90% of approved borrowers; Months since the most recent credit inquiry 0.0 months is lower than 95% of approved borrowers."
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.332,
+          "decision": "decline",
+          "reasons": [
+            {
+              "feature": "dti",
+              "value": "34.4%",
+              "direction": "raises",
+              "text": "Debt-to-income ratio 34.4% is higher than 95% of approved borrowers",
+              "contribution": 0.1389
+            },
+            {
+              "feature": "fico",
+              "value": "662",
+              "direction": "raises",
+              "text": "FICO score 662 is lower than 95% of approved borrowers",
+              "contribution": 0.0819
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$39,000",
+              "direction": "raises",
+              "text": "Annual income $39,000 is lower than 90% of approved borrowers",
+              "contribution": 0.0808
+            },
+            {
+              "feature": "home_ownership",
+              "value": "RENT",
+              "direction": "raises",
+              "text": "Home ownership: RENT (associated with more defaults)",
+              "contribution": 0.064
+            },
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "5",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 5 is higher than 75% of approved borrowers",
+              "contribution": 0.0611
+            }
+          ],
+          "adverse_action": "Principal reasons for this decision: Debt-to-income ratio 34.4% is higher than 95% of approved borrowers; FICO score 662 is lower than 95% of approved borrowers; Annual income $39,000 is lower than 90% of approved borrowers; Home ownership: RENT (associated with more defaults)."
+        }
+      }
+    },
+    {
+      "id": "68587652",
+      "grade": "A",
+      "sub_grade": "A1",
+      "int_rate": 5.32,
+      "outcome": "fully paid",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.0099,
+          "decision": "approve",
+          "reasons": [
+            {
+              "feature": "fico",
+              "value": "797",
+              "direction": "lowers",
+              "text": "FICO score 797 supports approval (better than 95% of approved borrowers)",
+              "contribution": -0.3536
+            },
+            {
+              "feature": "tot_cur_bal",
+              "value": "$430,856",
+              "direction": "lowers",
+              "text": "Total current balance of all accounts $430,856 supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.2246
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$150,000",
+              "direction": "lowers",
+              "text": "Annual income $150,000 supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.1983
+            },
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "1",
+              "direction": "lowers",
+              "text": "Accounts opened in the last 24 months 1 supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.1946
+            },
+            {
+              "feature": "percent_bc_gt_75",
+              "value": "0.0%",
+              "direction": "lowers",
+              "text": "Share of bankcards above 75% of their limit 0.0% supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.1399
+            }
+          ],
+          "adverse_action": null
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.006,
+          "decision": "approve",
+          "reasons": [
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "1",
+              "direction": "lowers",
+              "text": "Accounts opened in the last 24 months 1 supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.2619
+            },
+            {
+              "feature": "fico",
+              "value": "797",
+              "direction": "lowers",
+              "text": "FICO score 797 supports approval (better than 95% of approved borrowers)",
+              "contribution": -0.2218
+            },
+            {
+              "feature": "annual_inc",
+              "value": "$150,000",
+              "direction": "lowers",
+              "text": "Annual income $150,000 supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.1674
+            },
+            {
+              "feature": "tot_cur_bal",
+              "value": "$430,856",
+              "direction": "lowers",
+              "text": "Total current balance of all accounts $430,856 supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.1192
+            },
+            {
+              "feature": "dti",
+              "value": "9.5%",
+              "direction": "lowers",
+              "text": "Debt-to-income ratio 9.5% supports approval (better than 90% of approved borrowers)",
+              "contribution": -0.0878
+            }
+          ],
+          "adverse_action": null
+        }
+      }
+    },
+    {
+      "id": "55988377",
+      "grade": "C",
+      "sub_grade": "C4",
+      "int_rate": 13.99,
+      "outcome": "fully paid",
+      "models": {
+        "lgbm-bureau-no-state": {
+          "pd": 0.2,
+          "decision": "approve",
+          "reasons": [
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "9",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 9 is higher than 95% of approved borrowers",
+              "contribution": 0.226
+            },
+            {
+              "feature": "total_acc",
+              "value": "64",
+              "direction": "lowers",
+              "text": "Total credit lines 64 supports approval (better than 95% of approved borrowers)",
+              "contribution": -0.1782
+            },
+            {
+              "feature": "mths_since_recent_inq",
+              "value": "1.0 months",
+              "direction": "raises",
+              "text": "Months since the most recent credit inquiry 1.0 months is lower than 90% of approved borrowers",
+              "contribution": 0.1074
+            },
+            {
+              "feature": "fico",
+              "value": "667",
+              "direction": "raises",
+              "text": "FICO score 667 is lower than 90% of approved borrowers",
+              "contribution": 0.0904
+            },
+            {
+              "feature": "num_tl_op_past_12m",
+              "value": "6",
+              "direction": "raises",
+              "text": "Accounts opened in the last 12 months 6 is higher than 95% of approved borrowers",
+              "contribution": 0.0787
+            }
+          ],
+          "adverse_action": null
+        },
+        "scorecard-bureau-no-state": {
+          "pd": 0.2396,
+          "decision": "review",
+          "reasons": [
+            {
+              "feature": "acc_open_past_24mths",
+              "value": "9",
+              "direction": "raises",
+              "text": "Accounts opened in the last 24 months 9 is higher than 95% of approved borrowers",
+              "contribution": 0.2869
+            },
+            {
+              "feature": "total_bc_limit",
+              "value": "$68,080",
+              "direction": "lowers",
+              "text": "Total bankcard credit limit $68,080 supports approval (better than 95% of approved borrowers)",
+              "contribution": -0.1041
+            },
+            {
+              "feature": "inq_last_6mths",
+              "value": "3",
+              "direction": "raises",
+              "text": "Credit inquiries in the last 6 months 3 is higher than 95% of approved borrowers",
+              "contribution": 0.0786
+            },
+            {
+              "feature": "home_ownership",
+              "value": "MORTGAGE",
+              "direction": "lowers",
+              "text": "Home ownership: MORTGAGE (associated with fewer defaults)",
+              "contribution": -0.0725
+            },
+            {
+              "feature": "fico",
+              "value": "667",
+              "direction": "raises",
+              "text": "FICO score 667 is lower than 90% of approved borrowers",
+              "contribution": 0.0672
+            }
+          ],
+          "adverse_action": null
+        }
+      }
+    }
+  ],
+  "problems": [],
+  "examples_note": "five declined rows spread over the decline range, two approved rows",
+  "agreement": {
+    "n": 2000,
+    "top3_any_overlap": 0.983,
+    "top1_same": 0.591
+  },
+  "lead_reason_among_declines": {
+    "lgbm-bureau-no-state": {
+      "n_declined": 15775,
+      "share": {
+        "acc_open_past_24mths": 0.4353,
+        "emp_years": 0.1231,
+        "annual_inc": 0.1216,
+        "dti": 0.1155,
+        "revol_bal": 0.0429,
+        "purpose": 0.042,
+        "total_bc_limit": 0.0266,
+        "bc_util": 0.0259,
+        "delinq_2yrs": 0.0195,
+        "mths_since_recent_inq": 0.0096,
+        "loan_to_income": 0.0079,
+        "loan_amnt": 0.0078,
+        "home_ownership": 0.0061,
+        "revol_util": 0.006,
+        "fico": 0.0044,
+        "bc_open_to_buy": 0.0014,
+        "total_acc": 0.0011,
+        "inq_last_6mths": 0.001,
+        "num_tl_op_past_12m": 0.001,
+        "tot_cur_bal": 0.0008,
+        "open_acc": 0.0004,
+        "verification_status": 0.0003
+      }
+    },
+    "scorecard-bureau-no-state": {
+      "n_declined": 14499,
+      "share": {
+        "acc_open_past_24mths": 0.5499,
+        "annual_inc": 0.2607,
+        "dti": 0.1235,
+        "loan_to_income": 0.0316,
+        "purpose": 0.0232,
+        "fico": 0.0063,
+        "home_ownership": 0.0037,
+        "inq_last_6mths": 0.001,
+        "mths_since_recent_inq": 0.0001
+      }
+    }
+  },
+  "checks": {
+    "reason_texts_clean": true,
+    "all_reasons_have_5_entries": true
+  }
+}

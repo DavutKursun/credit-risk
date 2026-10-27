@@ -6,38 +6,34 @@ Section 0 says where we are.
 
 ## 0. Status (updated 2026-10-27)
 
-**Milestones 1–3 are done (commits "Milestone 1 (1/2)", "Milestone 1 (2/2)", "Milestone 2", "Milestone 3"). Start at Milestone 4, step 0 below.**
+**Milestones 1–4 are done. Start at Milestone 5, step 0 below.** The test split was used once (2026-10-27, see §2); never run a
+test-split script again.
 
-Done in M1–M2 (`docs/DESIGN.md` §1–5): cohort 589,488 36-month loans 2012-01..2015-12, train 306,462 / dev 120,790 / test 162,236;
-leakage audit clean; 37 bureau columns flagged True, nine of them the opt-in `BUREAU_FEATURES`; six dev-calibrated bundles.
+Done in M1–M3 (`docs/DESIGN.md` §1–8): cohort 589,488 36-month loans 2012-01..2015-12 (train 306,462 / dev 120,790 / test 162,236);
+leakage audit clean; bureau flags decided; ten dev-calibrated bundles in `models/`; binned isotonic calibration; policies, reasons,
+fairness and drift on dev. Deployed pair: **`lgbm-bureau-no-state`** and **`scorecard-bureau-no-state`** (both with LC grade and the
+nine bureau attributes, without `addr_state`); thresholds chosen on dev: expected-value 0.41 / 0.40, 85% operating point 0.253 / 0.248
+(`eval/results/policy_dev.json`). Reason codes never show the LC-derived features (`explain.NOT_A_REASON`).
 
-Done in M3 (`docs/DESIGN.md` §4–8; dev only, test never read):
-- `IsotonicCalibrator` fits on equal-count bins (≥ 500 rows, weighted) so no step rests on a few tail defaults; the clear-decline sample
-  reads 0.40 instead of 0.999; ECE after calibration 0.007–0.009 for all ten bundles (fewer than 5,000 rows → raw-point fit).
-- Rules fixed and applied: bureau set kept (+0.006 / +0.007 dev AUC); `addr_state` dropped (costs ≤ 0.0012; `train.py --no-state`).
-  **Deployed pair: `lgbm-bureau-no-state` (dev AUC 0.6966) and `scorecard-bureau-no-state` (0.6890).** Ten bundles in `models/`.
-- `policy_eval.py`: expected-value threshold (min approval 0.5, review band ±0.02 → `decide()` is symmetric now) and fixed approval
-  rates 80/85/90% against approve-all, grades A–C and the exact sub-grade cut; profit-curve PNGs; `--variants`; test needs
-  `--final --thresholds-from eval/results/policy_dev.json`. Thresholds for M4: EV 0.41 / 0.40 (approves 99.5%),
-  85% operating point 0.253 / 0.248. At 85% LightGBM approves 12.3% defaulters vs 12.8% for the sub-grade cut, $1,063 vs $1,015 per loan.
-- `reasons_report.py` (`--policy-rate 0.85`): displayed reasons skip the LC-derived features (M4 rule, `explain.NOT_A_REASON`); top-3
-  agreement 98.7%, same #1 reason 61.8%; accounts opened in 24 months lead 42% / 53% of declines, then income and DTI; text check clean. `fairness_report.py` (`--tag`, `--min-n`, group default rate and gaps): at 85% the income
-  quintile four-fifths ratio is 0.69 (LightGBM) / 0.59 (scorecard), home ownership 0.85 / 0.81; by state 0.96 / 0.94.
-- `drift_report.py` (`--variants`): int_rate 0.18 → 0.32, initial_list_status 0.61 in Q4, bureau columns 0.49 from missingness only,
-  deployed scores 0.01–0.02. 35 tests; `eval/results/*.png` are committed.
+Done in M4 (`docs/DESIGN.md` §9–10, `docs/model_card.md`, README): test AUC 0.7046 (LightGBM) / 0.6968 (scorecard) / 0.6814 (grade only);
+ECE 0.0065 / 0.0092; at 85% approval 11.8% / 11.9% defaulters among approved against 12.3% for the sub-grade cut, realized P&L
+$1,022 / $1,012 per approved loan against $976; fairness four-fifths on income 0.72 / 0.63; test confirms dev in every block
+(every variant +0.005–0.008 AUC, a population effect). Test reliability plots were drawn from evaluate's tables, not from a second read.
 
-**Milestone 4, step 0 (do first):** `pytest -q` (expect 35 passed). Then the single test run, in this order, each script once, and
-write the date into §2 of this file: `python scripts/evaluate.py --split test --final` (all ten bundles + grade only);
-`python scripts/policy_eval.py --split test --final --thresholds-from eval/results/policy_dev.json --variants lgbm-bureau-no-state,scorecard-bureau-no-state`
-(the dev thresholds unchanged, plus the fixed rates); `python scripts/fairness_report.py --model <each deployed> --split test` at the EV
-threshold and `--threshold <85% dev threshold> --tag @85`; `python scripts/reasons_report.py --split test --final --policy-rate 0.85 --variants ...`;
-`python scripts/plot_reliability.py` is dev-only, write the test reliability tables from evaluate's output. Then DESIGN.md §9 with the
-date, `docs/model_card.md`, README results table and decision table (scorecard vs LightGBM: when each wins), commit "Milestone 4: ...",
-push. Stop. Never run the test scripts twice.
+**Milestone 5, step 0 (do first):** `pytest -q` (expect 35 passed). Build `app.py`: FastAPI `POST /score` (the `Application` schema,
+extra fields rejected; response `{pd, decision, reasons[5], score_points, model, version, latency_ms}` for the deployed pair, model chosen by
+a `model` query parameter defaulting to `lgbm-bureau-no-state`; decision = `policy.decide` with the 85% operating-point threshold from
+`eval/results/policy_dev.json`, review band ±0.02; reasons from `explain.reason_codes`), `POST /score/batch` (≤ 1,000), `GET /health`,
+`GET /monitoring` (PSI by quarter from `eval/results/psi_by_quarter.csv`); request logging without applicant data. Mount Gradio on the same
+app with the three tabs of §6 (Application with the three samples and what-if sliders, both models side by side; Policy with the dev
+profit curve and the two thresholds; Monitoring with the PSI heat map). `scripts/bench_latency.py`: p50/p95 of `/score` for batch 1 and
+1,000 on this Mac (criterion: p50 < 50 ms on the Space CPU). Tests for the API (schema rejection, five reasons, batch limit). Then the
+Hugging Face Space (Gradio SDK, cpu-basic, models committed), `scripts/demo_gif.py` → `assets/demo.gif`, README demo link and latency row,
+CI green. Commit "Milestone 5: ...", push. Stop.
 
 macOS notes: Python 3.11 venv at `.venv`. The Mac has 8 GB RAM: reading the raw CSV peaks at 3.4–3.8 GB RSS; run raw-file steps one at a
 time. Training all ten bundles takes about 2.5 minutes. The background shell is zsh: it does not word-split unquoted variables, so pass
-script arguments explicitly (or use arrays).
+script arguments explicitly (or use arrays); Python 3.11 f-strings cannot nest the same quote type.
 
 ## 1. Goal
 
@@ -61,6 +57,9 @@ monitoring). It is the one project in the portfolio with no LLM in the critical 
 - **Out-of-time test, touched once.** Train on loans issued 2012-01 → 2014-12, dev = 2015-01 → 2015-06,
   test = 2015-07 → 2015-12. No random splits anywhere. `scripts/evaluate.py` refuses `--split test`
   without `--final`; the date of the single test run goes into this file.
+  **Single test run: 2026-10-27** (`evaluate.py --split test --final`, `policy_eval.py --split test --final` with the dev thresholds,
+  `fairness_report.py --split test` at the EV and the 85% dev thresholds for both deployed models, `reasons_report.py --split test --final`;
+  each once; results in `eval/results/*test*` and DESIGN.md §9).
 - **Only matured cohorts.** 36-month loans issued ≤ 2015-12 are fully matured by the data snapshot
   (2018Q4). 60-month loans and later cohorts are excluded; the reason (right-censoring) is written in
   DESIGN.md with survival analysis as the next step.

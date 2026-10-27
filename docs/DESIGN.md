@@ -589,6 +589,118 @@ of the 2012 block is documented, not actionable.
 
 ![PSI heat map](../eval/results/psi_by_quarter.png)
 
-## 9. Test results (M4) — run once on _(date)_
+## 9. Test results (M4) — run once on 2026-10-27
+
+Every script ran once on the test split (loans issued 2015-07..2015-12, 162,236 loans, 14.7% charged off) with everything frozen:
+the bundles trained on 2012–2014, the calibrators fitted on 2015H1, the dev thresholds unchanged (`eval/results/test-summary.json`,
+`policy_test.json`, `fairness_test_*`, `reasons_test@85.*`, `reliability_test_*`). Acceptance criteria of CLAUDE.md §9: LightGBM AUC
+0.705 ≥ 0.68 and the scorecard within 0.02 (0.697); ECE 0.0065 and 0.0092 ≤ 0.02; the expected-value threshold beats
+approve-all and grades A–C on total realized P&L ($933 per applicant against $929 and $836) with a review band of
+0.4%; at the 85% operating point the model beats both per approved loan ($1,022 against $976 for the sub-grade cut and $929
+for approve-all) and per dollar lent.
+
+**Does test confirm dev?** Yes in every block. Ranking: every variant gains 0.005–0.008 AUC on test, the grade-only reference included,
+so the shift is the 2015H2 population (a larger, slightly safer book with more grade B) rather than any model; the ordering of the
+ten bundles is unchanged. Calibration: ECE 0.0074 → 0.0065 and 0.0082 → 0.0092 with the same 0.6–0.7 point under-prediction of the
+level as on the later half of dev. Policies: the dev thresholds reproduce their approval rates on test (99.6% at the expected-value
+threshold; the dev 85% threshold of 0.253 approves 86.2% of test at a default rate of 12.0% among approved, derived from the fairness
+tables); realized P&L per loan is $60 lower for every policy, approve-all included, because 2015H2 loans were priced lower, and the
+model's edge over the sub-grade cut is intact (5.0 against 4.0 fewer defaults per 1,000 on dev, $46 against $48 per loan). Fairness:
+the four-fifths ratios move by at most 0.04 and the income pattern repeats. Reasons: top-3 agreement 98.7% → 98.3%, the #1 reason
+distribution within two points.
+
+### Ranking, dev (120,790 loans, default rate 15.12%) → test (162,236 loans, 14.71%), run 2026-10-27
+| Variant | AUC dev → test | Δ | Gini dev → test | KS dev → test | PR-AUC dev → test |
+|---|---|---|---|---|---|
+| lgbm-bureau-no-state **(deployed)** | 0.6966 → 0.7046 | +0.0080 | 0.393 → 0.409 | 0.286 → 0.298 | 0.273 → 0.278 |
+| scorecard-bureau-no-state **(deployed)** | 0.6890 → 0.6968 | +0.0078 | 0.378 → 0.394 | 0.275 → 0.287 | 0.264 → 0.269 |
+| lgbm-bureau | 0.6978 → 0.7059 | +0.0081 | 0.396 → 0.412 | 0.288 → 0.299 | 0.275 → 0.279 |
+| scorecard-bureau | 0.6890 → 0.6968 | +0.0078 | 0.378 → 0.394 | 0.275 → 0.287 | 0.264 → 0.269 |
+| lgbm | 0.6918 → 0.6986 | +0.0068 | 0.384 → 0.397 | 0.281 → 0.290 | 0.267 → 0.270 |
+| scorecard | 0.6821 → 0.6887 | +0.0066 | 0.364 → 0.378 | 0.267 → 0.277 | 0.253 → 0.258 |
+| lgbm-no-state | 0.6908 → 0.6969 | +0.0061 | 0.382 → 0.394 | 0.279 → 0.288 | 0.266 → 0.269 |
+| scorecard-no-state | 0.6821 → 0.6887 | +0.0066 | 0.364 → 0.378 | 0.267 → 0.277 | 0.253 → 0.258 |
+| lgbm-no-lc-grade | 0.6712 → 0.6764 | +0.0052 | 0.342 → 0.353 | 0.249 → 0.256 | 0.250 → 0.250 |
+| scorecard-no-lc-grade | 0.6497 → 0.6548 | +0.0051 | 0.299 → 0.310 | 0.218 → 0.225 | 0.229 → 0.230 |
+| grade_only | 0.6750 → 0.6814 | +0.0064 | 0.350 → 0.363 | 0.257 → 0.268 | 0.250 → 0.252 |
+
+### Calibration, deployed pair: later half of dev (out-of-sample) → test
+| Variant | Brier | ECE | mean PD vs observed | log loss |
+|---|---|---|---|---|
+| lgbm-bureau-no-state | 0.12225 → 0.11701 | 0.0074 → 0.0065 | 0.1473 vs 0.1547 → 0.1407 vs 0.1471 | 0.3977 → 0.3839 |
+| scorecard-bureau-no-state | 0.12304 → 0.11782 | 0.0082 → 0.0092 | 0.1472 vs 0.1547 → 0.1399 vs 0.1471 | 0.4006 → 0.3870 |
+
+### Policies, dev → test (realized P&L per approved loan; dev thresholds applied unchanged on test)
+| Policy | Threshold | Approve dev → test | Default rate among approved dev → test | P&L per approved loan dev → test | per $ lent dev → test | Defaults avoided / 1,000 vs sub-grade cut (test) | vs approve-all (test) |
+|---|---|---|---|---|---|---|---|
+| approve_all |  | 100.0% → 100.0% | 15.1% → 14.7% | $991 → $929 | 7.8% → 7.2% |  |  |
+| approve_grades_A-C |  | 82.8% → 85.8% | 12.5% → 12.4% | $1,018 → $974 | 7.9% → 7.5% |  |  |
+| sub_grade_cut@80% |  | 80.0% → 80.0% | 12.1% → 11.7% | $1,020 → $980 | 7.9% → 7.5% |  |  |
+| sub_grade_cut@85% |  | 85.0% → 85.0% | 12.8% → 12.3% | $1,015 → $976 | 7.9% → 7.5% |  |  |
+| sub_grade_cut@90% |  | 90.0% → 90.0% | 13.4% → 13.0% | $1,010 → $966 | 7.9% → 7.5% |  |  |
+| lgbm-bureau-no-state@ev | 0.410 | 99.5% → 99.6% | 15.0% → 14.5% | $996 → $937 | 7.8% → 7.3% | 0.2 | 1.7 |
+| lgbm-bureau-no-state@80% | 0.226 | 80.0% → 80.0% | 11.6% → 11.1% | $1,074 → $1,040 | 8.3% → 8.0% | 6.2 | 36.4 |
+| lgbm-bureau-no-state@85% | 0.228 | 85.0% → 85.0% | 12.3% → 11.8% | $1,063 → $1,022 | 8.3% → 7.9% | 5.0 | 29.0 |
+| lgbm-bureau-no-state@90% | 0.267 | 90.0% → 90.0% | 13.1% → 12.6% | $1,045 → $999 | 8.2% → 7.8% | 3.6 | 21.0 |
+| scorecard-bureau-no-state@ev | 0.400 | 99.5% → 99.6% | 15.0% → 14.6% | $995 → $933 | 7.8% → 7.3% | -0.1 | 1.2 |
+| scorecard-bureau-no-state@80% | 0.209 | 80.0% → 80.0% | 11.8% → 11.2% | $1,068 → $1,034 | 8.2% → 7.9% | 4.6 | 34.8 |
+| scorecard-bureau-no-state@85% | 0.240 | 85.0% → 85.0% | 12.5% → 11.9% | $1,057 → $1,012 | 8.2% → 7.8% | 3.7 | 27.7 |
+| scorecard-bureau-no-state@90% | 0.260 | 90.0% → 90.0% | 13.3% → 12.7% | $1,039 → $990 | 8.1% → 7.7% | 2.5 | 19.9 |
+
+review share at the EV threshold on test: {'lgbm-bureau-no-state': 0.0045, 'scorecard-bureau-no-state': 0.0038}; approval: {'lgbm-bureau-no-state': 0.9955, 'scorecard-bureau-no-state': 0.9962}
+
+### AUC inside each grade, deployed pair, dev → test
+| Variant | A | B | C | D | E | F | G |
+|---|---|---|---|---|---|---|---|
+| test loans / default rate | 39,493 / 5.1% | 55,979 / 11.8% | 43,742 / 19.8% | 17,322 / 26.4% | 4,817 / 33.5% | 733 / 43.1% | 150 / 53.3% |
+| lgbm-bureau-no-state | 0.658 → 0.649 | 0.610 → 0.619 | 0.601 → 0.605 | 0.591 → 0.597 | 0.580 → 0.592 | 0.593 → 0.597 | 0.627 → 0.604 |
+| scorecard-bureau-no-state | 0.645 → 0.635 | 0.596 → 0.602 | 0.586 → 0.591 | 0.573 → 0.580 | 0.566 → 0.579 | 0.581 → 0.569 | 0.588 → 0.601 |
+
+### Fairness four-fifths ratios, dev → test
+| Model, threshold | State | Income quintile | Employment band | Home ownership |
+|---|---|---|---|---|
+| lgbm-bureau-no-state, EV (t = 0.410) | 0.998 → 0.998 | 0.988 → 0.989 | 0.991 → 0.991 | 0.994 → 0.994 |
+| lgbm-bureau-no-state, 85% point (t = 0.253) | 0.956 → 0.952 | 0.688 → 0.721 | 0.723 → 0.766 | 0.846 → 0.865 |
+| scorecard-bureau-no-state, EV (t = 0.400) | 0.997 → 0.998 | 0.981 → 0.985 | 0.990 → 0.992 | 0.992 → 0.994 |
+| scorecard-bureau-no-state, 85% point (t = 0.248) | 0.938 → 0.941 | 0.586 → 0.627 | 0.813 → 0.844 | 0.810 → 0.829 |
+
+income quintile on test, lgbm-bureau-no-state at the 85% dev threshold:
+| Group | n | Default rate | Approval rate | Default rate among approved | FPR | TPR |
+|---|---|---|---|---|---|---|
+| income_q1 | 32,448 | 19.5% | 69.5% | 14.4% | 26.1% | 48.9% |
+| income_q2 | 32,447 | 16.0% | 83.6% | 13.0% | 13.5% | 32.2% |
+| income_q3 | 32,447 | 14.6% | 88.6% | 12.3% | 9.0% | 25.5% |
+| income_q4 | 32,447 | 12.9% | 93.0% | 11.4% | 5.5% | 17.7% |
+| income_q5 | 32,447 | 10.5% | 96.3% | 9.7% | 2.8% | 11.5% |
+
+### Reasons, dev → test (85% point)
+- top-3 overlap 98.7% → 98.3%; same #1 reason 61.8% → 59.1%; text checks clean: True / True
+- lgbm-bureau-no-state #1 reason among declines: acc_open_past_24mths 42.0% → 43.5%, emp_years 11.0% → 12.3%, annual_inc 13.6% → 12.2%, dti 13.4% → 11.6%, revol_bal 3.0% → 4.3%
+- scorecard-bureau-no-state #1 reason among declines: acc_open_past_24mths 52.6% → 55.0%, annual_inc 26.1% → 26.1%, dti 14.0% → 12.3%, loan_to_income 3.6% → 3.2%, purpose 2.4% → 2.3%
+
+
+![Reliability on test, LightGBM](../eval/results/reliability_test_lgbm-bureau-no-state.png)
+![Reliability on test, scorecard](../eval/results/reliability_test_scorecard-bureau-no-state.png)
+![Profit curve on test, LightGBM](../eval/results/profit_curve_test_lgbm-bureau-no-state.png)
 
 ## 10. What I would do differently
+
+- **Model the censored cohorts.** Half the export is unmatured. A survival model (time to default) would use the 2016–2018 vintages and
+  the 60-month loans instead of discarding them, and would give a PD at any horizon.
+- **Hold early stopping and calibration apart.** LightGBM's early stopping looked at all of dev, so the dev ranking is slightly
+  optimistic and only test is clean; a three-way split of dev by issue month (stop / calibrate / measure) costs nothing here.
+- **Price-aware decisions.** The expected-value threshold approves almost everyone because every grade is profitable on average; the
+  real decision a lender makes is the rate, not approve / decline. Learning the profit-maximising rate per PD band is the natural next model.
+- **Prepayment.** Gain if repaid is scheduled interest, an upper bound; realized P&L per loan is $50–60 below it. A prepayment model, or
+  simply realized interest as the gain, would make the profit curve honest instead of optimistic.
+- **Drop `initial_list_status`** before it drifts further (PSI 0.61 by 2015Q4): it is a distribution-channel flag, not an applicant attribute.
+- **Decide the income question up front.** Income features carry most of the proxy disparity; the choice between predictive power and
+  an approval gap across income quintiles is a policy decision that should be written down before the model is built, not discovered in §7.
+- **Run the leakage tests label-free first.** The bureau-column evidence (identities, "the LC loan never appears", no ageing) needs no
+  labels; doing it on dev before any training would have settled the flags earlier.
+- **Calibrate per sub-grade or per vintage.** The isotonic fit corrects the level globally; the within-sub-grade vintage shift of 2015
+  suggests a calibrator with the sub-grade as a second input.
+- **Measure latency and payload size in M2, not M5.** The bureau set adds nine fields to every request; knowing the cost early would
+  have shaped the ablation.
+- **Freeze the data dictionary.** Every field definition used here came from memory of the Lending Club dictionary; a copy in the
+  repo would make the provenance argument of §2 auditable.
