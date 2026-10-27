@@ -1,0 +1,14 @@
+{
+  "input_rows": 2260668,
+  "dropped_term": 650914,
+  "dropped_issue_window": 1020119,
+  "dropped_non_terminal": 147,
+  "non_terminal_statuses": {
+    "Current": 72,
+    "Late (31-120 days)": 61,
+    "In Grace Period": 9,
+    "Late (16-30 days)": 5
+  },
+  "cohort_rows": 589488,
+  "default_rate": 0.1403
+}

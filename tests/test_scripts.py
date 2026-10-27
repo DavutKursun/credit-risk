@@ -1,0 +1,71 @@
+"""End to end on a synthetic export: build_cohort → audit → train → evaluate (dev; test refused) → policy → fairness → drift.
+The same chain Claude Code runs on the real data, so the first real run is not the first run."""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+
+import audit_leakage
+import build_cohort
+import drift_report
+import evaluate
+import fairness_report
+import policy_eval
+import train
+
+from credit_risk.synthetic import make_raw, write_raw_csv
+
+
+@pytest.fixture(scope="module")
+def workspace(tmp_path_factory):
+    base = tmp_path_factory.mktemp("ws")
+    raw = write_raw_csv(make_raw(n=5000, seed=11), base / "raw" / "accepted.csv.gz")
+    dirs = {"raw": raw, "cohort": base / "cohort", "models": base / "models", "out": base / "results"}
+    for d in ("cohort", "models", "out"):
+        dirs[d].mkdir(parents=True, exist_ok=True)
+    return dirs
+
+
+def test_build_cohort_script(workspace):
+    assert build_cohort.main(["--raw", str(workspace["raw"]), "--out", str(workspace["cohort"])]) == 0
+    summary = json.loads((workspace["cohort"] / "summary.json").read_text())
+    assert set(summary["splits"]) == {"train", "dev", "test"} and (workspace["cohort"] / "build_report.json").exists()
+
+
+def test_audit_script(workspace):
+    assert audit_leakage.main(["--cohort-dir", str(workspace["cohort"]), "--out", str(workspace["out"])]) == 0
+    assert (workspace["out"] / "leakage_audit_train.csv").exists()
+
+
+def test_train_script(workspace):
+    rc = train.main(["--model", "both", "--cohort-dir", str(workspace["cohort"]), "--models-dir", str(workspace["models"]), "--out", str(workspace["out"])])
+    assert rc == 0
+    res = json.loads((workspace["out"] / "train_dev.json").read_text())
+    assert {"lgbm", "scorecard"} <= set(res) and res["lgbm"]["dev_ranking"]["auc"] > 0.6
+    assert res["lgbm"]["dev_late_after"]["ece"] <= res["lgbm"]["dev_late_before"]["ece"] + 0.02  # out-of-sample calibration check
+    assert (workspace["models"] / "lgbm.joblib").exists() and (workspace["models"] / "scorecard.joblib").exists()
+
+
+def test_evaluate_refuses_test_without_final(workspace):
+    assert evaluate.main(["--split", "test", "--models-dir", str(workspace["models"]), "--cohort-dir", str(workspace["cohort"]), "--out", str(workspace["out"])]) == 3
+    assert evaluate.main(["--split", "dev", "--models-dir", str(workspace["models"]), "--cohort-dir", str(workspace["cohort"]), "--out", str(workspace["out"])]) == 0
+    s = json.loads((workspace["out"] / "dev-summary.json").read_text())
+    assert {r["model"] for r in s["metrics"]} == {"lgbm", "scorecard", "grade_only"}
+
+
+def test_policy_fairness_drift_scripts(workspace):
+    common = ["--models-dir", str(workspace["models"]), "--cohort-dir", str(workspace["cohort"]), "--out", str(workspace["out"])]
+    assert policy_eval.main(["--split", "test", *common]) == 3  # no --final / --threshold
+    assert policy_eval.main(["--split", "dev", "--min-approval-rate", "0.3", *common]) == 0
+    pol = json.loads((workspace["out"] / "policy_dev.json").read_text())
+    assert "lgbm" in pol["thresholds"] and any(p["policy"] == "approve_all" for p in pol["policies"])
+    assert fairness_report.main(["--model", "lgbm", "--split", "dev", *common]) == 0
+    assert drift_report.main(common) == 0
+    assert (workspace["out"] / "psi_by_quarter.csv").exists()

@@ -1,0 +1,57 @@
+{
+  "rows": 589488,
+  "default_rate": 0.1403,
+  "by_year_status": {
+    "2012": {
+      "Charged Off": 5903,
+      "Fully Paid": 37567
+    },
+    "2013": {
+      "Charged Off": 12378,
+      "Fully Paid": 88044
+    },
+    "2014": {
+      "Charged Off": 22315,
+      "Fully Paid": 140255
+    },
+    "2015": {
+      "Charged Off": 42132,
+      "Fully Paid": 240894
+    }
+  },
+  "default_rate_by_year": {
+    "2012": 0.1358,
+    "2013": 0.1233,
+    "2014": 0.1373,
+    "2015": 0.1489
+  },
+  "default_rate_by_grade": {
+    "A": 0.0545,
+    "B": 0.1122,
+    "C": 0.1803,
+    "D": 0.2357,
+    "E": 0.2892,
+    "F": 0.3314,
+    "G": 0.4017
+  },
+  "splits": {
+    "train": {
+      "rows": 306462,
+      "default_rate": 0.1325,
+      "issue_from": "2012-01-01",
+      "issue_to": "2014-12-01"
+    },
+    "dev": {
+      "rows": 120790,
+      "default_rate": 0.1512,
+      "issue_from": "2015-01-01",
+      "issue_to": "2015-06-01"
+    },
+    "test": {
+      "rows": 162236,
+      "default_rate": 0.1471,
+      "issue_from": "2015-07-01",
+      "issue_to": "2015-12-01"
+    }
+  }
+}
